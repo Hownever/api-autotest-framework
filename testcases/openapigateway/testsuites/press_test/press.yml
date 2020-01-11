@@ -1,0 +1,7 @@
+config:
+  name: 使用各种AKSK请求
+testcases:
+  describeApiGroups接口，使用各种AKSK请求:
+    testcase: testcases/authAllow/describeInstances_test_press.yml
+    parameters:
+      repeat: ${return_list(200)}

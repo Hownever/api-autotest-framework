@@ -1,0 +1,39 @@
+name: 创建访问授权
+description: 创建访问授权
+operationId: createAccessAuth
+
+variables:
+#    url
+    host_caa: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_caa: ${ENV(ENV_API_VERSION)}
+    regionId_caa: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_caa:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json:
+    accessKey_caa: AAA
+    authUserType_caa: AA
+    deploymentIds_caa: AA
+    description_caa: AA
+#    hooks
+    serviceLine_caa: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_caa: nofile
+    openApiAk_caa: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_caa: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_caa: v1
+
+request:
+    url: $host_caa/$apiVer_caa/regions/$regionId_caa/accessAuths
+    method: POST
+    headers: $header_caa
+    json:
+        accessAuthView:
+            accessKey: $accessKey_caa
+            authUserType: $authUserType_caa
+            deploymentIds: $deploymentIds_caa
+            description: $description_caa
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_caa, $openApiSk_caa, $serviceLine_caa, $apiVersion_caa, $openapiYaml_caa, $regionId_caa)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

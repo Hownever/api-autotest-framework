@@ -1,0 +1,39 @@
+name: 获取所有集群信息
+description: 获取所有集群信息
+operationId: describeGateways
+
+variables:
+#    url
+    host_dgs: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dgs: ${ENV(ENV_API_VERSION)}
+    regionId_dgs: ${ENV(ENV_JDSF_REGIONID)}
+#    header
+    header_dgs:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    params
+    pageNumber_dgs: 1
+    pageSize_dgs: 100
+    filters1_dgs: gatewayName
+    filters1values_dgs: groupName
+#    hooks
+    serviceLine_dgs: ${ENV(ENV_SERVICELINE_JDSF)}
+    openapiYaml_dgs: nofile
+    openApiAk_dgs: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dgs: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dgs: v1
+
+request:
+    url: $host_dgs/$apiVer_dgs/regions/$regionId_dgs/gateways
+    method: GET
+    headers: $header_dgs
+    params:
+        pageNumber: $pageNumber_dgs
+        pageSize: $pageSize_dgs
+        filters.1.name: $filters1_dgs
+        filters.1.values.1: $filters1values_dgs
+        filters.1.operator: like
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dgs, $openApiSk_dgs, $serviceLine_dgs, $apiVersion_dgs, $openapiYaml_dgs, $regionId_dgs)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

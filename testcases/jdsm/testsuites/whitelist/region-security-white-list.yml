@@ -1,0 +1,42 @@
+config:
+    name: 多区域域名测试，保证目前所要求的各个（区域的）域名可以正常访问
+    variables:
+        times: 0
+        testenv: ${ENV(ENV_TEST_ENV)}
+        testproduct: ${ENV(ENV_TEST_PRODUCT)}
+        test_provider_app: ${ENV(ENV_TEST_PROVIDER)}
+        test_consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+
+testcases:
+    多区域权限测试，白名单开启时，未授权，禁用调用-$test_provider_app:
+        testcase: testcases/ark-whitelist/whitelist-open-deny.yml
+        parameters:
+            # host: http://not_exist_suite
+            base_ark_url:
+                - http://productpage.ingress.mesh.cn-north-1.jdcloud.com
+                - http://productpage.ingress.mesh.cn-north-1.jcloud.com
+                - http://productpage.ingress.mesh.cn-east-1.jdcloud.com
+                - http://productpage.ingress.mesh.cn-east-2.jdcloud.com
+                - http://productpage.ingress.mesh.cn-south-1.jdcloud.com
+            base_url_jdmesh_web:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product:
+                - $test_provider_app
+            provider_app:
+                - $test_provider_app
+            provider_groups:
+                - []
+            provider_inss:
+                - []
+            consumer_app:
+                - []
+            consumer_groups:
+                - []
+            consumer_inss:
+                - []
+            env:
+                - $testenv
+            expected_status_code:
+                - 403
+            c_update_basicconfig_waittime:
+                - ${ENV(ENV_UPDATE_BASICCONFIG_WAITTIME_SEC)}

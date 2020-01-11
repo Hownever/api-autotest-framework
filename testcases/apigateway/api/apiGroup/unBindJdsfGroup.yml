@@ -1,0 +1,29 @@
+name: 微服务网关解绑分组
+description: 微服务网关解绑分组
+operationId: unBindJdsfGroup
+
+variables:
+#    url
+    host_ubjg: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_ubjg: ${ENV(ENV_API_VERSION)}
+    regionId_ubjg: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_ubjg: apiGroupId
+#    header
+    header_ubjg:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_ubjg: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_ubjg: nofile
+    openApiAk_ubjg: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_ubjg: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_ubjg: v1
+
+request:
+    url: $host_ubjg/$apiVer_ubjg/regions/$regionId_ubjg/apiGroups/$apiGroupId_ubjg:unBindJdsfGroup
+    method: POST
+    headers: $header_ubjg
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_ubjg, $openApiSk_ubjg, $serviceLine_ubjg, $apiVersion_ubjg, $openapiYaml_ubjg, $regionId_ubjg)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

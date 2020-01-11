@@ -1,0 +1,60 @@
+- config:
+    name: 调用describeApiGroups接口，网关不拦截，后端返回200
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        result: "网关不拦截，后端返回200"
+        serviceLine: apigateway
+        apis: describeApiGroups
+        ser_ver_api: apigateway-v2-describeApiGroups
+        openapi_manage_host: ${ENV(ENV_OPENAPI_OUTER_MANAGE_HOST)}
+        openapi_data_host: ${ENV(ENV_OPENAPI_OUTER_DATA_HOST)}
+        serviceLinePin: ${ENV(ENV_USER_AK_PIN)}
+        apisPin: ${ENV(ENV_USER_AK_PIN)}
+        userinfo:
+            prepareinfo: bbb
+            info: aaa
+            serviceLineFlag: False
+            serviceLinePinFlag: False
+            apisFlag: False
+            apisPinFlag: False
+            pin:
+            AK: ${ENV(ENV_USER_AK)}
+            SK: ${ENV(ENV_USER_SK)}
+    verify: False
+
+- test:
+    name: ${get_value_from_userinfo($userinfo, prepareinfo)}
+    testcase: testcases/authAllow/prepare_for_gray_test.yml
+    variables:
+        openapi_manage_host: $openapi_manage_host
+        serviceLine: $serviceLine
+        serviceLineFlag: ${get_value_from_userinfo($userinfo, serviceLineFlag)}
+        serviceLinePin: $serviceLinePin
+        serviceLinePinFlag: ${get_value_from_userinfo($userinfo, serviceLinePinFlag)}
+        ser_ver_api: $ser_ver_api
+        apis: $apis
+        apisFlag: ${get_value_from_userinfo($userinfo, apisFlag)}
+        apisPin: $apisPin
+        apisPinFlag:  ${get_value_from_userinfo($userinfo, apisPinFlag)}
+
+- test:
+    name: ${get_value_from_userinfo($userinfo, info)}调用接口$apis，$result
+    api: api/describeApiGroups.yml
+    variables:
+        host: $openapi_data_host
+        header: ${get_value_from_userinfo($userinfo, header)}
+        AK: ${get_value_from_userinfo($userinfo, AK)}
+        SK: ${get_value_from_userinfo($userinfo, SK)}
+        filters1:
+        filters1values:
+        sleeptime: 15
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+    validate:
+        - eq: [$scode, 200]
+        - len_eq: [$requestId, 32]

@@ -1,0 +1,46 @@
+name: apply request transfer settings
+description: |
+    apply request transfer settings
+
+variables:
+    host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+    productline: apigatewaytestproductline
+    apiversion: v1
+    operationid: your_operationid
+
+    token: ${ENV(ENV_GW_CONTROL_TOKEN)}
+    request_transfer_is_open: True_or_False
+    request_transfer_is_in_to_eq: True_or_False
+    request_transfer_is_ni_to_ne: True_or_False
+    is_internal: True_or_False
+    request_transfer_sub_path: /post
+    request_transfer_resource_name: "tag001"
+
+    teardown_wait_time: 10
+    expected_status_code: 200
+
+# curl -X PATCH 127.0.0.1:8001/api_operation_list/version/v1/service/apigatewaytestproductline/operation/describeInstances \
+# -d req_trans_is_open=True -d req_trans_is_in_to_eq=False -d req_trans_is_ni_to_ne=False -d is_internal=True
+
+request:
+    url: $host/api_operation_list/version/$apiversion/service/$productline/operation/$operationid
+    method: PATCH
+    headers:
+        x-jdcloud-admin-token: $token
+    params:
+        req_trans_is_open: $request_transfer_is_open
+        req_trans_is_in_to_eq: $request_transfer_is_in_to_eq
+        req_trans_is_ni_to_ne: $request_transfer_is_ni_to_ne
+        is_internal: $is_internal
+        req_trans_sub_path: $request_transfer_sub_path
+        req_trans_resource_name: $request_transfer_resource_name
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+    - eq: [content.result.req_trans_is_open, $request_transfer_is_open]
+    - eq: [content.result.req_trans_is_in_to_eq, $request_transfer_is_in_to_eq]
+    - eq: [content.result.req_trans_is_ni_to_ne, $request_transfer_is_ni_to_ne]
+
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+    - ${sleep_N_secs($teardown_wait_time)}

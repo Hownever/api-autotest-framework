@@ -1,0 +1,38 @@
+config:
+    name: 核心功能监控
+    variables:
+        s_looptimes: 200
+        testenv: ${ENV(ENV_TEST_ENV)}
+        jsonResList: []
+        hostlist: ${clear_buffer()}
+        mock_server_url: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        mock_server_host: ${get_host_from_url($mock_server_url)}
+
+testcases:
+    配置IP例外，验证pilot下发IP例外配置时，不会清空iptables规则(使用后面的负载均衡功能来验证):
+        testcase: testcases/jdmesh-basicconfig/serviceentry-config-verify.yml
+        variables:
+            jdsm_ui_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            expected_status_code: [200, 301, 302]
+            product: productpage
+            env: product
+            serviceentrys: [{"protocol":"TCP","host":"$mock_server_host","port": 9999},{"protocol":"TCP","host":"10.0.0.55","port": 8000}]
+            test_protocol: NOT_TCP_OR_HTTP
+            sleeptime: 0  # 等待0s，配置下发一般10s以内，请求200次预计需要20s
+
+    负载均衡-调用productpage的reviews API $s_looptimes 次，使用不同reviews实例:
+        testcase: testcases/productpage/productpage-reviews-route-load-balance.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            c_expected_status_code: [ 200 ]
+            c_headers: [{}]
+            c_cache:
+                - $hostlist
+
+            c_looptime: ${gen_list($s_looptimes)}
+            c_total_looptime:
+                - $s_looptimes
+            c_spec_host_cnt:
+                - ${ENV(ENV_REVIEW_HOST_INSTANCE_CNT)}

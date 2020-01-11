@@ -1,0 +1,31 @@
+name: 启用主账号AccessKey
+description: 启用主账号AccessKey
+operationId: enabledUserAccessKey
+
+variables:
+#    url
+    host_euak: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_euak: ${ENV(ENV_API_VERSION)}
+    regionId_euak: ${ENV(ENV_APIM_REGIONID)}
+    accessKey_euak: accessKey_euak
+#    header
+    header_euak:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    cache_euak: ${ENV(ENV_CACHE_TIME)}
+    serviceLine_euak: ${ENV(ENV_SERVICELINE_IAM)}
+    openapiYaml_euak: nofile
+    openApiAk_euak: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_euak: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_euak: v1
+
+request:
+    url: $host_euak/$apiVer_euak/regions/$regionId_euak/userAccessKey/$accessKey_euak:enabled
+    method: PUT
+    headers: $header_euak
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_euak, $openApiSk_euak, $serviceLine_euak, $apiVersion_euak, $openapiYaml_euak, $regionId_euak)}
+teardown_hooks:
+    - ${sleep_N_secs($cache_euak)}
+    - ${hook_print("teardown_hooks for config")

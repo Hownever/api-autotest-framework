@@ -1,0 +1,45 @@
+name: 查询分组信息
+description: 查询分组信息
+operationId: describeApiGroups
+
+variables:
+##    内部网关
+#    host: http://apigw-internal.cn-north-1.jdcloud.com
+#    外部网关
+    host: http://resourcetag.cn-south-1.jdcloud-api.com
+    product: resourcetag
+    api_ver: v1
+    apiVersion: v1
+    regionId: cn-south-1
+    openapi_yaml: nofile
+#    pin：jdcloud-apigw-test2
+    AK: 8E518E5D98645A1FDB1AF2E7EF30D6F4
+    SK: 10FDEFDC02B79B3D0CD9EB28CE2D9BA9
+##    pin：jdcloud-api-test
+#    AK: 0E91C3765B78CBD71715F9BF24997AF3
+#    SK: AF7B13C8010F50F03A52C01458714701
+##    sys
+#    AK: DD1B0BFA7BAA5DAED057ACF4817AF55B
+#    SK: 6FC47989E4F4B1F489004F12FFFD89DE
+    header:
+        Content-Type: application/json;charset=UTF-8
+#        x-jdcloud-pin: jdcloud-api-test
+    filters1:
+    filters1values:
+    sleeptime: 0
+
+request:
+    url: $host/$api_ver/regions/$regionId/tags:unTagResources
+    method: POST
+    headers: $header
+    json:
+        tagResources:
+            pin: 10
+            region: qqq
+            resources: qqq
+            tags: wqfw
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, resourcetag, $apiVersion, $openapi_yaml, $regionId)}
+    - ${sleep_N_secs($sleeptime)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

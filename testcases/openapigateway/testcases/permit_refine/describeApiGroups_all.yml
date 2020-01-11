@@ -1,0 +1,26 @@
+- config:
+    name: 调用describeApiGroups接口
+    variables:
+        host_descags: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+        userinfo:
+            info: aaa
+            headers:
+                Content-Type: application/json;charset=UTF-8
+                x-jdcloud-pin: ${ENV(ENV_PIN)}
+            AK: ${ENV(ENV_OPENAPI_SYS_AK)}
+            SK: ${ENV(ENV_OPENAPI_SYS_SK)}
+            result: "网关不拦截，后端返回200"
+            result_code: 200
+    verify: False
+
+- test:
+    name: ${get_value_from_userinfo($userinfo, info)}调用接口describeApiGroups，${get_value_from_userinfo($userinfo, result)}
+    api: api/permit_refine/describeApiGroups.yml
+    variables:
+        header_descags: ${get_value_from_userinfo($userinfo, headers)}
+        openApiAk_descags: ${get_value_from_userinfo($userinfo, AK)}
+        openApiSk_descags: ${get_value_from_userinfo($userinfo, SK)}
+    validate:
+        - eq:
+           - status_code
+           - ${get_value_from_userinfo($userinfo, result_code)}

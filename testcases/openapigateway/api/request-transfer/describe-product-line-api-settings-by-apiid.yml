@@ -1,0 +1,19 @@
+name: describe request transfer settings
+description: |
+    describe request transfer settings
+
+variables:
+    host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+    apiid: c82ffd1f-85ea-4af0-a0fb-e459615f05e6
+
+    token: ${ENV(ENV_GW_CONTROL_TOKEN)}
+    expected_status_code: 200
+
+request:
+    url: $host/api_operation_list/$apiid
+    headers:
+        x-jdcloud-admin-token: $token
+    method: GET
+
+validate:
+    - eq: ["status_code", $expected_status_code]

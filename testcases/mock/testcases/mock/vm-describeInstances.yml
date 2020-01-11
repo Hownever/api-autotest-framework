@@ -1,0 +1,101 @@
+- config:
+    name: get resources
+    variables:
+        c_gw_host: ${ENV(ENV_INTER_GW_BASE_URL)}
+        c_product: vm
+        c_apiVersion: v1
+        c_regionId: cn-north-1
+        c_openapi_yaml: nofile
+        c_AK: ${ENV(ENV_USER_AK_MAIN)}
+        c_SK: ${ENV(ENV_USER_SK_MAIN)}
+
+        c_skip_uless_mock: 1
+        c_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # 值必须为1，否则mock server不会存储
+        c_mock_setter: enable
+        # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+        c_mock_force_covered: enable
+
+        c_mock_header:  {
+                "Content-Type": application/json,
+                "token": mytoken
+            }
+
+        # mock存储的id，使用时的id
+        c_mock_id: 1
+        # mock返回结果时的http status code
+        c_mock_code: 200
+        # mock返回结果的内容
+        c_mock_data: your_mock_return_datas
+        # mock值的http协议中的数据类型
+        c_mock_type: application/json
+
+
+        c_header: {
+            "x-jdcloud-pin": "${ENV(ENV_USER_PIN_MAIN)}",
+        }
+        c_pin: my_pin
+        c_filter: []
+        # 页码；默认为1
+        c_pagenumber: 1
+        # 分页大小；默认为20；取值范围[10, 100]
+        c_pagesize: 20
+
+        c_expected_status_code: 200
+    verify: False
+
+- test:
+    name:  configure mock server data-$c_mock_id
+    skipUnless: $c_skip_uless_mock
+    api: api/mock/mock-data-set.yml
+    variables:
+        host: $c_mock_host
+        # 值必须为1，否则mock server不会存储
+        setter: $c_mock_setter
+        # 如果已经存在对应mock_id的记录，是否覆盖， 1表示覆盖，其他值不覆盖
+        force_covered: $c_mock_force_covered
+
+        mock_header:  $c_mock_header
+        # mock存储的id，使用时的id
+        mock_id: $c_mock_id
+        # mock返回结果时的http status code
+        mock_code: $c_mock_code
+        # mock返回结果的内容
+        mock_data: $c_mock_data
+        # mock值的http协议中的数据类型
+        mock_type: $c_mock_type
+
+        expected_status_code: 200
+
+    extract:
+        - scode: status_code
+
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+    name:  获取资源list
+    api: api/vm-mock/vm-describeInstances.yml
+    variables:
+        host: $c_gw_host
+        product: $c_product
+        apiVersion: $c_apiVersion
+        regionId: $c_regionId
+        openapi_yaml: $c_openapi_yaml
+        AK: $c_AK
+        SK: $c_SK
+        header: $c_header
+
+        # 页码；默认为1
+        pagenumber: $c_pagenumber
+        # 分页大小；默认为20；取值范围[10, 100]
+        pagesize: $c_pagesize
+        filter: $c_filter
+
+        expected_status_code: $c_expected_status_code
+
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+    validate:
+        - eq: [$scode, 200]

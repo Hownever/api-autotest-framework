@@ -1,0 +1,40 @@
+name: 批量查询分组
+description: 批量查询已绑定分组
+operationId: batchQueryApiGroups
+
+variables:
+#    url
+    host_bqag: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_bqag: ${ENV(ENV_API_VERSION)}
+    regionId_bqag: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_bqag:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    params
+    filters1_bqag: jdsfId
+    filters1values_bqag: jdsfId
+    pageNumber_bqag: 1
+    pageSize_bqag: 10
+#    hooks
+    serviceLine_bqag: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_bqag: nofile
+    openApiAk_bqag: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_bqag: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_bqag: v1
+
+request:
+    url: $host_bqag/$apiVer_bqag/regions/$regionId_bqag/apiGroups:batch
+    method: GET
+    headers: $header_bqag
+    params:
+        pageNumber: $pageNumber_bqag
+        pageSize: $pageSize_bqag
+        filters.1.name: $filters1_bqag
+        filters.1.values.1: $filters1values_bqag
+        filters.1.operator: eq
+setup_hooks:
+    - ${sleep_N_secs(20)}
+    - ${hook_update_jdcloud_request($request, $openApiAk_bqag, $openApiSk_bqag, $serviceLine_bqag, $apiVersion_bqag, $openapiYaml_bqag, $regionId_bqag)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

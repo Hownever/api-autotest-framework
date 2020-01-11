@@ -1,0 +1,127 @@
+config:
+    name: As a main user or sub user, set the request transfer disabled, apply the resources policy to subuser, then use mainuser or subuser to get resources, should return all the resources for user
+    variables:
+        product: apigatewaytestproductline
+
+testcases:
+    初始化Tag服务相关接口数据:
+        testcase: testcases/mock/mock-mockdata-set-get.yml
+        parameters:
+            c_mock_host:
+                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            # 值必须为1，否则mock server不会存储
+            c_mock_setter:
+                - enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered:
+                - enable
+            c_mock_remove_after_get:
+                - disable
+            c_mock_header:
+                - {
+                    "Content-Type": application/json,
+                    "token": mytoken
+                  }
+            # mock值的http协议中的数据类型
+            c_mock_type:
+                - application/json
+
+            # mock返回结果时的http status code
+            c_mock_code:
+                - 200
+            # mock data id 和 mock数据的内容
+            c_mock_id-c_mock_data:
+                - [tags_validateTags,
+                  {"apiGatewayTestProductLineResult":
+                    [
+                    {
+                      "resourceId": "id001",
+                      "valid": True,
+                      "resourceName": "name001",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id002",
+                      "valid": True,
+                      "resourceName": "name002",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id003",
+                      "valid": True,
+                      "resourceName": "name003",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id004",
+                      "valid": True,
+                      "resourceName": "name004",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id005",
+                      "valid": True,
+                      "resourceName": "name005",
+                      "az": "cn-north-1",
+                    },
+                    ]}
+                  ]
+                - [tags_describeTagResourcesInfo,
+                    {"apiGatewayTestProductLineResult":
+                    [
+                    {
+                      "resourceName": "name001",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name002",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name003",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name004",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name005",
+                      "az": "cn-north-1",
+                    },
+                    ]}
+                  ]
+
+
+    获取Tag服务相关接口数据-查询接口:
+        testcase: testcases/mock/mock-api-sdk-get-data.yml
+        parameters:
+            c_mock_host:
+                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            # 值必须为1，否则mock server不会存储
+            c_mock_setter:
+                - enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered:
+                - enable
+            c_mock_remove_after_get:
+                - disable
+            c_mock_id:
+                - tags_describeTagResourcesInfo
+
+
+    获取Tag服务相关接口数据-验证接口:
+        testcase: testcases/mock/mock-api-sdk-get-data.yml
+        parameters:
+            c_mock_host:
+                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            # 值必须为1，否则mock server不会存储
+            c_mock_setter:
+                - enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered:
+                - enable
+            c_mock_remove_after_get:
+                - disable
+            c_mock_id:
+                - tags_validateTags

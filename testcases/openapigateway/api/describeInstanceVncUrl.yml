@@ -1,0 +1,39 @@
+name: 查询主机vnc
+description: |
+    获取云主机vnc，用于连接管理云主机。<br>
+    vnc地址的有效期为1个小时，调用接口获取vnc地址后如果1个小时内没有使用，vnc地址自动失效，再次使用需要重新获取。
+operationId: describeInstanceVncUrl
+
+variables:
+    host: ${ENV(ENV_GW_BASE_URL)}
+    product: vm
+    apiVersion: v1
+    regionId: cn-north-1
+    openapi_yaml: nofile
+    AK: xxx
+    SK: xxx
+
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+
+    params: {}
+    json: {}
+
+    instanceId: you_instance_id
+
+    expected_status_code: 200
+
+request:
+    url: $host/$apiVersion/regions/$regionId/instances/$instanceId/vnc
+    method: GET
+    headers: $header
+    params: $params
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

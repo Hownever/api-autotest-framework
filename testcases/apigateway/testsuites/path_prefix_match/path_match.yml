@@ -1,0 +1,131 @@
+config:
+    name: 各种情况下的API路径匹配
+testcases:
+    绝对匹配下的API匹配情况:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: absolute, path: "/A/B", reqParams: ~}]
+            api2: [{matchType: absolute, path: "/A/{B}", reqParams:[{isRequired: true, name: B, paramType: String, paramLocation: path}]}]
+            req_para:
+                -  req_path_ppm: "/A/B"
+                   res_content_ppm: "/A/B"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/C"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "APIGATEWAY_NOT_FOUND"
+                   res_info_ppm: 未匹配到API，后端返回APIGATEWAY_NOT_FOUND
+                -  req_path_ppm: "/A"
+                   res_content_ppm: "APIGATEWAY_NOT_FOUND"
+                   res_info_ppm: 未匹配到API，后端返回APIGATEWAY_NOT_FOUND
+    前缀匹配下的API匹配情况1:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: prefix, path: "/A/B", reqParams: ~}]
+            api2: [{matchType: prefix, path: "/A/{B}", reqParams:[{isRequired: true, name: B, paramType: String, paramLocation: path}]}]
+            req_para:
+                -  req_path_ppm: "/A/B"
+                   res_content_ppm: "/A/B"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/C"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "/A/B/C"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/C/D"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+                -  req_path_ppm: "/A"
+                   res_content_ppm: "APIGATEWAY_NOT_FOUND"
+                   res_info_ppm: 未匹配到API，后端返回APIGATEWAY_NOT_FOUND
+    前缀匹配下的API匹配情况2:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: prefix, path: "/A/B/C", reqParams: ~}]
+            api2: [{matchType: prefix, path: "/A", reqParams:[{isRequired: true, name: B, paramType: String, paramLocation: path}]}]
+            req_para:
+                -  req_path_ppm: "/A"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+                -  req_path_ppm: "/A/B"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "/A/B/C"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/B/C/D"
+                   res_content_ppm: "/A/B/C/D"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+    前缀匹配下的API匹配情况3:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: prefix, path: "/A/B/{C}", reqParams: [{isRequired: true, name: C, paramType: String, paramLocation: path}]}]
+            api2: [{matchType: prefix, path: "/A/{B}/{C}", reqParams:[{isRequired: true, name: B, paramType: String, paramLocation: path}, {isRequired: true, name: C, paramType: String, paramLocation: path}]}]
+            req_para:
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "/A/B/C"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/C/D"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+    两种API匹配情况1:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: absolute, path: "/A/B", reqParams: ~}]
+            api2: [{matchType: prefix, path: "/A/B", reqParams: ~}]
+            req_para:
+                -  req_path_ppm: "/A/B"
+                   res_content_ppm: "/A/B"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+    两种API匹配情况2:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: absolute, path: "/A/{B}", reqParams:[{isRequired: true, name: B, paramType: String, paramLocation: path}]}]
+            api2: [{matchType: prefix, path: "/A/{B}", reqParams:[{isRequired: true, name: B, paramType: String, paramLocation: path}]}]
+            req_para:
+                -  req_path_ppm: "/A/B"
+                   res_content_ppm: "/A/B"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+    两种API匹配情况3:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: absolute, path: "/A/B", reqParams: ~}]
+            api2: [{matchType: prefix, path: "/A", reqParams: ~}]
+            req_para:
+                -  req_path_ppm: "/A/B"
+                   res_content_ppm: "/A/B"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK
+    两种API匹配情况4:
+        testcase: testcases/path_prefix_match/path_prefix_match.yml
+        parameters:
+            authFlag_dyna: [jd_apikms]
+            api1: [{matchType: absolute, path: "/A/B", reqParams: ~}]
+            api2: [{matchType: prefix, path: "/A/B/C", reqParams: ~}]
+            req_para:
+                -  req_path_ppm: "/A/B"
+                   res_content_ppm: "/A/B"
+                   res_info_ppm: 匹配到API1，后端为HTTP
+                -  req_path_ppm: "/A/B/C"
+                   res_content_ppm: "value"
+                   res_info_ppm: 匹配到API2，后端为MOCK

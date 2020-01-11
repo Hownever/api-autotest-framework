@@ -1,0 +1,42 @@
+name: 根据云翼服务树中应用名称配置服务网格的基本配置项-$product-$env-$host
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: productpage
+    fullname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_productpage
+    env: pre
+    rolloutgroups: []
+
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    # http://mesh-online.ark.jdcloud.com/openApi/jdmesh/rolloutDeploy HTTP/1.1
+    url: $host/openApi/jdmesh/rolloutDeploy
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    # {"params":{"appName":"productpage","env":"pre","rolloutGroups":[{"arkGroupName":"east2-pre-az2","targetEnv":"product"}]}}  # 打开流量
+    # {"params":{"appName":"productpage","env":"pre","rolloutGroups":[{"arkGroupName":"east2-pre-az2","targetEnv":"gray"}]}} # 关闭流量
+
+    json:
+        params:
+            appName: $product
+            env: $env
+            rolloutGroups: $rolloutgroups
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+# response
+# {"requestId":"bmsq3p953h5ti6sead10hwju68wd7oj0","error":null,"result":{"deployment":null}}}

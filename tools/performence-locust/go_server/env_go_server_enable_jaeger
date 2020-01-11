@@ -1,0 +1,12 @@
+#!/bin/bash
+export GO_SERVER_DEBUG_ENABLED=false
+export JAEGER_REMOVED_FROM_SRC=false
+export JAEGER_DISABLED=false
+export JAEGER_SAMPLER_TYPE=const
+export JAEGER_SAMPLER_PARAM=1
+export JAEGER_SERVICE_NAME=go_sdk_client_likui
+export JAEGER_ENDPOINT=http://collector-tc-1qjceddu4zlkw-nlb.jvessel-open-hb.jdcloud.com:14268/api/traces?format=jaeger.thrift
+export JAEGER_REPORTER_LOG_SPANS=true
+
+export GO_SERVER_REMOTECALL_HTTP_URL="http://localhost:8080/ok"
+export GO_SEVER_PORT=8080

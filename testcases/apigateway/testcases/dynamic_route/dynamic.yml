@@ -1,0 +1,1326 @@
+- config:
+    name: 创建分组-成功
+    variables:
+    #    path
+        regionId_apim_dyna: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_dyna: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        groupName_dyna: JIASHUO_TEST_DYNAMIC
+        description_dyna: 测试微服务VPC网关，勿删
+        prefix_dyna:
+        keyCheck_dyna: check_exist
+        authType_dyna: jd_cloud
+        prefixStrip_dyna: 0
+        groupType_dyna: api_group
+        jdsfName_dyna:
+        jdsfRegistryName_dyna:
+        jdsfId_dyna:
+        environment_dyna:
+        backendServiceType_dyna: vpc
+        backendUrl_dyna: ${ENV(ENV_BACK_SERVICE_PATH)}
+        #-----------------------------------------------------
+        filters1values_dyna: JIASHUO_TEST_DYNAMIC
+        serviceLine_jdsf_dyna: ${ENV(ENV_SERVICELINE_JDSF)}
+        regionId_jdsf_dyna: ${ENV(ENV_JDSF_REGIONID)}
+        gatewayName_dyna: JIASHUO_TEST_DYNAMIC
+        gatewayType_dyna: VPC_PROXY
+        vpcId_dyna: vpc-7hrcljzkli
+        subnetId_dyna: subnet-jqsaas34xn
+        gatewaySpec_dyna: QPS_1500
+        gatewayVersion_dyna: 1.0.0
+        rz_dyna:
+        rzType_dyna: SYSTEM
+        chargeMode_dyna: CONFIG
+        chargeUnit_dyna:
+        apiGroupRegion_dyna: ${ENV(ENV_APIM_REGIONID)}
+        registryId_dyna:
+        proxyAddress_dyna: 10.0.0.218:5111
+#        proxyAddress_dyna: 116.196.96.7:5111
+        timeSpan_dyna:
+        serviceNames_dyna:
+        #-----------------------------------------------------
+        authFlag_dyna: jd_subscription_key
+        accessKey_dyna: ${ENV(ENV_USER_AK)}
+        secretKey_dyna: ${ENV(ENV_USER_SK)}
+        #-----------------------------------------------------
+        kmsName_dyna: ${ENV(ENV_KMS_NAME)}
+        subsName_dyna: ${ENV(ENV_SUBS_KEY_NAME)}
+        #-----------------------------------------------------
+        anotherPin_dyna: ${ENV(ENV_PIN_ANOTHER)}
+        anotherVpc_dyna: TEST_DYNAMIC_TWO
+        pin_dyna: ${ENV(ENV_PIN)}
+    verify: False
+
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/dynamic_route/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim_dyna
+        regionId_apim_pcag: $regionId_apim_dyna
+        filters1values_pcag: $groupName_dyna
+
+- test:
+    name: 创建分组成功，分组名：$groupName_dyna，分组类型：$groupType_dyna
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+    #    path
+        regionId_cag: $regionId_apim_dyna
+    #    json
+        groupName_cag: $groupName_dyna
+        description_cag: $description_dyna
+        prefix_cag: $prefix_dyna
+        keyCheck_cag: $keyCheck_dyna
+        authType_cag: $authType_dyna
+        prefixStrip_cag: $prefixStrip_dyna
+        groupType_cag: $groupType_dyna
+        jdsfName_cag: $jdsfName_dyna
+        jdsfRegistryName_cag: $jdsfRegistryName_dyna
+        jdsfId_cag: $jdsfId_dyna
+        serviceLine_cag: $serviceLine_apim_dyna
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+
+- test:
+    name: 查询微服务网关各信息，绑定分组
+    testcase: testcases/dynamic_route/prepare_for_createGateway.yml
+    variables:
+        regionId_apim_pcg: $regionId_apim_dyna
+        regionId_jdsf_pcg: $regionId_jdsf_dyna
+        filters1values_pcg: $gatewayName_dyna
+    #-----------------------------------------------------
+        gatewayName_pcg: $gatewayName_dyna
+        gatewayType_pcg: $gatewayType_dyna
+        vpcId_pcg: $vpcId_dyna
+        subnetId_pcg: $subnetId_dyna
+        gatewaySpec_pcg: $gatewaySpec_dyna
+        gatewayVersion_pcg: $gatewayVersion_dyna
+        rz_pcg: $rz_dyna
+        rzType_pcg: $rzType_dyna
+        chargeMode_pcg: $chargeMode_dyna
+        chargeUnit_pcg: $chargeUnit_dyna
+        apiGroupId_pcg: $apiGroupId_cag
+        apiGroupRegion_pcg: $regionId_apim_dyna
+        registryId_pcg: $registryId_dyna
+        proxyAddress_pcg: $proxyAddress_dyna
+        timeSpan_pcg: $timeSpan_dyna
+        serviceNames_pcg: $serviceNames_dyna
+        serviceLine_pcg: $serviceLine_jdsf_dyna
+        jdsfParam_pcg: $proxyAddress_dyna
+        jdsfRegion_pcg: $regionId_jdsf_dyna
+    output:
+        - gatewayId_dg
+        - registryId_dg
+        - gatewayName_dg
+
+- test:
+    name: 查询分组，绑定信息正确
+    api: api/apiGroup/batchQueryApiGroups.yml
+    variables:
+        regionId_bqag: $regionId_apim_dyna
+        filters1values_bqag: $gatewayId_dg
+        serviceLine_bqag: $serviceLine_apim_dyna
+    extract:
+        - apiGroup_bqag: content.result.apiGroups.0
+        - apiGroupId_bqag: content.result.apiGroups.0.apiGroupId
+        - jdsfId_bqag: content.result.apiGroups.0.jdsfId
+        - jdsfName_bqag: content.result.apiGroups.0.jdsfName
+        - environment_bqag: content.result.apiGroups.0.environment
+        - jdsfRegistryName_bqag: content.result.apiGroups.0.jdsfRegistryName
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [$apiGroupId_bqag, $apiGroupId_cag]
+        - contains: [$jdsfId_bqag, $gatewayId_dg]
+        - eq: [$jdsfName_bqag, null]
+        - eq: [$jdsfRegistryName_bqag, null]
+        - eq: [$environment_bqag, "test,preview,online"]
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 创建API_create_task_json
+    api: api/createApis/createApis_create_task_json.yml
+    variables:
+        apiGroupId_ctj: $apiGroupId_cag
+        revision_ctj: $revision_cag
+        regionId_ctj: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_delete_task
+    api: api/createApis/createApis_delete_task.yml
+    variables:
+        apiGroupId_dt: $apiGroupId_cag
+        revision_dt: $revision_cag
+        regionId_dt: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_get_all_task
+    api: api/createApis/createApis_get_all_task.yml
+    variables:
+        apiGroupId_gat: $apiGroupId_cag
+        revision_gat: $revision_cag
+        regionId_gat: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_head_task
+    api: api/createApis/createApis_head_task.yml
+    variables:
+        apiGroupId_ht: $apiGroupId_cag
+        revision_ht: $revision_cag
+        regionId_ht: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_patch_task_json
+    api: api/createApis/createApis_patch_task_json.yml
+    variables:
+        apiGroupId_ptj: $apiGroupId_cag
+        revision_ptj: $revision_cag
+        regionId_ptj: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_put_task_json
+    api: api/createApis/createApis_put_task_json.yml
+    variables:
+        apiGroupId_puttj: $apiGroupId_cag
+        revision_puttj: $revision_cag
+        regionId_puttj: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_test_all_type_get
+    api: api/createApis/createApis_test_all_type_get.yml
+    variables:
+        apiGroupId_tatg: $apiGroupId_cag
+        revision_tatg: $revision_cag
+        regionId_tatg: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_test_all_type_post
+    api: api/createApis/createApis_test_all_type_post.yml
+    variables:
+        apiGroupId_tatp: $apiGroupId_cag
+        revision_tatp: $revision_cag
+        regionId_tatp: $regionId_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 创建测试环境动态路由1，到mock后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: test
+        backendUrl_cbc: ~
+        backendServiceType_cbc: mock
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: MOCK
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 1
+        userSort_cbc: ~
+        jdsfId_cbc: ~
+        jdsfParam_cbc: ~
+        jdsfRegion_cbc: ~
+        jdsfPin_cbc: ~
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建测试环境动态路由2，到http后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: test
+        backendUrl_cbc: $backendUrl_dyna
+        backendServiceType_cbc: HTTP/HTTPS
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: HTTP
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 2
+        userSort_cbc: ~
+        jdsfId_cbc: ~
+        jdsfParam_cbc: ~
+        jdsfRegion_cbc: ~
+        jdsfPin_cbc: ~
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 查询其他PIN的微服务网关，获取微服务网关信息
+    api: api/jdsf/describeGateways.yml
+    variables:
+        regionId_dgs: $regionId_jdsf_dyna
+        filters1values_dgs: $anotherVpc_dyna
+        serviceLine_dgs: $serviceLine_jdsf_dyna
+#        header_dgs:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $anotherPin_dyna
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - gatewayId_another: content.result.microServiceGateways.0.gatewayId
+        - proxyAddress_another: content.result.microServiceGateways.0.proxyAddress
+    output:
+        - gatewayId_another
+        - proxyAddress_another
+
+- test:
+    name: 创建测试环境动态路由3，到其他pin的vpc后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: test
+        backendUrl_cbc: ~
+        backendServiceType_cbc: vpc
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: VPC
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 3
+        userSort_cbc: ~
+        jdsfId_cbc: $gatewayId_another
+        jdsfParam_cbc: $proxyAddress_another
+        jdsfRegion_cbc: $regionId_jdsf_dyna
+        jdsfPin_cbc: $pin_dyna
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建预发环境动态路由1，到mock后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: preview
+        backendUrl_cbc: ~
+        backendServiceType_cbc: mock
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: MOCK
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 1
+        userSort_cbc: ~
+        jdsfId_cbc: ~
+        jdsfParam_cbc: ~
+        jdsfRegion_cbc: ~
+        jdsfPin_cbc: ~
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建预发环境动态路由2，到http后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: preview
+        backendUrl_cbc: $backendUrl_dyna
+        backendServiceType_cbc: HTTP/HTTPS
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: HTTP
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 2
+        userSort_cbc: ~
+        jdsfId_cbc: ~
+        jdsfParam_cbc: ~
+        jdsfRegion_cbc: ~
+        jdsfPin_cbc: ~
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建预发环境动态路由3，到其他pin的vpc后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: preview
+        backendUrl_cbc: ~
+        backendServiceType_cbc: vpc
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: VPC
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 3
+        userSort_cbc: ~
+        jdsfId_cbc: $gatewayId_another
+        jdsfParam_cbc: $proxyAddress_another
+        jdsfRegion_cbc: $regionId_jdsf_dyna
+        jdsfPin_cbc: $pin_dyna
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建线上环境动态路由1，到mock后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: online
+        backendUrl_cbc: ~
+        backendServiceType_cbc: mock
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: MOCK
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 1
+        userSort_cbc: ~
+        jdsfId_cbc: ~
+        jdsfParam_cbc: ~
+        jdsfRegion_cbc: ~
+        jdsfPin_cbc: ~
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建线上环境动态路由2，到http后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: online
+        backendUrl_cbc: $backendUrl_dyna
+        backendServiceType_cbc: HTTP/HTTPS
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: HTTP
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 2
+        userSort_cbc: ~
+        jdsfId_cbc: ~
+        jdsfParam_cbc: ~
+        jdsfRegion_cbc: ~
+        jdsfPin_cbc: ~
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建线上环境动态路由3，到其他pin的vpc后端
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_dyna
+        regionId_cbc: $regionId_apim_dyna
+        apiGroupId_cbc: $apiGroupId_cag
+        backendConfigId_cbc: ~
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: online
+        backendUrl_cbc: ~
+        backendServiceType_cbc: vpc
+        headerParams_cbc:
+          - name: DYNAMIC_BACKEND
+            value: VPC
+        queryParams_cbc: ~
+        description_cbc: ~
+        createTime_cbc: ~
+        sort_cbc: 3
+        userSort_cbc: ~
+        jdsfId_cbc: $gatewayId_another
+        jdsfParam_cbc: $proxyAddress_another
+        jdsfRegion_cbc: $regionId_jdsf_dyna
+        jdsfPin_cbc: $pin_dyna
+    validate:
+        - eq: ["status_code", 200]
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 发布分组到测试环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_dyna
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: test
+        backendServiceType_dba: $backendServiceType_dyna
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba: $proxyAddress_dyna
+        jdsfRegistryName_dba:
+        jdsfId_dba: $gatewayId_dg
+        serviceLine_dba: $serviceLine_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布分组到预发环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_dyna
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: preview
+        backendServiceType_dba: $backendServiceType_dyna
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba: $proxyAddress_dyna
+        jdsfRegistryName_dba:
+        jdsfId_dba: $gatewayId_dg
+        serviceLine_dba: $serviceLine_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布分组到线上环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_dyna
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: online
+        backendServiceType_dba: $backendServiceType_dyna
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba: $proxyAddress_dyna
+        jdsfRegistryName_dba:
+        jdsfId_dba: $gatewayId_dg
+        serviceLine_dba: $serviceLine_apim_dyna
+    validate:
+        - eq: ["status_code", 200]
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型是京东云用户，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_jdcloud.yml
+    variables:
+        accessKey_pcaaj: $accessKey_dyna
+        serviceLine_pcaaj: $serviceLine_apim_dyna
+        regionId_apim_pcaaj: $regionId_apim_dyna
+        filters2values_pcaaj: $accessKey_dyna
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是京东云用户，创建jdcloud访问授权，绑定分组测试环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $accessKey_dyna
+        authUserType_caa: jd_cloud
+        deploymentIds_caa: ${return_string($apiGroupId_cag, test)}
+        description_caa: $accessKey_dyna+jd_cloud+${return_string($apiGroupId_cag, test)}
+        serviceLine_caa: $serviceLine_apim_dyna
+        regionId_caa: $regionId_apim_dyna
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是京东云用户，创建jdcloud访问授权，绑定分组预发环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $accessKey_dyna
+        authUserType_caa: jd_cloud
+        deploymentIds_caa: ${return_string($apiGroupId_cag, preview)}
+        description_caa: $accessKey_dyna+jd_cloud+${return_string($apiGroupId_cag, preview)}
+        serviceLine_caa: $serviceLine_apim_dyna
+        regionId_caa: $regionId_apim_dyna
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是京东云用户，创建jdcloud访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $accessKey_dyna
+        authUserType_caa: jd_cloud
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: $accessKey_dyna+jd_cloud+${return_string($apiGroupId_cag, online)}
+        serviceLine_caa: $serviceLine_apim_dyna
+        regionId_caa: $regionId_apim_dyna
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 请求测试环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: test
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: $accessKey_dyna
+        secretKey_raa: $secretKey_dyna
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+
+- test:
+    name: 请求测试环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: subscriptionKey_raa
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=test, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: $accessKey_dyna
+        USERSK_gatn: $secretKey_dyna
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求测试环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: test
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $accessKey_dyna
+          secretKey_raa: $secretKey_dyna
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求测试环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: test
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $accessKey_dyna
+          secretKey_raa: $secretKey_dyna
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+
+- test:
+    name: 请求预发环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: preview
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: $accessKey_dyna
+        secretKey_raa: $secretKey_dyna
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+
+- test:
+    name: 请求预发环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: subscriptionKey_raa
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=preview, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: $accessKey_dyna
+        USERSK_gatn: $secretKey_dyna
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求预发环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: preview
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $accessKey_dyna
+          secretKey_raa: $secretKey_dyna
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求预发环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: preview
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $accessKey_dyna
+          secretKey_raa: $secretKey_dyna
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+
+- test:
+    name: 请求线上环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: online
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: $accessKey_dyna
+        secretKey_raa: $secretKey_dyna
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+
+- test:
+    name: 请求线上环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: subscriptionKey_raa
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: $accessKey_dyna
+        USERSK_gatn: $secretKey_dyna
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求线上环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: online
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $accessKey_dyna
+          secretKey_raa: $secretKey_dyna
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求线上环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_cloud, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: online
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $accessKey_dyna
+          secretKey_raa: $secretKey_dyna
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型是API网关签名，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_kms.yml
+    variables:
+        regionId_apim_pcaak: $regionId_apim_dyna
+        serviceLine_apim_pcaak: $serviceLine_apim_dyna
+        kmsName_pcaak: ${ENV(ENV_KMS_NAME)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是API网关签名，创建kms
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    api: api/kms/createKey.yml
+    variables:
+        keyName_ck: $kmsName_dyna
+        keyDesc_ck: $kmsName_dyna
+        serviceLine_ck: $serviceLine_apim_dyna
+        regionId_ck: $regionId_apim_dyna
+    extract:
+        - kmsaccessKey_ck: content.result.accessKey
+        - kmssecretKey_ck: content.result.secretKey
+        - kmskeyId_ck: content.result.keyId
+    validate:
+          - eq: ["status_code", 200]
+    output:
+        - kmsaccessKey_ck
+        - kmssecretKey_ck
+        - kmskeyId_ck
+
+- test:
+    name: 如果授权类型是API网关签名，创建kms访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        regionId_caa: $regionId_apim_dyna
+        accessKey_caa: $kmskeyId_ck
+        authUserType_caa: jd_apikms
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: $kmsaccessKey_ck+jd_apikms+${return_string($apiGroupId_cag, online)}
+        serviceLine_caa: $serviceLine_apim_dyna
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是API网关签名，创建kms访问授权，绑定分组预发环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        regionId_caa: $regionId_apim_dyna
+        accessKey_caa: $kmskeyId_ck
+        authUserType_caa: jd_apikms
+        deploymentIds_caa: ${return_string($apiGroupId_cag, preview)}
+        description_caa: $accessKey_dyna+jd_apikms+${return_string($apiGroupId_cag, preview)}
+        serviceLine_caa: $serviceLine_apim_dyna
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是API网关签名，创建kms访问授权，绑定分组测试环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        regionId_caa: $regionId_apim_dyna
+        accessKey_caa: $kmskeyId_ck
+        authUserType_caa: jd_apikms
+        deploymentIds_caa: ${return_string($apiGroupId_cag, test)}
+        description_caa: $accessKey_dyna+jd_apikms+${return_string($apiGroupId_cag, test)}
+        serviceLine_caa: $serviceLine_apim_dyna
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 请求测试环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: test
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: $kmsaccessKey_ck
+        secretKey_raa: $kmssecretKey_ck
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+
+- test:
+    name: 请求测试环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: subscriptionKey_raa
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=test, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: $kmsaccessKey_ck
+        USERSK_gatn: $kmssecretKey_ck
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求测试环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: test
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $kmsaccessKey_ck
+          secretKey_raa: $kmssecretKey_ck
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求测试环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: test
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $kmsaccessKey_ck
+          secretKey_raa: $kmssecretKey_ck
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+
+- test:
+    name: 请求预发环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: preview
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: $kmsaccessKey_ck
+        secretKey_raa: $kmssecretKey_ck
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+
+- test:
+    name: 请求预发环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: subscriptionKey_raa
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=preview, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: $kmsaccessKey_ck
+        USERSK_gatn: $kmssecretKey_ck
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求预发环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: preview
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $kmsaccessKey_ck
+          secretKey_raa: $kmssecretKey_ck
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求预发环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: preview
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $kmsaccessKey_ck
+          secretKey_raa: $kmssecretKey_ck
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+
+- test:
+    name: 请求线上环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: online
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: $kmsaccessKey_ck
+        secretKey_raa: $kmssecretKey_ck
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+
+- test:
+    name: 请求线上环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: subscriptionKey_raa
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: $kmsaccessKey_ck
+        USERSK_gatn: $kmssecretKey_ck
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求线上环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: online
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $kmsaccessKey_ck
+          secretKey_raa: $kmssecretKey_ck
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求线上环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_apikms, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: online
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: $kmsaccessKey_ck
+          secretKey_raa: $kmssecretKey_ck
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: subscriptionKey
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型是订阅密钥，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_subs.yml
+    variables:
+        regionId_apim_pcaas: $regionId_apim_dyna
+        serviceLine_apim_pcaas: $serviceLine_apim_dyna
+        subsName_pcaas: $subsName_dyna
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是订阅密钥，创建订阅密钥
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/subscriptionKey/createSubscriptionKey.yml
+    variables:
+        serviceLine_csk: $serviceLine_apim_dyna
+        regionId_csk: $regionId_apim_dyna
+        name_csk: $subsName_dyna
+        description_csk: $subsName_dyna
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是订阅密钥，检查是否已创建
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/subscriptionKey/querySubscriptionKeys.yml
+    variables:
+        serviceLine_qsk: $serviceLine_apim_dyna
+        regionId_qsk: $regionId_apim_dyna
+        filters1_qsk:
+        filters1values_qsk:
+    extract:
+        - subscriptionKeys_qsk: content.result.subscriptionKeys
+        - totalCount_qsk: content.result.totalCount
+    validate:
+        - eq: ["status_code", 200]
+    output:
+        - subscriptionKeys_qsk
+
+- test:
+    name: 创建订阅密钥访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        serviceLine_caa: $serviceLine_apim_dyna
+        regionId_caa: $regionId_apim_dyna
+        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKeyId)}
+        authUserType_caa: jd_subscription_key
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, online)}
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 创建订阅密钥访问授权，绑定分组预发环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        serviceLine_caa: $serviceLine_apim_dyna
+        regionId_caa: $regionId_apim_dyna
+        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKeyId)}
+        authUserType_caa: jd_subscription_key
+        deploymentIds_caa: ${return_string($apiGroupId_cag, preview)}
+        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, preview)}
+    validate:
+          - eq: ["status_code", 200]
+
+- test:
+    name: 创建订阅密钥访问授权，绑定分组测试环境
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        serviceLine_caa: $serviceLine_apim_dyna
+        regionId_caa: $regionId_apim_dyna
+        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKeyId)}
+        authUserType_caa: jd_subscription_key
+        deploymentIds_caa: ${return_string($apiGroupId_cag, test)}
+        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, test)}
+    validate:
+          - eq: ["status_code", 200]
+
+
+- test:
+    name: 请求测试环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: test
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: USERAK
+        secretKey_raa: USERSK
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+        done_raa: False
+
+- test:
+    name: 请求测试环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=test, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: USERAK
+        USERSK_gatn: USERSK
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求测试环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: test
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: USERAK
+          secretKey_raa: USERSK
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求测试环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: test
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: USERAK
+          secretKey_raa: USERSK
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+
+- test:
+    name: 请求预发环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: preview
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: USERAK
+        secretKey_raa: USERSK
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+        done_raa: False
+
+- test:
+    name: 请求预发环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=preview, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: USERAK
+        USERSK_gatn: USERSK
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求预发环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: preview
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: USERAK
+          secretKey_raa: USERSK
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求预发环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: preview
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: USERAK
+          secretKey_raa: USERSK
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+
+- test:
+    name: 请求线上环境默认后端，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    testcase: testcases/dynamic_route/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: online
+        regionId_apim_raa: $regionId_apim_dyna
+        accessKey_raa: USERAK
+        secretKey_raa: USERSK
+        description_raa: description_dyna
+        title_raa: tc_title
+        subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+        done_raa: False
+
+- test:
+    name: 请求线上环境动态路由1，MOCK，请求成功
+    skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+    api: api/requestBackend/getAllTaskNew.yml
+    variables:
+        subscriptionKey_gatn: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+        gw_host_gatn: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_dyna)}
+        USERAK_gatn: USERAK
+        USERSK_gatn: USERSK
+        DYNAMIC_BACKEND_gatn: MOCK
+    extract:
+        - result: content.result
+    validate:
+        - ne: [$result, True]
+        - ne: [$result, False]
+
+- test:
+      name: 请求线上环境动态路由2，HTTP，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: online
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: USERAK
+          secretKey_raa: USERSK
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+          done_raa: False
+          DYNAMIC_BACKEND_raa: HTTP
+
+- test:
+      name: 请求线上环境动态路由3，VPC，请求成功
+      skipIf: ${validate_skip($authFlag_dyna, jd_subscription_key, noeq)}
+      testcase: testcases/dynamic_route/requestAllApis.yml
+      variables:
+          apiGroupId_raa: $apiGroupId_cag
+          env_raa: online
+          regionId_apim_raa: $regionId_apim_dyna
+          accessKey_raa: USERAK
+          secretKey_raa: USERSK
+          description_raa: description_dyna
+          title_raa: tc_title
+          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_dyna, subscriptionKey)}
+          done_raa: False
+          DYNAMIC_BACKEND_raa: VPC
+#----------------------------------------------------------------------------------------------------------------
+- test:
+    name: 删除已创建的API分组
+    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_apim_pcag: $serviceLine_apim_dyna
+        regionId_apim_pcag: $regionId_apim_dyna
+        filters1values_pcag: $groupName_dyna

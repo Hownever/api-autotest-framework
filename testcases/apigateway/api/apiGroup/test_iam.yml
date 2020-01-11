@@ -1,0 +1,46 @@
+name: 批量查询分组
+description: 批量查询已绑定分组
+operationId: batchQueryApiGroups
+
+variables:
+#    url
+    host_bqag: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_bqag: ${ENV(ENV_API_VERSION)}
+    regionId_bqag: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_bqag:
+        Content-Type: application/json;charset=UTF-8
+#    params
+    filters1_bqag: jdsfId
+    filters1values_bqag: jdsfId
+    pageNumber_bqag: 1
+    pageSize_bqag: 10
+#    deleteBackendConfig
+
+#    createPinAuthManage
+#    describePinAuthManages
+#    deletePinAuthManage
+#    batchOffline
+
+
+    #    hooks
+    serviceLine_bqag: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_bqag: nofile
+    openApiAk_bqag: 7737A005C29D5F05FA65AA145335C0D2
+    openApiSk_bqag: 3620CDF1115C2BAA8CA0BEC30869E471
+    apiVersion_bqag: v1
+
+request:
+    url: $host_bqag/$apiVer_bqag/regions/$regionId_bqag/apiGroups/aa/deployments:offline
+    method: POST
+    headers: $header_bqag
+    params:
+        pageNumber: $pageNumber_bqag
+        pageSize: $pageSize_bqag
+        filters.1.name: $filters1_bqag
+        filters.1.values.1: $filters1values_bqag
+        filters.1.operator: eq
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_bqag, $openApiSk_bqag, $serviceLine_bqag, $apiVersion_bqag, $openapiYaml_bqag, $regionId_bqag)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

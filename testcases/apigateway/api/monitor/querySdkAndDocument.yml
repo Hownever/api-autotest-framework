@@ -1,0 +1,20 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId/generate
+    method: GET
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        revision: $revision
+        deploymentId: $deploymentId
+        environment: $environment
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    - ${sleep_N_secs(10)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - GenerateInfo: content.result.downloadUrls
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

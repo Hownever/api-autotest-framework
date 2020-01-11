@@ -1,0 +1,68 @@
+- config:
+    name: 创建子账号-不绑定策略-请求三个接口-都失败
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+    verify: False
+
+- test:
+    name: 创建子账号-获取子账号的pin
+    testcase: testcases/monitor/createSubUser_getPin.yml
+    variables:
+        subUserName: SubUser_no_pol
+    output:
+        - subUser_name
+        - accessKey
+        - secretAccessKey
+        - subUser_pin
+
+- test:
+    name: 使用子账号的pin，请求describeApiGroups接口，网关会报错
+    api: api/monitor/describeApiGroups.yml
+    variables:
+        pin: $subUser_pin @ ${ENV(ENV_PIN)}
+        filters1:
+        filters1values:
+    validate:
+        - eq: ["status_code", 403]
+        - contains: [content.error.message, You are not authorized to perform (apigateway:describeApiGroups) on resource (*)]
+        - eq: [content.error.status, HTTP_FORBIDDEN]
+
+- test:
+    name: 请求describeApiGroup接口，网关会报错
+    api: api/monitor/describeApiGroup.yml
+    variables:
+        pin: $subUser_pin @ ${ENV(ENV_PIN)}
+        apiGroupId: aaa
+    validate:
+        - eq: ["status_code", 403]
+        - contains: [content.error.message, You are not authorized to perform (apigateway:describeApiGroup) on resource (jrn:apigateway:cn-north-1:*:apiGroups/aaa)]
+        - eq: [content.error.status, HTTP_FORBIDDEN]
+
+- test:
+    name: 请求createApiGroup接口，网关会报错
+    api: api/monitor/createApiGroup.yml
+    variables:
+        pin: $subUser_pin @ ${ENV(ENV_PIN)}
+        groupName: aaa
+        description: aaa
+        prefix: aaa
+        keyCheck:
+        authType: jd_cloud
+    validate:
+        - eq: ["status_code", 403]
+        - contains: [content.error.message, You are not authorized to perform (apigateway:createApiGroup) on resource (*)]
+        - eq: [content.error.status, HTTP_FORBIDDEN]
+
+- test:
+    name: 删除子用户
+    api: api/monitor/deleteSubUser.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        subUser: $subUser_name

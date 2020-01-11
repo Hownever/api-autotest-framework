@@ -1,0 +1,71 @@
+name: 根据云翼服务树中应用名称配置服务网格的基本配置项-$product-$env-$host
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    headers:
+        ajax-id: ${get_timestamp(13)}${gen_random_string(19)}
+    product: productpage
+    env: pre
+    # enableAuthToken: False
+    # enableWhiteListCheck: False
+    enableNegativeHealthCheck: False
+    enableSubscription: False
+    healthCheckInterval: 10
+    healthCheckconsecutiveErrors: 5
+    healthCheckmaxEjectionPercent: 30
+    healthCheckbaseEjectionTime: 180
+    serviceEntries: []
+    update_basicconfig_waittime: 0
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/openApi/jdmesh/updateBasicConfig
+    method: POST
+    headers: $headers
+    cookies: $cookies
+#     fiddler raw sample:
+#     {
+#       "params":{
+#            "appId":"jdmesh-productpage-test",
+#            "env":"pre",
+#            "enableAuthToken":false,
+#            "enableWhiteListCheck":false,
+#            "enableNegativeHealthCheck":false,
+#            "healthCheckParameters":{"interval":10,"consecutiveErrors":5,"maxEjectionPercent":30,"baseEjectionTime":180},
+#            "serviceEntries":[{"protocol":"HTTP","host":"10.226.204.205","port":80,"revision":"5915369"}]
+#        }
+#      }
+#
+# 新版本 190903：
+#{"params":{
+#            "appName":"jdmesh-productpage-test",
+#            "env":"pre",
+#            "enableSubscription":false,
+#            "enableNegativeHealthCheck":false,
+#            "healthCheckParameters":{"interval":10,"consecutiveErrors":5,"maxEjectionPercent":30,"baseEjectionTime":180},
+#            "serviceEntries":[{"protocol":"HTTP","host":"10.226.204.205","port":80,"revision":"7629434"}]}}
+
+    json:
+        params:
+            appName: $product
+            env: $env
+            # enableAuthToken: $enableAuthToken
+            # enableWhiteListCheck: $enableWhiteListCheck
+            enableNegativeHealthCheck: $enableNegativeHealthCheck
+            enableSubscription: $enableSubscription
+            healthCheckParameters:
+                interval: $healthCheckInterval
+                consecutiveErrors: $healthCheckconsecutiveErrors
+                maxEjectionPercent: $healthCheckmaxEjectionPercent
+                baseEjectionTime: $healthCheckbaseEjectionTime
+            serviceEntries: $serviceEntries
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}

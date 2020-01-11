@@ -1,0 +1,34 @@
+name: 查询可绑定的微服务分组
+description: 查询可绑定的微服务分组
+operationId: describeBindableApiGroups
+
+variables:
+#    url
+    host_dbag: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dbag: ${ENV(ENV_API_VERSION)}
+    regionId_dbag: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_dbag:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    params
+    filters1_dbag: groupName
+    filters1values_dbag: groupName
+#    hooks
+    serviceLine_dbag: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_dbag: nofile
+    openApiAk_dbag: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dbag: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dbag: v1
+
+request:
+    url: $host_dbag/$apiVer_dbag/regions/$regionId_dbag/bindableApiGroups
+    method: GET
+    headers: $header_dbag
+    params:
+        filters.1.name: $filters1_dbag
+        filters.1.values.1: $filters1values_dbag
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dbag, $openApiSk_dbag, $serviceLine_dbag, $apiVersion_dbag, $openapiYaml_dbag, $regionId_dbag)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

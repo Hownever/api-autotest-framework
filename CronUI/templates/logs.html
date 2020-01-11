@@ -1,0 +1,123 @@
+{% extends "layout.html" %}
+{% block content %}
+<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4">
+  <div class="container">
+    <ul class="nav nav-tabs">
+      <li role="presentation"><a class="nav-link" href="/crontab">crontab</a></li>
+      <!--<li role="presentation"><a class="nav-link" href="/file">Logs</a></li>-->
+      <li role="presentation" class="active"><a class="nav-link" href="/logs">Logs</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingOne">
+    <div class="row"><div class="col-md-10">
+    <ol class="breadcrumb">
+      <li><a href="/logs/{{ files.goback }}">返回上一级目录</a></li>
+      <li><a href="/logs">根目录</a></li>
+      {% for crumb, crumbpath in files.breadcrumbs %}
+      <li><a href="/logs/{{ crumbpath }}">{{ crumb }}</a></li>
+      {% endfor %}
+      <li class="active">{{ files.breadcrumb_last }}</li>
+    </ol></div>
+    <div class="col-md-1">
+      <div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ files.size }}条/页<span class="caret"></span></button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+      <li><a href="?page={{ files.page }}&size=10&filter={{ files.filter }}">10条/页</a></li>
+      <li><a href="?page={{ files.page }}&size=20&filter={{ files.filter }}">20条/页</a></li>
+      <li><a href="?page={{ files.page }}&size=50&filter={{ files.filter }}">50条/页</a></li>
+      <li role="separator" class="divider"></li>
+      <li><a href="?page={{ files.page }}&size=100&filter={{ files.filter }}">100条/页</a></li>
+      <li><a href="?page={{ files.page }}&size=200&filter={{ files.filter }}">200条/页</a></li>
+      </ul>
+      </div>
+    </div>{% if files.has_avocado_result_dir %}
+    <div class="col-md-1">
+        <div class="btn-group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ files.filter }} <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">{% for filter in files.filters %}{% if filter == files.filter %}
+            <li class="disabled">{% else %}<li>{% endif %}<a href="?page={{ files.page }}&size={{ files.size }}&filter={{ filter }}">{{ filter }}</a></li>{% endfor %}
+          </ul>
+        </div>
+      <a href="#" class="link"><span class="glyphicon glyphicon-question-sign"></span><div class="tips">测试结果过滤条件，ALL表示不过滤结果，FAILED表示所有非PASS的结果</div></a>
+    </div>{% endif %}
+    </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingZero">
+    <div class="row">{% if files.has_avocado_result_dir %}
+        <div class="col-md-1">Index</div>
+        <div class="col-md-3">FileName</div>
+        <div class="col-md-1">Total</div>
+        <div class="col-md-1">Pass</div>
+        <div class="col-md-1">Failures</div>
+        <div class="col-md-1">Error</div>
+        <div class="col-md-1">Skip</div>
+        <div class="col-md-1">Cancel</div>
+        <div class="col-md-1">Time</div>
+        <div class="col-md-1">打开文件夹</div>{% else %}
+        <div class="col-md-1">Index</div>
+        <div class="col-md-11">FileName</div>{% endif %}
+    </div></div></div>
+  <div class="panel panel-default">
+  {% for f in files.filesinfos %}{% for index, file in f %}
+    <div class="panel-heading" role="tab" id="heading{{ index }}">
+      <div class="row">{% if file.isavocadoresultdir %}
+        <div class="col-md-1">{{ index }}</div>
+        <div class="col-md-3"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ index }}" aria-expanded="false" aria-controls="collapse{{ index }}">{{ file.filename }}</a></div>
+        <div class="col-md-1">{% if file.result.total == file.result.pass %}
+            <span class="label label-success">{{ file.result.total }}</span>{% else %}
+            <span class="label label-danger">{{ file.result.total }}</span>{% endif %}
+        </div>
+        <div class="col-md-1">{{ file.result.pass }}</div>
+        <div class="col-md-1">{% if file.result.failures == 0 %}{{ file.result.failures }}{% else %}<span class="label label-danger">{{ file.result.failures }}</span>{% endif %}</div>
+        <div class="col-md-1">{% if file.result.errors == 0 %}{{ file.result.errors }}{% else %}<span class="label label-danger">{{ file.result.errors }}</span>{% endif %}</div>
+        <div class="col-md-1">{{ file.result.skip }}</div>
+        <div class="col-md-1">{{ file.result.cancel }}</div>
+        <div class="col-md-1">{% if file.result %}{{ "%.3f"|format(file.result.time) }}s{% endif %}</div>
+        <div class="col-md-1"><a href="/logs/{{ file.path }}">打开文件夹</a></div>{% else %}
+        <div class="col-md-1">{{ index }}</div>
+        <div class="col-md-11"><a href="/logs/{{ file.path }}">{{ file.filename }}</a></div>{% endif %}
+      </div>
+    </div>
+    <div id="collapse{{ index }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ index }}">
+      <div class="panel-body">
+      <div><table class="table table-hover">{% if file.isavocadoresultdir %}
+        <thead><tr><th>FileName</th><td>TestResult</td><td>Fail Reason</td><td>Time</td></tr></thead>{% else %}
+        <thead><tr><th>FileName</th></tr></thead>{% endif %}
+        <tbody>{% if file.isavocadoresultdir %}{% for hf in file.file_httprunner_report_file %}
+          <tr><th><a href="/logs/{{ hf.path }}" target="_blank">{{ hf.filename }}</a></th>{% if hf.test_result.status == "PASS" %}
+          <td><span class="label label-success">{{ hf.test_result.status }}</span></td>{% else %}
+          <td><span class="label label-danger">{{ hf.test_result.status }}</span></td>{% endif %}
+          <td>{{ hf.test_result.fail_reason }}</td>
+          <td>{{ "%.3f"|format(hf.test_result.time) }}s</td></tr>{% endfor %}{% else %}
+        <tr><th><a href="/logs/{{ file.path }}">{{ file.filename }}</a></th></tr>{% endif %}
+        </tbody>
+    </table></div>
+    </div>
+  </div>{% endfor %}{% endfor %}
+  <div class="footer">
+    <div class="row">
+    <div class="col-md-10"></div>
+    <div class="col-md-2"><nav aria-label="Page navigation">
+      <ul class="pagination">
+        {% if files.page_previous > 0 %}<li>{% else %}<li class="disable">{% endif %}
+          <a href="?page={{ files.page_previous }}&size={{ files.size }}&filter={{ files.filter }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+        </li>{% for i,j in files.pagelist %}{% if j != "" %}
+        <li class="{{ j }}">{% else %}<li>{% endif %}<a href="?page={{ i }}&size={{ files.size }}&filter={{ files.filter }}">{{ i }}</a></li>{% endfor %}{% if files.page_next > 0 %}
+        <li>{% else %}<li class="disable">{% endif %}
+          <a href="?page={{ files.page_next }}&size={{ files.size }}&filter={{ files.filter }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+        </li>
+        <li><a href="#">{{ files.totals_filter }}/{{ files.totals }}</a></li>
+      </ul>
+    </nav>
+    </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

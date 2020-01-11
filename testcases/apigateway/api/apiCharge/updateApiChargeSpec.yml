@@ -1,0 +1,60 @@
+name: 修改计费规格
+description: 修改计费规格
+operationId: updateApiChargeSpec
+
+variables:
+#    url
+    host_uacs: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_uacs: ${ENV(ENV_API_VERSION)}
+    regionId_uacs: cn-south-1
+#    header
+    header_uacs:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    apiId_uacs: ~
+    showStatus_uacs: 1
+    appCode_uacs: PaaS
+    apiGroupAlias_uacs: 贾硕
+    grayWhiteListStatus_uacs: 0
+
+    serviceCode_uacs: lingmatting
+    key_uacs: matting
+    chargeType_uacs: 1
+#    计费类型 0 标准计费 1 阶梯计费
+    accessSuccessType_uacs: 1
+#    计费方式 0 200请求计费 1 后端处理计费
+    apiGroupId_uacs: ag-wnpb3aow6534
+
+    value_uacs: 1
+    unit_uacs: 元/10000次
+#    hooks
+    serviceLine_uacs: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_uacs: nofile
+    openApiAk_uacs: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_uacs: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_uacs: v1
+
+request:
+    url: $host_uacs/$apiVer_uacs/regions/$regionId_uacs/apiChargeSpecs
+    method: PATCH
+    headers: $header_uacs
+    json:
+        apiGroupId: $apiGroupId_uacs
+        appCode: $appCode_uacs
+        serviceCode: $serviceCode_uacs
+        showStatus: $showStatus_uacs
+        chargeType: $chargeType_uacs
+        apiGroupAlias: $apiGroupAlias_uacs
+        grayWhiteListStatus: $grayWhiteListStatus_uacs
+        accessSuccessType: $accessSuccessType_uacs
+        apiChargeSpecs:
+            - apiId: $apiId_uacs
+              formulas:
+                  - key: $key_uacs
+                    value: $value_uacs
+                    unit: $unit_uacs
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_uacs, $openApiSk_uacs, $serviceLine_uacs, $apiVersion_uacs, $openapiYaml_uacs, $regionId_uacs)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

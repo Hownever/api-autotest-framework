@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+<nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse mb-4">
+  <div class="container">
+    <ul class="nav nav-tabs">
+      <li role="presentation"><a class="nav-link" href="/crontab">crontab</a></li>
+      <li role="presentation"  class="active"><a class="nav-link" href="/file">Logs</a></li>
+      <li role="presentation" ><a class="nav-link" href="/logs">Logs</a></li>
+    </ul>
+  </div>
+</nav>
+<ul>{% if up != "/" %}
+  <li><a href="/file/{{ up }}">返回</a></li>{% endif %}{% for k in sort_key %}
+  <li><a href="/file/{{ files[k] }}">{{ k }}{{ file_type[k] }}</a></li>{% endfor %}
+</ul>
+{% endblock %}

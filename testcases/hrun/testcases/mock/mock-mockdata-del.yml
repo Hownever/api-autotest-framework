@@ -1,0 +1,19 @@
+- config:
+    name: mock data delete
+    variables:
+        c_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # mock存储的id，使用时的id
+        c_mock_data_id: mock-data-test-${gen_random_string(5)}
+
+        c_expected_status_code: 200
+
+- test:
+    name: Delete Mock Data - $c_mock_data_id
+    api: api/mock/mock-data-delete.yml
+    variables:
+        mock_host: $c_mock_host
+        # mock存储的id，使用时的id
+        mock_data_id: $c_mock_data_id
+
+    validate:
+        - eq: [status_code, $c_expected_status_code]

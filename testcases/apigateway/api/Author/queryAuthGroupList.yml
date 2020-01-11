@@ -1,0 +1,32 @@
+name: 查询可绑定部署列表
+description: 查询可绑定部署列表
+operationId: queryAuthGroupList
+
+variables:
+#    url
+    host_qagl: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_qagl: ${ENV(ENV_API_VERSION)}
+    regionId_qagl: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_qagl:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    params
+    authUserType_qagl: ~
+#    hooks
+    serviceLine_qagl: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_qagl: nofile
+    openApiAk_qagl: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_qagl: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_qagl: v1
+
+request:
+    url: $host_qagl/$apiVer_qagl/regions/$regionId_qagl/accessAuths:groupList
+    method: GET
+    headers: $header_qagl
+    params:
+        authUserType: $authUserType_qagl
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_qagl, $openApiSk_qagl, $serviceLine_qagl, $apiVersion_qagl, $openapiYaml_qagl, $regionId_qagl)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

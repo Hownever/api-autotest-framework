@@ -1,0 +1,38 @@
+name: 查询密钥列表
+description: 查询密钥列表
+operationId: querySubscriptionKeys
+
+variables:
+#    url
+    host_qsk: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_qsk: ${ENV(ENV_API_VERSION)}
+    regionId_qsk: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_qsk:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    pageNumber_qsk: 1
+    pageSize_qsk: 100
+    filters1_qsk: 1
+    filters1values_qsk: 100
+#    hooks
+    serviceLine_qsk: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_qsk: nofile
+    openApiAk_qsk: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_qsk: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_qsk: v1
+
+request:
+    url: $host_qsk/$apiVer_qsk/regions/$regionId_qsk/subscriptionKeys
+    method: GET
+    headers: $header_qsk
+    params:
+        pageNumber: $pageNumber_qsk
+        pageSize: $pageSize_qsk
+        filters.1.name: $filters1_qsk
+        filters.1.values.1: $filters1values_qsk
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_qsk, $openApiSk_qsk, $serviceLine_qsk, $apiVersion_qsk, $openapiYaml_qsk, $regionId_qsk)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

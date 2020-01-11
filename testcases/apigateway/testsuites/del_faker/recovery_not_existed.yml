@@ -1,0 +1,62 @@
+- config:
+    name: 恢复不存在的分组、api、版本
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+    verify: False
+
+- test:
+    name: 恢复不存在的分组
+    api: api/monitor/recoveryDeletedApiGroup.yml
+    variables:
+        apiGroupId: qqag-wph1b0h8mn5yq
+        revision: 10.0.11
+        apiId: qqapi-wphukj2tu5j412
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 403]
+        - eq: [$status, APIGATEWAY_HTTP_FORBIDDEN]
+        - eq: [$message, 没有权限]
+
+- test:
+    name: 恢复不存在的版本
+    api: api/monitor/recoveryDeletedRevision.yml
+    variables:
+        apiGroupId: ag-wph1b0h8mn5yq
+        revision: 0.0.11
+        apiId: api-wphukj2tu5j412
+        revisionId: vwee
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 404]
+        - eq: [$status, APIGATEWAY_NOT_FOUND]
+        - eq: [$message, api group资源不存在]
+
+- test:
+    name: 恢复不存在的api
+    api: api/monitor/recoveryDeletedApi.yml
+    variables:
+        apiGroupId: ag-wph1b0h8mn5yq
+        revision: 0.0.11
+        apiId: api-wphukj2tu5j412
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 404]
+        - eq: [$status, APIGATEWAY_NOT_FOUND]
+        - eq: [$message, api group资源不存在]

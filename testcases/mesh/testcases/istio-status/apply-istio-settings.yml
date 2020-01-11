@@ -1,0 +1,475 @@
+- config:
+    # 测试用例名称
+    name: 对k8s集群的istio进行配置- 安装：$c_istio_install
+    description: |
+        1.如果未安装istio，则根据需求进行安装并按照需求初始化组件；
+        2.如果已安装istio，则跳过安装，然后根据需要进行对应的组件配置，包含组件按照，或者组件卸载；
+        3.根据需求，移除istio组件
+    variables:
+        c_web_host: ${ENV(ENV_MESH_WEB_BASE_URL)}
+        c_k8s_cluster_name: istio-test-likui
+        c_k8s_cluster_id: null
+        c_regionid: cn-north-1
+        c_node_extra_header: {"user": "gray"}
+
+        c_summary: your case summary
+
+        c_istio_install: True
+
+        c_version: 1.2.5
+        c_isAutoInject: True
+        c_isExternalAccess: True
+        c_isMTLS: True
+        c_isPolicyCheck: True
+        c_kiali_enabled: True
+        c_kiali_username: "look"
+        c_kiali_password: "qwer1234"
+        c_grafana_enabled: True
+        c_grafana_username: "look"
+        c_grafana_password: "qwer1234"
+        c_tracing_enabled: True
+        c_tracing_sampling: 10
+
+        c_bookinfo_enabled : True
+
+
+        c_wait_time_for_istio_status_changing: 30
+
+
+        c_tmp_istio_states: UNKNOWN
+        c_tmp_istio_states_is_installing: False
+        c_tmp_istio_states_is_deleting: False
+        c_tmp_istio_states_is_creating: False
+        c_tmp_istio_states_is_updating: False
+        c_tmp_istio_states_is_installed: False
+        c_tmp_istio_states_is_failed: False
+        c_tmp_istio_states_is_others: False
+        c_tmp_istio_states_is_not_installed: False
+        c_tmp_istio_states_is_not_installing: False
+        c_tmp_istio_states_is_not_deleting: False
+        c_tmp_istio_states_is_not_creating: False
+        c_tmp_istio_do_install: False
+        c_tmp_istio_do_uninstall: False
+        c_tmp_istio_do_update: False
+
+        c_tmp_same_version: null
+        c_tmp_same_isAutoInject: null
+        c_tmp_same_isExternalAccess: null
+        c_tmp_same_isMTLS: null
+        c_tmp_same_isPolicyCheck: null
+        c_tmp_same_kiali: null
+        c_tmp_same_kiali_enabled: null
+        c_tmp_same_kiali_username: null
+        c_tmp_same_kiali_password: null
+        c_tmp_same_grafana: null
+        c_tmp_same_grafana_enabled: null
+        c_tmp_same_grafana_username: null
+        c_tmp_same_grafana_password: null
+        c_tmp_same_tracing: null
+        c_tmp_same_tracing_enabled: null
+        c_tmp_same_tracing_sampling: null
+        c_tmp_same_tracing_username: null
+        c_tmp_same_tracing_password: null
+        c_tmp_same_bookinfo: null
+        c_tmp_same_bookinfo_enabled: null
+        c_tmp_same_basic_options: null
+        c_tmp_any_difference_for_istio_modules: null
+
+- test:
+    name: 测试场景：$c_summary
+    api: api/mock/mock-data-get.yml
+
+    variables:
+        mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # mock存储的id，使用时的id
+        mock_id: jdcloud.com
+        # 是否删除get的value
+        remove_after_get: disable
+        console_cookies: "FAIL_TO_GET_COOKIES_FROM_MOCK_SERVER"
+    extract:
+        - console_cookies: content.cookie
+        - set_cookies: content.cookie
+    teardown_hooks:
+        - set_cookies: {"ENV_WEB_COOKIES_JDCLOUD_COM": $console_cookies}
+        # 更新cookie值到环境变量中，方便后续脚本使用
+        - update_env_var: ${set_os_environ($set_cookies)}
+    validate:
+        - eq: ["status_code", 200]
+
+
+- test:
+    name:  如果没有提供k8s集群cluster id，提供了k8s的集群名称，那么先获取其ID，如果已提供ID，则跳过此步
+    skipIf: $c_k8s_cluster_id
+    api: api/k8s-cluster/k8s-describe-clusters.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        node_extra_header: $c_node_extra_header
+        pagenumber: 1
+        pagesize: 10
+        filters:
+            - {name: "name", values: ["$c_k8s_cluster_name"], operator: "like"}
+            # - {name: "id", values: ["k8s-9iu5eg9wje"], operator: "eq"}
+
+    extract:
+        - c_k8s_cluster_id: content.result.clusters.0.clusterId
+
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 查询集群的istio安装状态
+    api: api/istio-status/istio-get-istio-states.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+        node_extra_header: $c_node_extra_header
+
+    validate:
+        - eq: ["status_code", 200]
+
+    extract:
+        - response: content
+
+    teardown_hooks:
+        # installed, uninstalled, failed, installing, deleting, creating
+        - c_tmp_istio_states: ${get_istio_state_from_response($response)}
+        - c_tmp_istio_states_is_installing: ${validate($c_tmp_istio_states, installing)}
+        - c_tmp_istio_states_is_deleting: ${validate($c_tmp_istio_states, deleting)}
+        - c_tmp_istio_states_is_creating: ${validate($c_tmp_istio_states, creating)}
+        - c_tmp_istio_states_is_updating: ${validate($c_tmp_istio_states, updating)}
+        - c_tmp_istio_states_is_installed: ${validate($c_tmp_istio_states, installed)}
+        - c_tmp_istio_states_is_failed: ${validate($c_tmp_istio_states, failed)}
+        - c_tmp_istio_states_is_others: ${any_true($c_tmp_istio_states_is_installing, $c_tmp_istio_states_is_deleting, $c_tmp_istio_states_is_installed)}
+        - c_tmp_istio_states_is_not_installed: ${validate($c_tmp_istio_states, installed, ne)}
+        - c_tmp_istio_states_is_not_installing: ${validate($c_tmp_istio_states, installing, ne)}
+        - c_tmp_istio_states_is_not_deleting: ${validate($c_tmp_istio_states, deleting, ne)}
+
+- test:
+    name: 如果istio状态时failed状态，那么必须先执行此步删除，才能进行其他项目配置，否则跳过此步
+    skipUnless: $c_tmp_istio_states_is_failed
+    api: api/istio-status/istio-delete-istio.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+
+        node_extra_header: $c_node_extra_header
+
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.message, "deleting"]
+
+    extract:
+        - response: content.result.message
+    teardown_hooks:
+        # installed, uninstalled, failed, installing, deleting, creating
+        - c_tmp_istio_states: ${get_istio_state_from_response($response)}
+        - c_tmp_istio_states_is_installing: ${validate($c_tmp_istio_states, installing)}
+        - c_tmp_istio_states_is_deleting: ${validate($c_tmp_istio_states, deleting)}
+        - c_tmp_istio_states_is_creating: ${validate($c_tmp_istio_states, creating)}
+
+- test:
+    name: 如果查询的集群的istio状态是一个动态的状态，如：(installing,creating,updating,deleting)，等待${c_wait_time_for_istio_status_changing}s，再查是否是稳定状态，如：installed， null（未安装）,或者安装失败状态，否则，跳过此步
+    skipUnless: ${any_true($c_tmp_istio_states_is_installing, $c_tmp_istio_states_is_deleting, $c_tmp_istio_states_is_creating, $c_tmp_istio_states_is_updating)}
+    api: api/istio-status/istio-get-istio-states.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+        node_extra_header: $c_node_extra_header
+    extract:
+        - response: content
+
+    setup_hooks:
+        - ${sleep_N_secs($c_wait_time_for_istio_status_changing)}
+
+    teardown_hooks:
+        - c_tmp_istio_states: ${get_istio_state_from_response($response)}
+        - c_tmp_istio_states_is_not_installed: ${validate($c_tmp_istio_states, installed, ne)}
+        - c_tmp_istio_states_is_not_installing: ${validate($c_tmp_istio_states, installing, ne)}
+        - c_tmp_istio_states_is_not_deleting: ${validate($c_tmp_istio_states, deleting, ne)}
+        - c_tmp_istio_states_is_installing: ${validate($c_tmp_istio_states, installing)}
+        - c_tmp_istio_states_is_deleting: ${validate($c_tmp_istio_states, deleting)}
+        - c_tmp_istio_states_is_creating: ${validate($c_tmp_istio_states, creating)}
+        - c_tmp_istio_states_is_not_creating: ${validate($c_tmp_istio_states, creating, ne)}
+        - c_tmp_istio_states_is_installed: ${validate($c_tmp_istio_states, installed)}
+        - c_tmp_istio_states_is_others: ${any_true($c_tmp_istio_states_is_installing, $c_tmp_istio_states_is_deleting, $c_tmp_istio_states_is_installed)}
+        - c_tmp_istio_states_is_not_installed: ${validate($c_tmp_istio_states, installed, ne)}
+        - c_tmp_istio_states_is_not_installing: ${validate($c_tmp_istio_states, installing, ne)}
+        - c_tmp_istio_states_is_not_deleting: ${validate($c_tmp_istio_states, deleting, ne)}
+
+    validate:
+        - eq: ["status_code", 200]
+        # 此时不应该是动态状态，并且是安装成功或者未安装状态
+        - eq: [$c_tmp_istio_states_is_not_installing, True]
+        - eq: [$c_tmp_istio_states_is_not_deleting, True]
+        - eq: [$c_tmp_istio_states_is_not_creating, True]
+        - string_contained_by: ["$c_tmp_istio_states", "installed uninstalled"]
+
+- test:
+    name: 如果是更新，则先查询集群的istio组件安装状态，否则跳过此步
+    skipUnless: ${all_true($c_istio_install, $c_tmp_istio_states_is_installed)}
+    api: api/istio-status/istio-get-istio.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+        node_extra_header: $c_node_extra_header
+
+    validate:
+        - eq: ["status_code", 200]
+
+    extract:
+        - response: content
+        - c_tmp_version: content.result.install_config.version
+        - c_tmp_isAutoInject: content.result.install_config.isAutoInject
+        - c_tmp_isExternalAccess: content.result.install_config.isExternalAccess
+        - c_tmp_isMTLS: content.result.install_config.isMTLS
+        - c_tmp_isPolicyCheck: content.result.install_config.isPolicyCheck
+        - c_tmp_isPolicyCheck: content.result.install_config.isPolicyCheck
+        - c_tmp_kiali: content.result.install_config.kiali
+        - c_tmp_kiali_enabled: content.result.install_config.kiali.enabled
+        - c_tmp_kiali_username: content.result.install_config.kiali.username
+        - c_tmp_kiali_password: content.result.install_config.kiali.password
+        - c_tmp_kiali_externalAddress: content.result.install_config.kiali.externalAddress
+        - c_tmp_kiali_internalAddress: content.result.install_config.kiali.internalAddress
+        - c_tmp_grafana: content.result.install_config.monitor
+        - c_tmp_grafana_enabled: content.result.install_config.monitor.enabled
+        - c_tmp_grafana_username: content.result.install_config.monitor.username
+        - c_tmp_grafana_password: content.result.install_config.monitor.password
+        - c_tmp_grafana_externalAddress: content.result.install_config.monitor.externalAddress
+        - c_tmp_grafana_internalAddress: content.result.install_config.monitor.internalAddress
+        - c_tmp_tracing: content.result.install_config.tracing
+        - c_tmp_tracing_enabled: content.result.install_config.tracing.enabled
+        - c_tmp_tracing_username: content.result.install_config.tracing.username
+        - c_tmp_tracing_password: content.result.install_config.tracing.password
+        - c_tmp_tracing_sampling: content.result.install_config.tracing.sampling
+        - c_tmp_tracing_externalAddress: content.result.install_config.tracing.externalAddress
+        - c_tmp_tracing_internalAddress: content.result.install_config.tracing.internalAddress
+        - c_tmp_bookinfo: content.result.install_config.sample
+        - c_tmp_bookinfo_enabled: content.result.install_config.sample.enabled
+        - c_tmp_bookinfo_externalAddress: content.result.install_config.sample.externalAddress
+        - c_tmp_bookinfo_internalAddress: content.result.install_config.sample.internalAddress
+
+    teardown_hooks:
+        - c_tmp_same_version: ${validate($c_tmp_version, $c_version)}
+        - c_tmp_same_isAutoInject: ${validate($c_tmp_isAutoInject, $c_isAutoInject)}
+        - c_tmp_same_isExternalAccess: ${validate($c_tmp_isExternalAccess, $c_isExternalAccess)}
+        - c_tmp_same_isMTLS: ${validate($c_tmp_isMTLS, $c_isMTLS)}
+        - c_tmp_same_isPolicyCheck: ${validate($c_tmp_isPolicyCheck, $c_isPolicyCheck)}
+        - c_tmp_same_kiali_enabled: ${validate($c_tmp_kiali_enabled, $c_kiali_enabled)}
+        - c_tmp_same_kiali_username: ${validate($c_tmp_kiali_username, $c_kiali_username)}
+        - c_tmp_same_kiali_password: ${validate($c_tmp_kiali_password, $c_kiali_password)}
+        - c_tmp_same_grafana_enabled: ${validate($c_tmp_grafana_enabled, $c_grafana_enabled)}
+        - c_tmp_same_grafana_username: ${validate($c_tmp_grafana_username, $c_grafana_username)}
+        - c_tmp_same_grafana_password: ${validate($c_tmp_grafana_password, $c_grafana_password)}
+        - c_tmp_same_tracing_enabled: ${validate($c_tmp_tracing_enabled, $c_tracing_enabled)}
+        - c_tmp_same_tracing_sampling: ${validate($c_tmp_tracing_sampling, $c_tracing_sampling)}
+#        - c_tmp_same_tracing_username: ${validate($c_tmp_tracing_username, $c_tracing_username)}
+#        - c_tmp_same_tracing_password: ${validate($c_tmp_tracing_password, $c_tracing_password)}
+        - c_tmp_same_bookinfo_enabled: ${validate($c_tmp_bookinfo_enabled, $c_bookinfo_enabled)}
+        - c_tmp_same_basic_options: ${all_true($c_tmp_same_isAutoInject, $c_tmp_same_isExternalAccess, $c_tmp_same_isMTLS, $c_tmp_same_isPolicyCheck)}
+        - c_tmp_same_kiali: ${all_true($c_tmp_same_kiali_enabled, $c_tmp_same_kiali_username, $c_tmp_same_kiali_password)}
+        - c_tmp_same_grafana: ${all_true($c_tmp_same_grafana_enabled, $c_tmp_same_grafana_username, $c_tmp_same_grafana_password)}
+        - c_tmp_same_tracing: ${all_true($c_tmp_same_tracing_enabled, $c_tmp_same_tracing_sampling)}
+        - c_tmp_same_bookinfo: ${all_true($c_tmp_same_bookinfo_enabled)}
+        - c_tmp_any_difference_for_istio_modules: ${any_false($c_tmp_same_version, $c_tmp_same_basic_options, $c_tmp_same_kiali, $c_tmp_same_grafana, $c_tmp_same_tracing, $c_tmp_same_bookinfo)}
+
+- test:
+    name: 如果期望istio是安装，并且查询到的状态不是未安装、安装中，删除中等，那么执行此步安装，否则跳过此步
+    skipUnless: ${all_true($c_istio_install, $c_tmp_istio_states_is_not_installed, $c_tmp_istio_states_is_not_installing, $c_tmp_istio_states_is_not_deleting)}
+    api: api/istio-status/istio-create-istio.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+
+        version: $c_version
+        isAutoInject: $c_isAutoInject
+        isExternalAccess: $c_isExternalAccess
+        isMTLS: $c_isMTLS
+        isPolicyCheck: $c_isPolicyCheck
+        kiali: { "enabled": $c_kiali_enabled, "username": "$c_kiali_username", "password": "$c_kiali_password"}
+        grafana: { "enabled": $c_grafana_enabled, "username": "$c_grafana_username", "password": "$c_grafana_password"}
+        bookinfo: {"enabled": $c_bookinfo_enabled}
+        tracing: {"enabled": $c_tracing_enabled, "sampling": $c_tracing_sampling}
+        node_extra_header: $c_node_extra_header
+
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.message, "creating"]
+
+    extract:
+        - response: content.result.message
+    teardown_hooks:
+        - c_tmp_istio_do_install: True
+
+- test:
+    name: 如果需要则更新istio（istio已经安装，比较已安装项目配置与期望项目配置不一致），则执行此步更新，否则跳过此步
+    # 当$c_istio_install和 $c_tmp_any_difference_for_istio_modules都未true时，执行此步
+    skipUnless: ${all_true($c_istio_install, $c_tmp_any_difference_for_istio_modules)}
+    api: api/istio-status/istio-update-istio.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+
+        version: $c_version
+        isAutoInject: $c_isAutoInject
+        isExternalAccess: $c_isExternalAccess
+        isMTLS: $c_isMTLS
+        isPolicyCheck: $c_isPolicyCheck
+        kiali: { "enabled": $c_kiali_enabled, "username": "$c_kiali_username", "password": "$c_kiali_password"}
+        grafana: { "enabled": $c_grafana_enabled, "username": "$c_grafana_username", "password": "$c_grafana_password"}
+        bookinfo: {"enabled": $c_bookinfo_enabled}
+        tracing: {"enabled": $c_tracing_enabled, "sampling": $c_tracing_sampling}
+
+        node_extra_header: $c_node_extra_header
+
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.message, "updating"]
+
+    extract:
+        - response: content.result.message
+    teardown_hooks:
+        - c_tmp_istio_do_update: True
+
+- test:
+    name: 如果期望istio是删除，并且查询到的状态是安装，那么执行此步移除，否则跳过此步
+    skipUnless: ${all_false($c_istio_install, $c_tmp_istio_states_is_not_installed, $c_tmp_istio_states_is_installing, $c_tmp_istio_states_is_deleting)}
+    api: api/istio-status/istio-delete-istio.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+
+        node_extra_header: $c_node_extra_header
+
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.message, "deleting"]
+
+    extract:
+        - response: content.result.message
+    teardown_hooks:
+        - c_tmp_istio_do_uninstall: True
+
+
+- test:
+    name: 等待${c_wait_time_for_istio_status_changing}s，查询集群的istio安装状态,确认安装或者删除成功
+    skipUnless: ${any_true($c_tmp_istio_do_install, $c_tmp_istio_do_uninstall, $c_tmp_istio_do_update)}
+    api: api/istio-status/istio-get-istio-states.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+        node_extra_header: $c_node_extra_header
+
+    setup_hooks:
+        - ${sleep_N_secs($c_wait_time_for_istio_status_changing)}
+
+    validate:
+        - eq: ["status_code", 200]
+
+    extract:
+        - response: content
+
+    teardown_hooks:
+        - c_tmp_istio_states: ${get_istio_state_from_response($response)}
+        - c_tmp_istio_states_is_installed: ${validate($c_tmp_istio_states, installed)}
+
+    validate:
+        - eq: ["$c_tmp_istio_states_is_installed", $c_istio_install ]
+
+- test:
+    name: 如果执行了安装或者更新，则查询集群的istio组件状态，并判断是否与期望安装或更新的结果一致，否则跳过此步
+    skipUnless: ${any_true($c_tmp_istio_do_update, $c_tmp_istio_do_install)}
+    api: api/istio-status/istio-get-istio.yml
+
+    variables:
+        host: $c_web_host
+        regionid: $c_regionid
+        clusterid: $c_k8s_cluster_id
+        node_extra_header: $c_node_extra_header
+
+    validate:
+        - eq: ["status_code", 200]
+
+    extract:
+        - response: content
+        - c_tmp_version: content.result.install_config.version
+        - c_tmp_isAutoInject: content.result.install_config.isAutoInject
+        - c_tmp_isExternalAccess: content.result.install_config.isExternalAccess
+        - c_tmp_isMTLS: content.result.install_config.isMTLS
+        - c_tmp_isPolicyCheck: content.result.install_config.isPolicyCheck
+        - c_tmp_isPolicyCheck: content.result.install_config.isPolicyCheck
+        - c_tmp_kiali: content.result.install_config.kiali
+        - c_tmp_kiali_enabled: content.result.install_config.kiali.enabled
+        - c_tmp_kiali_username: content.result.install_config.kiali.username
+        - c_tmp_kiali_password: content.result.install_config.kiali.password
+        - c_tmp_kiali_externalAddress: content.result.install_config.kiali.externalAddress
+        - c_tmp_kiali_internalAddress: content.result.install_config.kiali.internalAddress
+        - c_tmp_grafana: content.result.install_config.monitor
+        - c_tmp_grafana_enabled: content.result.install_config.monitor.enabled
+        - c_tmp_grafana_username: content.result.install_config.monitor.username
+        - c_tmp_grafana_password: content.result.install_config.monitor.password
+        - c_tmp_grafana_externalAddress: content.result.install_config.monitor.externalAddress
+        - c_tmp_grafana_internalAddress: content.result.install_config.monitor.internalAddress
+        - c_tmp_tracing: content.result.install_config.tracing
+        - c_tmp_tracing_enabled: content.result.install_config.tracing.enabled
+        - c_tmp_tracing_username: content.result.install_config.tracing.username
+        - c_tmp_tracing_password: content.result.install_config.tracing.password
+        - c_tmp_tracing_sampling: content.result.install_config.tracing.sampling
+        - c_tmp_tracing_externalAddress: content.result.install_config.tracing.externalAddress
+        - c_tmp_tracing_internalAddress: content.result.install_config.tracing.internalAddress
+        - c_tmp_bookinfo: content.result.install_config.sample
+        - c_tmp_bookinfo_enabled: content.result.install_config.sample.enabled
+        - c_tmp_bookinfo_externalAddress: content.result.install_config.sample.externalAddress
+        - c_tmp_bookinfo_internalAddress: content.result.install_config.sample.internalAddress
+
+    teardown_hooks:
+        - c_tmp_same_version: ${validate($c_tmp_version, $c_version)}
+        - c_tmp_same_isAutoInject: ${validate($c_tmp_isAutoInject, $c_isAutoInject)}
+        - c_tmp_same_isExternalAccess: ${validate($c_tmp_isExternalAccess, $c_isExternalAccess)}
+        - c_tmp_same_isMTLS: ${validate($c_tmp_isMTLS, $c_isMTLS)}
+        - c_tmp_same_isPolicyCheck: ${validate($c_tmp_isPolicyCheck, $c_isPolicyCheck)}
+        - c_tmp_same_kiali_enabled: ${validate($c_tmp_kiali_enabled, $c_kiali_enabled)}
+        - c_tmp_same_kiali_username: ${validate($c_tmp_kiali_username, $c_kiali_username)}
+        - c_tmp_same_kiali_password: ${validate($c_tmp_kiali_password, $c_kiali_password)}
+        - c_tmp_same_grafana_enabled: ${validate($c_tmp_grafana_enabled, $c_grafana_enabled)}
+        - c_tmp_same_grafana_username: ${validate($c_tmp_grafana_username, $c_grafana_username)}
+        - c_tmp_same_grafana_password: ${validate($c_tmp_grafana_password, $c_grafana_password)}
+        - c_tmp_same_tracing_enabled: ${validate($c_tmp_tracing_enabled, $c_tracing_enabled)}
+        - c_tmp_same_tracing_sampling: ${validate($c_tmp_tracing_sampling, $c_tracing_sampling)}
+#        - c_tmp_same_tracing_username: ${validate($c_tmp_tracing_username, $c_tracing_username)}
+#        - c_tmp_same_tracing_password: ${validate($c_tmp_tracing_password, $c_tracing_password)}
+        - c_tmp_same_bookinfo_enabled: ${validate($c_tmp_bookinfo_enabled, $c_bookinfo_enabled)}
+        - c_tmp_same_basic_options: ${all_true($c_tmp_same_isAutoInject, $c_tmp_same_isExternalAccess, $c_tmp_same_isMTLS, $c_tmp_same_isPolicyCheck)}
+        - c_tmp_same_kiali: ${all_true($c_tmp_same_kiali_enabled, $c_tmp_same_kiali_username, $c_tmp_same_kiali_password)}
+        - c_tmp_same_grafana: ${all_true($c_tmp_same_grafana_enabled, $c_tmp_same_grafana_username, $c_tmp_same_grafana_password)}
+        - c_tmp_same_tracing: ${all_true($c_tmp_same_tracing_enabled, $c_tmp_same_tracing_sampling)}
+        - c_tmp_same_bookinfo: ${all_true($c_tmp_same_bookinfo_enabled)}
+
+
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [$c_tmp_same_version, True]
+        - eq: [$c_tmp_same_basic_options, True]
+        - eq: [$c_tmp_same_kiali, True]
+        - eq: [$c_tmp_same_grafana, True]
+        - eq: [$c_tmp_same_tracing, True]
+        - eq: [$c_tmp_same_bookinfo, True]
+
+

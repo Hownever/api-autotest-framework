@@ -1,0 +1,39 @@
+name: 从oss中下载网格编译构建时使用的相关软件tar包
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    #mesh_tar_file_name: mesh_v1.0.1.beta-p0926-01-e1.11.0.tar.gz
+    mesh_tar_file_name: mesh_v1.0.1.beta-p0926-01-e1.11.0.md5sum
+
+    timeout: 300
+# https://jdmesh-proxy.s3.cn-north-1.jdcloud-oss.com/version/mesh_v1.0.1.beta-p0926-01-e1.11.0.tar.gz
+# http://jdmesh-proxy.s3.cn-north-1.jdcloud-oss.com/version/mesh_v1.0.1.beta-p0926-01-e1.11.0.tar.gz
+request:
+    url: $host/version/$mesh_tar_file_name
+    method: GET
+    stream: True
+    verify: False
+    timeout: $timeout
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+
+response:
+    headers:
+        Date: Thu, 17 Oct 2019 04:04:37 GMT
+        Content-Type: application/octet-stream
+        Content-Length: 25770506
+        Connection: keep-alive
+        x-req-id: 86A89DB91D1C1CD4
+        x-amz-request-id: 86A89DB91D1C1CD4
+        Cache-Control: no-cache
+        Accept-Ranges: bytes
+        Last-Modified: Thu, 26 Sep 2019 09:29:40 GMT
+        x-amz-storage-class: STANDARD
+        ETag: "ee6b2e870ffdde7d08d5aa632623a0e2" # the md5sum of download file
+        x-jss-content-md5: 7msuhw/93n0I1apjJiOg4g==
+        Server: jfe
+    content_type: application/octet-stream
+    text: file content # tar file
+    text: ee6b2e870ffdde7d08d5aa632623a0e2  mesh_v1.0.1.beta-p0926-01-e1.11.0.tar.gz\n  # md5sum file

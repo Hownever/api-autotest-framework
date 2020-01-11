@@ -1,0 +1,76 @@
+name: 创建API
+description: 创建API
+operationId: createApis
+
+variables:
+#    url
+    host_ca: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_ca: ${ENV(ENV_API_VERSION)}
+    regionId_ca: ${ENV(ENV_APIM_REGIONID)}
+    revision_ca: ~
+#    header
+    header_ca:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    apiGroupId_ca: ~
+    apiName_ca: ~
+    action_ca: ~
+    path_ca: ~
+    matchType_ca: ~
+    description_ca: ~
+    reqParams_ca: ~
+    reqBody_ca: ~
+    resBody_ca: ~
+    reqBodyType_ca: ~
+    resBodyType_ca: ~
+    apiBackendConfig_ca: ~
+    backServiceType_ca: ~
+    backServicePath_ca: ~
+    backServiceId_ca: ~
+    backServiceName_ca: ~
+    backUrl_ca: ~
+    backServiceConfig_ca: ~
+    backServiceVersion_ca: ~
+    hufuAppTypeId_ca: ~
+    editableReqBodyType_ca: ~
+    editableResBodyType_ca: ~
+#    hooks
+    serviceLine_ca: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_ca: nofile
+    openApiAk_ca: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_ca: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_ca: v1
+
+request:
+    url: $host_ca/$apiVer_ca/regions/$regionId_ca/apiGroups/$apiGroupId_ca/revision/$revision_ca/apis:admin
+    method: POST
+    headers: $header_ca
+    json:
+        api:
+            apiGroupId: $apiGroupId_ca
+            apiName: $apiName_ca
+            action: $action_ca
+            path: $path_ca
+            matchType: $matchType_ca
+            description: $description_ca
+            reqParams: $reqParams_ca
+            reqBody: $reqBody_ca
+            resBody: $resBody_ca
+            reqBodyType: $reqBodyType_ca
+            resBodyType: $resBodyType_ca
+            apiBackendConfig: $apiBackendConfig_ca
+            backServiceType: $backServiceType_ca
+            backServicePath: $backServicePath_ca
+            backServiceId: $backServiceId_ca
+            backServiceName: $backServiceName_ca
+            backUrl: $backUrl_ca
+            backServiceConfig: $backServiceConfig_ca
+            backServiceVersion: $backServiceVersion_ca
+            hufuAppTypeId: $hufuAppTypeId_ca
+            editableReqBodyType: $editableReqBodyType_ca
+            editableResBodyType: $editableResBodyType_ca
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_ca, $openApiSk_ca, $serviceLine_ca, $apiVersion_ca, $openapiYaml_ca, $regionId_ca)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

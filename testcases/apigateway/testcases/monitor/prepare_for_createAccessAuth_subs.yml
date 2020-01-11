@@ -1,0 +1,32 @@
+- config:
+    name: 检查订阅密钥是否已创建，删除旧数据后创建新的访问授权
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        subsName: ${ENV(ENV_SUBS_KEY_NAME)}
+    verify: False
+
+- test:
+    name: 检查是否已创建
+    api: api/monitor/querySubscriptionKeys.yml
+    variables:
+        filters1:
+        filters1values:
+    output:
+        - subscriptionKeys
+
+- test:
+    name: 如果订阅密钥未创建，跳过，若已创建，删除订阅密钥
+    skipUnless: ${get_id_from_list($subscriptionKeys, name, $subsName, subscriptionKeyId)}
+    api: api/monitor/deleteSubscriptionKey.yml
+    variables:
+        subscriptionKeyId: ${get_id_from_list($subscriptionKeys, name, $subsName, subscriptionKeyId)}
+    validate:
+        - eq: ["status_code", 200]

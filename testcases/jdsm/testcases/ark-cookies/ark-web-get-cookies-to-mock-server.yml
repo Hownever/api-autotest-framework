@@ -1,0 +1,99 @@
+- config:
+    # 测试用例名称
+    name: 获取云翼的cookies并将它保存到mock server中供使用
+
+    variables:
+        c_ark_login_host: ${ENV(ENV_ARK_WEB_LOGIN_BASE_URL)}
+        c_ark_api_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+        c_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        c_env: ${ENV(ENV_TEST_ENV)}
+        c_mock_data_id: ${get_host_from_url($c_ark_api_host)}
+        c_username: ${ENV(ENV_ERP_USERNAME)}  # 仅供jenkins job使用的方式，env文件中不存放erp用户名和密码
+        c_password: ${ENV(ENV_ERP_PASSWORD)}  # 仅供jenkins job使用的方式，env文件中不存放erp用户名和密码
+        c_fp: N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I
+        fmt: "%Y-%m-%d %H:%M:%S"
+        now: ${get_current_date($fmt)}
+        arkcookie: None
+
+
+- test:
+    name: 获取cookies
+    api: api/ark-app/ark-web-login.yml
+
+    variables:
+        host: $c_ark_login_host
+        fp: $c_fp
+        username: $c_username
+        password: $c_password
+    extract:
+        - arkcookie: headers.Set-Cookie
+    validate:
+        - eq: ["status_code", 302]
+
+
+- test:
+    name: 保存到mock server - pre - $c_mock_host - $c_mock_data_id
+    api: api/mock/mock-data-set.yml
+
+    variables:
+        mock_host:  $c_mock_host
+        setter: enable
+        force_covered: enable
+        mock_id: $c_mock_data_id
+        mock_code: 200
+        mock_header: {}
+        mock_data:
+            host: $c_ark_api_host
+            cookie: $arkcookie
+            time: $now
+        mock_type: application/json
+
+    extract:
+        - jsonResponse: content
+    validate:
+        - eq: ["status_code", 200]
+
+#
+#- test:
+#    name: 保存到mock server - gray - $c_mock_host_gray - $c_mock_data_id
+#    api: api/mock/mock-data-set.yml
+#
+#    variables:
+#        mock_host: $c_mock_host_gray
+#        setter: enable
+#        force_covered: enable
+#        mock_id: $c_mock_data_id
+#        mock_code: 200
+#        mock_data:
+#            host: $c_ark_api_host
+#            cookie: $arkcookie
+#            time: $now
+#        mock_type: application/json
+#
+#    extract:
+#        - jsonResponse: content
+#    validate:
+#        - eq: ["status_code", 200]
+#
+#
+#- test:
+#    name: 保存到mock server - online - $c_mock_host_online - $c_mock_data_id
+#    api: api/mock/mock-data-set.yml
+#
+#    variables:
+#        mock_host: $c_mock_host_online
+#        setter: enable
+#        force_covered: enable
+#        mock_id: $c_mock_data_id
+#        mock_code: 200
+#        mock_data:
+#            host: $c_ark_api_host
+#            cookie: $arkcookie
+#            time: $now
+#        mock_type: application/json
+#
+#    extract:
+#        - jsonResponse: content
+#    validate:
+#        - eq: ["status_code", 200]
+

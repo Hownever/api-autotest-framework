@@ -1,0 +1,19 @@
+name: 根据应用id的获取应用信息
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+    erp: likui34
+    headers:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    # http://test.lord.ark.jd.com:8021/api/v1/lord/queryAppByUserName?userName=erp账户
+    url: $host/api/lord/v1/lord/queryAppByUserName
+    method: GET
+    headers: $headers
+    cookies: $cookies
+    params:
+        userName: $erp

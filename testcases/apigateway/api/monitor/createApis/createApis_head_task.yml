@@ -1,0 +1,41 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId/revision/$revision/apis
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        api:
+            apiGroupId: $apiGroupId
+            action: HEAD
+            apiName: head_task
+            description: head_task
+            path: "/tasks/getHead/{taskid}"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              - defaultValue: taskid
+                description: taskid
+                isRequired: true
+                name: taskid
+                paramType: Int
+                paramLocation: path
+              - defaultValue: Authorization
+                description: Authorization
+                isRequired: true
+                name: Author_test
+                paramType: String
+                paramLocation: head
+            reqBody: ~
+            resBody: ~
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - apiId_head_task: content.result.apiId
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

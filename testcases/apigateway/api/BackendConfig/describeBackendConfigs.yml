@@ -1,0 +1,40 @@
+name: 查询指定环境下的所有后端配置
+description: 查询指定环境下的所有后端配置
+operationId: describeBackendConfigs
+
+variables:
+#    url
+    host_descbcs: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_descbcs: ${ENV(ENV_API_VERSION)}
+    regionId_descbcs: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_descbcs: apiGroupId_descbcs
+    environment_descbcs: environment_descbcs
+#    header
+    header_descbcs:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    params
+    pageNumber_descbcs: 1
+    pageSize_descbcs: 100
+    filters1_descbcs: groupName
+    filters1values_descbcs: groupName
+#    hooks
+    serviceLine_descbcs: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_descbcs: nofile
+    openApiAk_descbcs: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_descbcs: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_descbcs: v1
+
+request:
+    url: $host_descbcs/$apiVer_descbcs/regions/$regionId_descbcs/apiGroups/$apiGroupId_descbcs/environment/$environment_descbcs/backendConfigs
+    method: GET
+    headers: $header_descbcs
+    params:
+        pageNumber: $pageNumber_descbcs
+        pageSize: $pageSize_descbcs
+        filters.1.name: $filters1_descbcs
+        filters.1.values.1: $filters1values_descbcs
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_descbcs, $openApiSk_descbcs, $serviceLine_descbcs, $apiVersion_descbcs, $openapiYaml_descbcs, $regionId_descbcs)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

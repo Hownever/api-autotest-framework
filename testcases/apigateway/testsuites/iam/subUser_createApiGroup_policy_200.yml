@@ -1,0 +1,72 @@
+- config:
+    name: 创建子账号-创建策略：允许createApiGroup-绑定策略-请求接口-成功
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        GroupName: ${get_name(GroupName)}
+    verify: False
+
+- test:
+    name: 创建子账号-获取子账号的pin
+    testcase: testcases/monitor/createSubUser_getPin.yml
+    variables:
+        subUserName: SubUser_have_pol
+    output:
+        - subUser_name
+        - accessKey
+        - secretAccessKey
+        - subUser_pin
+
+- test:
+    name: 创建策略：Policy_createApiGroup
+    api: api/monitor/createPolicy.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        name: Policy_createApiGroup
+        description: Policy_createApiGroup
+        content: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigateway:createApiGroup"],"Resource":["*"],"Condition":{}}]}'
+    extract:
+        - policyName: content.result.policy.name
+    output:
+        - policyName
+
+- test:
+    name: 子用户绑定策略：Policy_createApiGroup
+    api: api/monitor/attachSubUserPolicy.yml
+    variables:
+        subUser: $subUser_name
+        pin: ${ENV(ENV_PIN)}
+        policyName: $policyName
+
+- test:
+    name: 子用户请求createApiGroup接口，请求成功
+    api: api/monitor/createApiGroup.yml
+    variables:
+        pin: $subUser_pin @ ${ENV(ENV_PIN)}
+        groupName: $GroupName
+        description: aaa
+        prefix: aaa
+        keyCheck:
+        authType: jd_cloud
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 删除子用户
+    api: api/monitor/deleteSubUser.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        subUser: $subUser_name
+
+- test:
+    name: 删除策略
+    api: api/monitor/deletePolicy.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        policyName: $policyName

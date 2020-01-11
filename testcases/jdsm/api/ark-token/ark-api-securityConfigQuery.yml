@@ -1,0 +1,31 @@
+name: 根据云翼服务树中应用ID查询应用安全配置
+description: |
+    cf: https://cf.jd.com/pages/viewpage.action?pageId=213608699
+
+    curl -X GET --header 'Accept: application/json'
+    --header 'Cookie: sso.js.com=yourCookie'
+    'http://lord.hd-tst.ark.jd.com:8021/web-api/v1/lord/securityConfig/query?appId=3587'
+
+
+    # GET http://ark.jdcloud.com/api/lord/v1/lord/securityConfig/query?appId=7202
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+    appid: 7202
+    headers: {}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+         # _ga: _ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=86694794|cf.jd.com|-|referral|-|1568170896875; Hm_lvt_38f625421267eb5065e400d79fc42c74=1566369326,1568859508; __jda=36325045.155261874676598619927.1552618747.1568859508.1568967324.16; xCsrfToken=JZ-yXBaBmIM1Fz6mTsHp413W; erp1.jd.com=B6E2D56BEA2090CE2570857CBDDB6341B63A8E544BAECDC37BF0FA1F1505EC647DEBCF29C774F9D94CE50396074896CA0714E226122A3D3DDC80D6603B7EDDC736E1B57B2CCDE1282F66C7C8FED8329E; sso.jd.com=BJ.73380e375288437a9fee4d7788caac16
+         # _ga: _ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=86694794|cf.jd.com|-|referral|-|1568170896875; xCsrfToken=RqAx3tPDiEA3lbB_8HwyOsKm; jdcloud_sitelang=cn; jdcloud_sitelang_server=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1566369326,1568859508; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1568859508; beegosessionID=e6321a259d5df5ad286ee075d68da35a; erp1.jd.com=D19F6CBDC6810C4149C50D7406BB94875FBF3E8AC23A39C12A712482840CC24D52F584B4019DE97C7C4DC1434E32863D7357ED0037DEE5747907AF1553B5731EC55601EA3FAA3D1327DB0F5EC6A35613; sso.jd.com=BJ.db9bf872d4584dd1a156a2c3d129ee25; __jda=36325045.155261874676598619927.1552618747.1568859508.1568967324.16; __jdc=36325045
+request:
+    url: $host/web-api/v1/lord/securityConfig/query
+    method: GET
+    headers: $headers
+    cookies: $cookies
+
+    params:
+        appId: $appid
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+    # JSON

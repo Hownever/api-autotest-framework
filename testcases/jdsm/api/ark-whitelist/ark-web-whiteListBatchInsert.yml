@@ -1,0 +1,42 @@
+name: 添加白名单
+variables:
+#    "provider":
+#        "app":"jdmesh-productpage-test",
+#        "groups":["east2-pre"],
+#        "inss":[]
+#    "consumer":
+#        "app":"reviews",
+#        "groups":[],
+#        "inss":["4.reviews"]
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    provider_app: productpage
+    provider_groups: ["east2-pre"]
+    provider_inss: []
+    consumer_app: reviews
+    consumer_groups: ["east-pre-test"]
+    consumer_inss: []  # ["4.reviews"]
+    headers:
+        AUTH-APP-ID: mircoservice
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+    cookies:
+        _ga: ${ENV(ENV_COOKIES)}
+        # _ga: GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=86694794|cf.jd.com|-|referral|-|1568170896875; Hm_lvt_38f625421267eb5065e400d79fc42c74=1566369326,1568859508; __jda=36325045.155261874676598619927.1552618747.1568859508.1568967324.16; xCsrfToken=JZ-yXBaBmIM1Fz6mTsHp413W; erp1.jd.com=496A0F5A487C11239B76CF86030B80FA17B01F7037ABBA14720D53A5BF1A4FAE626654B0D364604FD241E5F2BF5FFE497645A9D7C6D9A08241AE4280607AD4F916AA542887C2BDF86BA1DCFB3AA4F3CD; sso.jd.com=BJ.c761734e5cc64beeb4d4658f6225ac9f
+
+request:
+    url: $host/lord/api/v1/whitelist/whiteListBatchInsert
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        provider:
+            app: $provider_app
+            groups: $provider_groups
+            inss: $provider_inss
+        consumer:
+            app: $consumer_app
+            groups: $consumer_groups
+            inss: $consumer_inss
+validate:
+    - eq: ["status_code", $expected_status_code]

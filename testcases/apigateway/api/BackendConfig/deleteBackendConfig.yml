@@ -1,0 +1,30 @@
+name: 删除后端配置
+description: 删除后端配置
+operationId: deleteBackendConfig
+
+variables:
+#    url
+    host_delebc: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_delebc: ${ENV(ENV_API_VERSION)}
+    regionId_delebc: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_delebc: apiGroupId
+    backendConfigId_delebc: backendConfigId
+#    header
+    header_delebc:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_delebc: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_delebc: nofile
+    openApiAk_delebc: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_delebc: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_delebc: v1
+
+request:
+    url: $host_delebc/$apiVer_delebc/regions/$regionId_delebc/apiGroups/$apiGroupId_delebc/backendConfig/$backendConfigId_delebc
+    method: DELETE
+    headers: $header_delebc
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_delebc, $openApiSk_delebc, $serviceLine_delebc, $apiVersion_delebc, $openapiYaml_delebc, $regionId_delebc)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

@@ -1,0 +1,52 @@
+name: create sub-user
+description: |
+    create subuser
+
+variables:
+    host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+    userpin: your_user_pin
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        #x-jdcloud-pin: $userpin
+
+    subuser_name: your_sub_user_name
+    subuser_description: your_sub_user_description
+    subuser_password: your_subuserpassword
+    subuser_phone: your_subuserphone
+    subuser_email: your_subuseremail
+    subuser_create_ak: your_subuser_create_ak
+    subuser_reset_passwd: your_subuser_reset_passwd
+    subuser_console_login: your_subuser_console_login
+    subuser_auto_gen_passwd: your_subuser_auto_gen_passwd
+
+    AK: your_ak
+    SK: your_sk
+    productline: iam
+    apiversion: v1
+    openapi_yaml: nofile
+    regionid: cn-north-1
+
+    expected_status_code: 200
+
+request:
+    url: $host/$apiversion/subUser
+    method: POST
+    headers: $headers
+    json:
+        createSubUserInfo:
+            name: $subuser_name
+            description: $subuser_description
+            password: $subuser_password
+            phone: $subuser_phone
+            email: $subuser_email
+            createAk: $subuser_create_ak
+            needResetPassword: $subuser_reset_passwd
+            consoleLogin: $subuser_console_login
+            autoGeneratePassword: $subuser_auto_gen_passwd
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $productline, $apiversion, $openapi_yaml, $regionid)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+
+validate:
+    - eq: ["status_code", $expected_status_code]

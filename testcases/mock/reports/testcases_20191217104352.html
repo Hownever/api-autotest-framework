@@ -1,0 +1,3738 @@
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> - TestReport</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      color: #333;
+      margin: 0 auto;
+      width: 960px;
+    }
+    #summary {
+      width: 960px;
+      margin-bottom: 20px;
+    }
+    #summary th {
+      background-color: skyblue;
+      padding: 5px 12px;
+    }
+    #summary td {
+      background-color: lightblue;
+      text-align: center;
+      padding: 4px 8px;
+    }
+    .details {
+      width: 960px;
+      margin-bottom: 20px;
+    }
+    .details th {
+      background-color: skyblue;
+      padding: 5px 12px;
+    }
+    .details tr .passed {
+      background-color: lightgreen;
+    }
+    .details tr .failed {
+      background-color: red;
+    }
+    .details tr .unchecked {
+      background-color: gray;
+    }
+    .details td {
+      background-color: lightblue;
+      padding: 5px 12px;
+    }
+    .details .detail {
+      background-color: lightgrey;
+      font-size: smaller;
+      padding: 5px 10px;
+      line-height: 20px;
+      text-align: left;
+    }
+    .details .success {
+      background-color: greenyellow;
+    }
+    .details .error {
+      background-color: red;
+    }
+    .details .failure {
+      background-color: salmon;
+    }
+    .details .skipped {
+      background-color: gray;
+    }
+
+    .button {
+      font-size: 1em;
+      padding: 6px;
+      width: 4em;
+      text-align: center;
+      background-color: #06d85f;
+      border-radius: 20px/50px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+    }
+    a.button{
+      color: gray;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .button:hover {
+      background: #2cffbd;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      transition: opacity 500ms;
+      visibility: hidden;
+      opacity: 0;
+      line-height: 25px;
+    }
+    .overlay:target {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .popup {
+      margin: 70px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      width: 50%;
+      position: relative;
+      transition: all 3s ease-in-out;
+    }
+
+    .popup h2 {
+      margin-top: 0;
+      color: #333;
+      font-family: Tahoma, Arial, sans-serif;
+    }
+    .popup .close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      transition: all 200ms;
+      font-size: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #333;
+    }
+    .popup .close:hover {
+      color: #06d85f;
+    }
+    .popup .content {
+      max-height: 80%;
+      overflow: auto;
+      text-align: left;
+    }
+    .popup .separator {
+      color:royalblue
+    }
+
+    @media screen and (max-width: 700px) {
+      .box {
+        width: 70%;
+      }
+      .popup {
+        width: 70%;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <h1>Test Report: </h1>
+
+  <h2>Summary</h2>
+  <table id="summary">
+    <tr>
+      <th>START AT</th>
+      <td colspan="4">2019-12-17 10:43:52</td>
+    </tr>
+    <tr>
+      <th>DURATION</th>
+      <td colspan="4">11.357 seconds</td>
+    </tr>
+    <tr>
+      <th>PLATFORM</th>
+      <td>HttpRunner 2.1.2 </td>
+      <td>CPython 3.6.5 </td>
+      <td colspan="2">Windows-10-10.0.17763-SP0</td>
+    </tr>
+    <tr>
+      <th>STAT</th>
+      <th colspan="2">TESTCASES (success/fail)</th>
+      <th colspan="2">TESTSTEPS (success/fail/error/skip)</th>
+    </tr>
+    <tr>
+      <td>total (details) =></td>
+      <td colspan="2">9 (7/2)</td>
+      <td colspan="2">13 (11/2/0/0)</td>
+    </tr>
+  </table>
+
+  <h2>Details</h2>
+
+  
+  
+  <h3>mock data get from gateway</h3>
+  <table id="suite_1" class="details">
+    <tr>
+      <td>TOTAL: 1</td>
+      <td>SUCCESS: 1</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_1_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">mock data get from gateway</td>
+      <td style="text-align:center;width:6em;">76.20 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_1_1_1">log-1</a>
+        <div id="popup_log_1_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_1_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: mock data get from gateway</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.148.63:8000/v1/api/mockserver/mocks/tags_describeTagResourcesInfo
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: api-autotest-framework/1.4.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>x-jdcloud-date</strong>: 20191217T104352Z
+                          </div>
+                          
+                          <div>
+                            <strong>x-jdcloud-nonce</strong>: 57a81e66-121c-42cd-8ddc-fcb5d01bfdc7
+                          </div>
+                          
+                          <div>
+                            <strong>Authorization</strong>: JDCLOUD2-HMAC-SHA256 Credential=2AC2808D7CC475CF460218D039297035/20191217/cn-north-1/apigatewaytestproductline/jdcloud2_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce, Signature=7ef6ac434a2c3870d2405f783f758c91cbea56dbee770fcea0ac36851db29af5
+                          </div>
+                          
+                          <div>
+                            <strong>x-jdcloud-content-sha256</strong>: 44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a
+                          </div>
+                          
+                          <div>
+                            <strong>JDCLOUD2-HMAC-SHA256</strong>: JDCLOUD2-HMAC-SHA256
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 2
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {}
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.148.63:8000/v1/api/mockserver/mocks/tags_describeTagResourcesInfo
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 138
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:43:52 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>x-jdcloud-request-id</strong>: bot41r7n90cjmqp5798pqtubw239q07o
+                            </div>
+                            
+                            <div>
+                              <strong>x-jdcloud-operationId</strong>: validateTag
+                            </div>
+                            
+                            <div>
+                              <strong>X-JDcloud-Upstream-Latency</strong>: 3
+                            </div>
+                            
+                            <div>
+                              <strong>X-JDcloud-Proxy-Latency</strong>: 4
+                            </div>
+                            
+                            <div>
+                              <strong>Via</strong>: jd-gateway/1.0.1
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;error&#39;: {&#39;code&#39;: 404, &#39;message&#39;: &#39;Mock data not found!&#39;, &#39;status&#39;: &#39;NOT_FOUND&#39;}, &#39;requestId&#39;: &#39;bot41r7n90cjmqp5798pqtubw239q07o&#39;, &#39;result&#39;: None}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>138</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>76.2</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>70.695</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>mock set and get</h3>
+  <table id="suite_2" class="details">
+    <tr>
+      <td>TOTAL: 1</td>
+      <td>SUCCESS: 1</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_2_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">获取资源list</td>
+      <td style="text-align:center;width:6em;">66.48 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_2_1_1">log-1</a>
+        <div id="popup_log_2_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_2_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: 获取资源list</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/v1/api/mockserver/mocks/mock-data-test-pFe7x
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 2
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {}
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/v1/api/mockserver/mocks/mock-data-test-pFe7x
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:43:52 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 138
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;error&#39;: {&#39;code&#39;: 404, &#39;message&#39;: &#39;Mock data not found!&#39;, &#39;status&#39;: &#39;NOT_FOUND&#39;}, &#39;requestId&#39;: &#39;12345678901234567890123456789012&#39;, &#39;result&#39;: None}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>138</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>66.48</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>64.343</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>mock data delete</h3>
+  <table id="suite_3" class="details">
+    <tr>
+      <td>TOTAL: 1</td>
+      <td>SUCCESS: 0</td>
+      <td>FAILED: 1</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_3_1">
+      <th class="failure" style="width:5em;">failure</th>
+      <td colspan="2">Delete Mock Data - mock-data-test-ai5UH</td>
+      <td style="text-align:center;width:6em;">64.63 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_3_1_1">log-1</a>
+        <div id="popup_log_3_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_3_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: Delete Mock Data - mock-data-test-ai5UH</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/api/v1/mockserver/mocks/mock-data-test-ai5UH
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          DELETE
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 0
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            False
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/api/v1/mockserver/mocks/mock-data-test-ai5UH
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            404
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            NOT FOUND
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:43:52 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 82
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;code&#39;: 404, &#39;data&#39;: None, &#39;error&#39;: &#39;Not Found the data&#39;, &#39;id&#39;: &#39;mock-data-test-ai5UH&#39;}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="failed">
+                      
+                        status_code
+                      </td>
+                      <td>equals</td>
+                      <td>LazyString($c_expected_status_code)</td>
+                      <td>404</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>82</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>64.63</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>62.667</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+          <a class="button" href="#popup_attachment_3_1">traceback</a>
+          <div id="popup_attachment_3_1" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_3_1">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File &#34;e:\workspace\sourcecode\python\api-autotest-framework\venv-httprunner2.1\lib\site-packages\httprunner\api.py&#34;, line 55, in test
+    test_runner.run_test(test_dict)
+httprunner.exceptions.ValidationFailure: 
+validate: status_code equals 200(int)	==&gt; fail
+404(int) equals 200(int)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &#34;e:\workspace\sourcecode\python\api-autotest-framework\venv-httprunner2.1\lib\site-packages\httprunner\api.py&#34;, line 57, in test
+    self.fail(str(ex))
+AssertionError: 
+validate: status_code equals 200(int)	==&gt; fail
+404(int) equals 200(int)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>mock data set and get</h3>
+  <table id="suite_4" class="details">
+    <tr>
+      <td>TOTAL: 1</td>
+      <td>SUCCESS: 1</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_4_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">获取Mock Data - mock-data-test-302</td>
+      <td style="text-align:center;width:6em;">65.32 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_4_1_1">log-1</a>
+        <div id="popup_log_4_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_4_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: 获取Mock Data - mock-data-test-302</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          GET
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Getter</strong>: mock-data-test-302
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Getter-Remove</strong>: enable
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:43:52 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>token</strong>: mytoken
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 90
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;requestId&#39;: &#39;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#39;, &#39;result&#39;: {&#39;apiGroups&#39;: [], &#39;totalCount&#39;: 0}}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>LazyString($c_expected_status_code)</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>90</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>65.32</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>63.44</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>mock data set and get</h3>
+  <table id="suite_5" class="details">
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 2</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_5_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">configure mock server data - get_url_test</td>
+      <td style="text-align:center;width:6em;">75.66 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_5_1_1">log-1</a>
+        <div id="popup_log_5_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_5_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: configure mock server data - get_url_test</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter-Force-Covered</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 317
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;headers&#34;: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;token&#34;: &#34;mytoken&#34;, &#34;Location&#34;: &#34;http://10.226.149.64:8001/kms?keyId=ab934878acdf&#34;}, &#34;id&#34;: &#34;get_url_test&#34;, &#34;code&#34;: 200, &#34;body&#34;: {&#34;result&#34;: {&#34;totalCount&#34;: 0, &#34;apiGroups&#34;: []}, &#34;requestId&#34;: &#34;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#34;}, &#34;type&#34;: &#34;application/json&#34;, &#34;delaysecs&#34;: 0}
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:43:52 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 418
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;code&#39;: 200, &#39;content&#39;: None, &#39;content-type&#39;: &#39;application/json&#39;, &#39;data&#39;: {&#39;code&#39;: 200, &#39;content&#39;: {&#39;requestId&#39;: &#39;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#39;, &#39;result&#39;: {&#39;apiGroups&#39;: [], &#39;totalCount&#39;: 0}}, &#39;content-type&#39;: &#39;application/json&#39;, &#39;delaysecs&#39;: 0, &#39;headers&#39;: {&#39;Content-Type&#39;: &#39;application/json&#39;, &#39;Location&#39;: &#39;http://10.226.149.64:8001/kms?keyId=ab934878acdf&#39;, &#39;token&#39;: &#39;mytoken&#39;}}, &#39;delaysecs&#39;: 0, &#39;error&#39;: None, &#39;headers&#39;: None, &#39;id&#39;: &#39;get_url_test&#39;}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>418</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>75.66</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>73.055</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+    
+    
+    <tr id="record_5_2">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">获取Mock Data - get_url_test</td>
+      <td style="text-align:center;width:6em;">39.66 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_5_2_1">log-1</a>
+        <div id="popup_log_5_2_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_5_2_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: 获取Mock Data - get_url_test</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/url/test
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          GET
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/url/test
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:43:52 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>token</strong>: mytoken
+                            </div>
+                            
+                            <div>
+                              <strong>Location</strong>: http://10.226.149.64:8001/kms?keyId=ab934878acdf
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 90
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;requestId&#39;: &#39;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#39;, &#39;result&#39;: {&#39;apiGroups&#39;: [], &#39;totalCount&#39;: 0}}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        status_code
+                      </td>
+                      <td>equals</td>
+                      <td>LazyString($c_mock_code)</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>90</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>39.66</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>37.064</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>mock data set and get</h3>
+  <table id="suite_6" class="details">
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 2</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_6_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">configure mock server data - mock-data-test-302</td>
+      <td style="text-align:center;width:6em;">70.99 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_6_1_1">log-1</a>
+        <div id="popup_log_6_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_6_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: configure mock server data - mock-data-test-302</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter-Force-Covered</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 260
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;headers&#34;: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;token&#34;: &#34;mytoken&#34;}, &#34;id&#34;: &#34;mock-data-test-302&#34;, &#34;code&#34;: 302, &#34;body&#34;: {&#34;result&#34;: {&#34;totalCount&#34;: 0, &#34;apiGroups&#34;: []}, &#34;requestId&#34;: &#34;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#34;}, &#34;type&#34;: &#34;application/json&#34;, &#34;delaysecs&#34;: 10}
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:43:53 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 363
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;code&#39;: 200, &#39;content&#39;: None, &#39;content-type&#39;: &#39;application/json&#39;, &#39;data&#39;: {&#39;code&#39;: 302, &#39;content&#39;: {&#39;requestId&#39;: &#39;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#39;, &#39;result&#39;: {&#39;apiGroups&#39;: [], &#39;totalCount&#39;: 0}}, &#39;content-type&#39;: &#39;application/json&#39;, &#39;delaysecs&#39;: 10, &#39;headers&#39;: {&#39;Content-Type&#39;: &#39;application/json&#39;, &#39;token&#39;: &#39;mytoken&#39;}}, &#39;delaysecs&#39;: 0, &#39;error&#39;: None, &#39;headers&#39;: None, &#39;id&#39;: &#39;mock-data-test-302&#39;}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>363</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>70.99</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>68.482</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+    
+    
+    <tr id="record_6_2">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">获取Mock Data - mock-data-test-302</td>
+      <td style="text-align:center;width:6em;">10036.20 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_6_2_1">log-1</a>
+        <div id="popup_log_6_2_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_6_2_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: 获取Mock Data - mock-data-test-302</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          GET
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Getter</strong>: mock-data-test-302
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Getter-Remove</strong>: disable
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            302
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            FOUND
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:44:03 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>token</strong>: mytoken
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 90
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;requestId&#39;: &#39;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#39;, &#39;result&#39;: {&#39;apiGroups&#39;: [], &#39;totalCount&#39;: 0}}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>LazyString($c_mock_code)</td>
+                      <td>302</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>90</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>10036.2</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>33.423</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>mock data set and get</h3>
+  <table id="suite_7" class="details">
+    <tr>
+      <td>TOTAL: 1</td>
+      <td>SUCCESS: 1</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_7_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">configure mock server data - mock-data-test-302</td>
+      <td style="text-align:center;width:6em;">69.75 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_7_1_1">log-1</a>
+        <div id="popup_log_7_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_7_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: configure mock server data - mock-data-test-302</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter-Force-Covered</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 259
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;headers&#34;: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;token&#34;: &#34;mytoken&#34;}, &#34;id&#34;: &#34;mock-data-test-302&#34;, &#34;code&#34;: 200, &#34;body&#34;: {&#34;result&#34;: {&#34;totalCount&#34;: 0, &#34;apiGroups&#34;: []}, &#34;requestId&#34;: &#34;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#34;}, &#34;type&#34;: &#34;application/json&#34;, &#34;delaysecs&#34;: 0}
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:44:03 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 362
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;code&#39;: 200, &#39;content&#39;: None, &#39;content-type&#39;: &#39;application/json&#39;, &#39;data&#39;: {&#39;code&#39;: 200, &#39;content&#39;: {&#39;requestId&#39;: &#39;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#39;, &#39;result&#39;: {&#39;apiGroups&#39;: [], &#39;totalCount&#39;: 0}}, &#39;content-type&#39;: &#39;application/json&#39;, &#39;delaysecs&#39;: 0, &#39;headers&#39;: {&#39;Content-Type&#39;: &#39;application/json&#39;, &#39;token&#39;: &#39;mytoken&#39;}}, &#39;delaysecs&#39;: 0, &#39;error&#39;: None, &#39;headers&#39;: None, &#39;id&#39;: &#39;mock-data-test-302&#39;}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>362</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>69.75</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>67.562</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>mock set and get</h3>
+  <table id="suite_8" class="details">
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 2</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_8_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">configure mock server data-mock-data-test-NGorg</td>
+      <td style="text-align:center;width:6em;">73.07 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_8_1_1">log-1</a>
+        <div id="popup_log_8_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_8_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: configure mock server data-mock-data-test-NGorg</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver/request
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Setter</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Setter-Id</strong>: mock-data-test-NGorg
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Setter-Force-Covered</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 0
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver/request
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:44:03 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 2244
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;code&#39;: 200, &#39;error&#39;: None, &#39;id&#39;: &#39;mock-data-test-NGorg&#39;, &#39;request&#39;: {&#39;allow_redirects&#39;: True, &#39;auth&#39;: None, &#39;base_url&#39;: &#39;http://10.226.152.49/mockserver/request&#39;, &#39;cookies&#39;: {}, &#39;data&#39;: &#34;b&#39;&#39;&#34;, &#39;environ&#39;: &#34;{&#39;wsgi.errors&#39;: &lt;gunicorn.http.wsgi.WSGIErrorsWrapper object at 0x7f0e88a55c88&gt;, &#39;wsgi.version&#39;: (1, 0), &#39;wsgi.multithread&#39;: True, &#39;wsgi.multiprocess&#39;: False, &#39;wsgi.run_once&#39;: False, &#39;wsgi.file_wrapper&#39;: &lt;class &#39;gunicorn.http.wsgi.FileWrapper&#39;&gt;, &#39;SERVER_SOFTWARE&#39;: &#39;gunicorn/19.9.0&#39;, &#39;wsgi.input&#39;: &lt;gunicorn.http.body.Body object at 0x7f0e88a55630&gt;, &#39;gunicorn.socket&#39;: &lt;socket.socket fd=14, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=(&#39;10.226.152.49&#39;, 80), raddr=(&#39;10.226.143.199&#39;, 2123)&gt;, &#39;REQUEST_METHOD&#39;: &#39;POST&#39;, &#39;QUERY_STRING&#39;: &#39;&#39;, &#39;RAW_URI&#39;: &#39;/mockserver/request&#39;, &#39;SERVER_PROTOCOL&#39;: &#39;HTTP/1.1&#39;, &#39;HTTP_HOST&#39;: &#39;10.226.152.49&#39;, &#39;HTTP_USER_AGENT&#39;: &#39;python-requests/2.21.0&#39;, &#39;HTTP_ACCEPT_ENCODING&#39;: &#39;gzip, deflate&#39;, &#39;HTTP_ACCEPT&#39;: &#39;*/*&#39;, &#39;HTTP_CONNECTION&#39;: &#39;keep-alive&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER&#39;: &#39;enable&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_ID&#39;: &#39;mock-data-test-NGorg&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_FORCE_COVERED&#39;: &#39;enable&#39;, &#39;CONTENT_LENGTH&#39;: &#39;0&#39;, &#39;wsgi.url_scheme&#39;: &#39;http&#39;, &#39;REMOTE_ADDR&#39;: &#39;10.226.143.199&#39;, &#39;REMOTE_PORT&#39;: &#39;2123&#39;, &#39;SERVER_NAME&#39;: &#39;0.0.0.0&#39;, &#39;SERVER_PORT&#39;: &#39;80&#39;, &#39;PATH_INFO&#39;: &#39;/mockserver/request&#39;, &#39;SCRIPT_NAME&#39;: &#39;&#39;, &#39;werkzeug.request&#39;: &lt;Request &#39;http://10.226.152.49/mockserver/request&#39; [POST]&gt;}&#34;, &#39;files&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;form&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;full_path&#39;: &#39;/mockserver/request?&#39;, &#39;headers&#39;: {&#39;Accept&#39;: &#39;*/*&#39;, &#39;Accept-Encoding&#39;: &#39;gzip, deflate&#39;, &#39;Connection&#39;: &#39;keep-alive&#39;, &#39;Content-Length&#39;: &#39;0&#39;, &#39;Host&#39;: &#39;10.226.152.49&#39;, &#39;User-Agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Force-Covered&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Id&#39;: &#39;mock-data-test-NGorg&#39;}, &#39;hooks&#39;: None, &#39;host&#39;: &#39;10.226.152.49&#39;, &#39;host_url&#39;: &#39;http://10.226.152.49/&#39;, &#39;method&#39;: &#39;POST&#39;, &#39;params&#39;: &#34;b&#39;&#39;&#34;, &#39;path&#39;: &#39;/mockserver/request&#39;, &#39;proxies&#39;: None, &#39;remote_addr&#39;: &#39;10.226.143.199&#39;, &#39;scheme&#39;: &#39;http&#39;, &#39;url&#39;: &#39;http://10.226.152.49/mockserver/request&#39;, &#39;url_charset&#39;: &#39;utf-8&#39;, &#39;user_agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;verify&#39;: None}}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>2244</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>73.07</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>71.303</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+    
+    
+    <tr id="record_8_2">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">获取资源list</td>
+      <td style="text-align:center;width:6em;">32.93 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_8_2_1">log-1</a>
+        <div id="popup_log_8_2_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_8_2_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: 获取资源list</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver/request
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          GET
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Getter</strong>: mock-data-test-NGorg
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Getter-Remove</strong>: enable
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver/request
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:44:03 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 2180
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;allow_redirects&#39;: True, &#39;auth&#39;: None, &#39;base_url&#39;: &#39;http://10.226.152.49/mockserver/request&#39;, &#39;cookies&#39;: {}, &#39;data&#39;: &#34;b&#39;&#39;&#34;, &#39;environ&#39;: &#34;{&#39;wsgi.errors&#39;: &lt;gunicorn.http.wsgi.WSGIErrorsWrapper object at 0x7f0e88a55c88&gt;, &#39;wsgi.version&#39;: (1, 0), &#39;wsgi.multithread&#39;: True, &#39;wsgi.multiprocess&#39;: False, &#39;wsgi.run_once&#39;: False, &#39;wsgi.file_wrapper&#39;: &lt;class &#39;gunicorn.http.wsgi.FileWrapper&#39;&gt;, &#39;SERVER_SOFTWARE&#39;: &#39;gunicorn/19.9.0&#39;, &#39;wsgi.input&#39;: &lt;gunicorn.http.body.Body object at 0x7f0e88a55630&gt;, &#39;gunicorn.socket&#39;: &lt;socket.socket fd=14, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=(&#39;10.226.152.49&#39;, 80), raddr=(&#39;10.226.143.199&#39;, 2123)&gt;, &#39;REQUEST_METHOD&#39;: &#39;POST&#39;, &#39;QUERY_STRING&#39;: &#39;&#39;, &#39;RAW_URI&#39;: &#39;/mockserver/request&#39;, &#39;SERVER_PROTOCOL&#39;: &#39;HTTP/1.1&#39;, &#39;HTTP_HOST&#39;: &#39;10.226.152.49&#39;, &#39;HTTP_USER_AGENT&#39;: &#39;python-requests/2.21.0&#39;, &#39;HTTP_ACCEPT_ENCODING&#39;: &#39;gzip, deflate&#39;, &#39;HTTP_ACCEPT&#39;: &#39;*/*&#39;, &#39;HTTP_CONNECTION&#39;: &#39;keep-alive&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER&#39;: &#39;enable&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_ID&#39;: &#39;mock-data-test-NGorg&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_FORCE_COVERED&#39;: &#39;enable&#39;, &#39;CONTENT_LENGTH&#39;: &#39;0&#39;, &#39;wsgi.url_scheme&#39;: &#39;http&#39;, &#39;REMOTE_ADDR&#39;: &#39;10.226.143.199&#39;, &#39;REMOTE_PORT&#39;: &#39;2123&#39;, &#39;SERVER_NAME&#39;: &#39;0.0.0.0&#39;, &#39;SERVER_PORT&#39;: &#39;80&#39;, &#39;PATH_INFO&#39;: &#39;/mockserver/request&#39;, &#39;SCRIPT_NAME&#39;: &#39;&#39;, &#39;werkzeug.request&#39;: &lt;Request &#39;http://10.226.152.49/mockserver/request&#39; [POST]&gt;}&#34;, &#39;files&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;form&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;full_path&#39;: &#39;/mockserver/request?&#39;, &#39;headers&#39;: {&#39;Accept&#39;: &#39;*/*&#39;, &#39;Accept-Encoding&#39;: &#39;gzip, deflate&#39;, &#39;Connection&#39;: &#39;keep-alive&#39;, &#39;Content-Length&#39;: &#39;0&#39;, &#39;Host&#39;: &#39;10.226.152.49&#39;, &#39;User-Agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Force-Covered&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Id&#39;: &#39;mock-data-test-NGorg&#39;}, &#39;hooks&#39;: None, &#39;host&#39;: &#39;10.226.152.49&#39;, &#39;host_url&#39;: &#39;http://10.226.152.49/&#39;, &#39;method&#39;: &#39;POST&#39;, &#39;params&#39;: &#34;b&#39;&#39;&#34;, &#39;path&#39;: &#39;/mockserver/request&#39;, &#39;proxies&#39;: None, &#39;remote_addr&#39;: &#39;10.226.143.199&#39;, &#39;scheme&#39;: &#39;http&#39;, &#39;url&#39;: &#39;http://10.226.152.49/mockserver/request&#39;, &#39;url_charset&#39;: &#39;utf-8&#39;, &#39;user_agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;verify&#39;: None}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>2180</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>32.93</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>30.991</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>get resources</h3>
+  <table id="suite_9" class="details">
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 1</td>
+      <td>FAILED: 1</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_9_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">configure mock server data-1</td>
+      <td style="text-align:center;width:6em;">69.86 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_9_1_1">log-1</a>
+        <div id="popup_log_9_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_9_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: configure mock server data-1</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.152.49/mockserver
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Mock-Setter-Force-Covered</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 169
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;headers&#34;: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;token&#34;: &#34;mytoken&#34;}, &#34;id&#34;: 1, &#34;code&#34;: 200, &#34;body&#34;: &#34;your_mock_return_datas&#34;, &#34;type&#34;: &#34;application/json&#34;, &#34;delaysecs&#34;: 0}
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.152.49/mockserver
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Server</strong>: gunicorn/19.9.0
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:44:03 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 278
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;code&#39;: 200, &#39;content&#39;: None, &#39;content-type&#39;: &#39;application/json&#39;, &#39;data&#39;: {&#39;code&#39;: 200, &#39;content&#39;: &#39;your_mock_return_datas&#39;, &#39;content-type&#39;: &#39;application/json&#39;, &#39;delaysecs&#39;: 0, &#39;headers&#39;: {&#39;Content-Type&#39;: &#39;application/json&#39;, &#39;token&#39;: &#39;mytoken&#39;}}, &#39;delaysecs&#39;: 0, &#39;error&#39;: None, &#39;headers&#39;: None, &#39;id&#39;: 1}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>278</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>69.86</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>68.056</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+    
+    
+    <tr id="record_9_2">
+      <th class="failure" style="width:5em;">failure</th>
+      <td colspan="2">获取资源list</td>
+      <td style="text-align:center;width:6em;">69.48 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_9_2_1">log-1</a>
+        <div id="popup_log_9_2_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_9_2_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: 获取资源list</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://10.226.148.63:8000/v1/regions/cn-north-1/instances?pageNumber=1&pageSize=20&filters=[]
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          GET
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: api-autotest-framework/1.4.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>x-jdcloud-pin</strong>: amlhc2h1by1pdGUtMQ==
+                          </div>
+                          
+                          <div>
+                            <strong>x-jdcloud-date</strong>: 20191217T104403Z
+                          </div>
+                          
+                          <div>
+                            <strong>x-jdcloud-nonce</strong>: 2a39a9bd-6182-43d4-a95c-18c0dec1db34
+                          </div>
+                          
+                          <div>
+                            <strong>Authorization</strong>: JDCLOUD2-HMAC-SHA256 Credential=2AC2808D7CC475CF460218D039297035/20191217/cn-north-1/vm/jdcloud2_request, SignedHeaders=content-type;host;x-jdcloud-date;x-jdcloud-nonce;x-jdcloud-pin, Signature=1e0e1612056d4de38d0b95e9f8c7ac7106679cd534bd5675b95b07824249decd
+                          </div>
+                          
+                          <div>
+                            <strong>x-jdcloud-content-sha256</strong>: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+                          </div>
+                          
+                          <div>
+                            <strong>JDCLOUD2-HMAC-SHA256</strong>: JDCLOUD2-HMAC-SHA256
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            False
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://10.226.148.63:8000/v1/regions/cn-north-1/instances?pageNumber=1&pageSize=20&filters=[]
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            401
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            Unauthorized
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            utf-8
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Date</strong>: Tue, 17 Dec 2019 02:44:03 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json; charset=utf-8
+                            </div>
+                            
+                            <div>
+                              <strong>Transfer-Encoding</strong>: chunked
+                            </div>
+                            
+                            <div>
+                              <strong>Connection</strong>: keep-alive
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: jd-gateway/1.0.1
+                            </div>
+                            
+                            <div>
+                              <strong>x-jdcloud-request-id</strong>: bot41tv9npoeh5p1i76em0sqset80m30
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json; charset=utf-8
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;error&#39;: {&#39;message&#39;: &#39;sign result is not same [gw]&#39;, &#39;status&#39;: &#39;ACCESS_ERROR&#39;, &#39;code&#39;: 401}, &#39;requestId&#39;: &#39;bot41tv9npoeh5p1i76em0sqset80m30&#39;}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="failed">
+                      
+                        status_code
+                      </td>
+                      <td>equals</td>
+                      <td>LazyString($expected_status_code)</td>
+                      <td>401</td>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="failed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>401</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>135</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>69.48</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>66.12</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+          <a class="button" href="#popup_attachment_9_2">traceback</a>
+          <div id="popup_attachment_9_2" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_9_2">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File &#34;e:\workspace\sourcecode\python\api-autotest-framework\venv-httprunner2.1\lib\site-packages\httprunner\api.py&#34;, line 55, in test
+    test_runner.run_test(test_dict)
+httprunner.exceptions.ValidationFailure: 
+validate: status_code equals 200(int)	==&gt; fail
+401(int) equals 200(int)
+
+validate: LazyString($scode) equals 200(int)	==&gt; fail
+401(int) equals 200(int)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File &#34;e:\workspace\sourcecode\python\api-autotest-framework\venv-httprunner2.1\lib\site-packages\httprunner\api.py&#34;, line 57, in test
+    self.fail(str(ex))
+AssertionError: 
+validate: status_code equals 200(int)	==&gt; fail
+401(int) equals 200(int)
+
+validate: LazyString($scode) equals 200(int)	==&gt; fail
+401(int) equals 200(int)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+</body>

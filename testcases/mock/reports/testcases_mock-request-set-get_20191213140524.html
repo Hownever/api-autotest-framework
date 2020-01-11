@@ -1,0 +1,702 @@
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> - TestReport</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      color: #333;
+      margin: 0 auto;
+      width: 960px;
+    }
+    #summary {
+      width: 960px;
+      margin-bottom: 20px;
+    }
+    #summary th {
+      background-color: skyblue;
+      padding: 5px 12px;
+    }
+    #summary td {
+      background-color: lightblue;
+      text-align: center;
+      padding: 4px 8px;
+    }
+    .details {
+      width: 960px;
+      margin-bottom: 20px;
+    }
+    .details th {
+      background-color: skyblue;
+      padding: 5px 12px;
+    }
+    .details tr .passed {
+      background-color: lightgreen;
+    }
+    .details tr .failed {
+      background-color: red;
+    }
+    .details tr .unchecked {
+      background-color: gray;
+    }
+    .details td {
+      background-color: lightblue;
+      padding: 5px 12px;
+    }
+    .details .detail {
+      background-color: lightgrey;
+      font-size: smaller;
+      padding: 5px 10px;
+      line-height: 20px;
+      text-align: left;
+    }
+    .details .success {
+      background-color: greenyellow;
+    }
+    .details .error {
+      background-color: red;
+    }
+    .details .failure {
+      background-color: salmon;
+    }
+    .details .skipped {
+      background-color: gray;
+    }
+
+    .button {
+      font-size: 1em;
+      padding: 6px;
+      width: 4em;
+      text-align: center;
+      background-color: #06d85f;
+      border-radius: 20px/50px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+    }
+    a.button{
+      color: gray;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .button:hover {
+      background: #2cffbd;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      transition: opacity 500ms;
+      visibility: hidden;
+      opacity: 0;
+      line-height: 25px;
+    }
+    .overlay:target {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .popup {
+      margin: 70px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      width: 50%;
+      position: relative;
+      transition: all 3s ease-in-out;
+    }
+
+    .popup h2 {
+      margin-top: 0;
+      color: #333;
+      font-family: Tahoma, Arial, sans-serif;
+    }
+    .popup .close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      transition: all 200ms;
+      font-size: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #333;
+    }
+    .popup .close:hover {
+      color: #06d85f;
+    }
+    .popup .content {
+      max-height: 80%;
+      overflow: auto;
+      text-align: left;
+    }
+    .popup .separator {
+      color:royalblue
+    }
+
+    @media screen and (max-width: 700px) {
+      .box {
+        width: 70%;
+      }
+      .popup {
+        width: 70%;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <h1>Test Report: </h1>
+
+  <h2>Summary</h2>
+  <table id="summary">
+    <tr>
+      <th>START AT</th>
+      <td colspan="4">2019-12-13 14:05:24</td>
+    </tr>
+    <tr>
+      <th>DURATION</th>
+      <td colspan="4">0.781 seconds</td>
+    </tr>
+    <tr>
+      <th>PLATFORM</th>
+      <td>HttpRunner 2.1.2 </td>
+      <td>CPython 3.6.5 </td>
+      <td colspan="2">Windows-10-10.0.17763-SP0</td>
+    </tr>
+    <tr>
+      <th>STAT</th>
+      <th colspan="2">TESTCASES (success/fail)</th>
+      <th colspan="2">TESTSTEPS (success/fail/error/skip)</th>
+    </tr>
+    <tr>
+      <td>total (details) =></td>
+      <td colspan="2">1 (1/0)</td>
+      <td colspan="2">2 (2/0/0/0)</td>
+    </tr>
+  </table>
+
+  <h2>Details</h2>
+
+  
+  
+  <h3>mock set and get</h3>
+  <table id="suite_1" class="details">
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 2</td>
+      <td>FAILED: 0</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    
+    <tr id="record_1_1">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">configure mock server data-mock-data-test-oSThg</td>
+      <td style="text-align:center;width:6em;">46.87 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_1_1_1">log-1</a>
+        <div id="popup_log_1_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_1_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: configure mock server data-mock-data-test-oSThg</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1/mockserver/request
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Setter</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Setter-Id</strong>: mock-data-test-oSThg
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Setter-Force-Covered</strong>: enable
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 4165
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;headers&#34;: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;token&#34;: &#34;mytoken&#34;}, &#34;id&#34;: &#34;mock-data-test-oSThg&#34;, &#34;code&#34;: 200, &#34;body&#34;: {&#34;result&#34;: {&#34;totalCount&#34;: 669, &#34;apiGroups&#34;: [{&#34;apiGroupId&#34;: &#34;ag-wfyi5xdvyjby&#34;, &#34;groupName&#34;: &#34;APIGW_MONITOR_GROUP_NAME&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyi5xdvyjby.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: null, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962121046, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyi74ic7zg2&#34;, &#34;groupName&#34;: &#34;groupName1558962099019409&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyi74ic7zg2.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;NONE&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962099220, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyiydka20vy&#34;, &#34;groupName&#34;: &#34;groupName15589620770851552&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyiydka20vy.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962077208, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyiwl7dzl44&#34;, &#34;groupName&#34;: &#34;groupName15589620499702694&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyiwl7dzl44.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962050167, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyixekqmomy&#34;, &#34;groupName&#34;: &#34;groupName15589620360730371&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyixekqmomy.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962036213, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyifxgvek8j&#34;, &#34;groupName&#34;: &#34;groupName155896200862328&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyifxgvek8j.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962008831, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfybkb7n0utj&#34;, &#34;groupName&#34;: &#34;groupName15589614962608504&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfybkb7n0utj.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;NONE&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961496407, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyb2agzmubn&#34;, &#34;groupName&#34;: &#34;groupName15589614746484423&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyb2agzmubn.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961474802, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyb5xh61oj4&#34;, &#34;groupName&#34;: &#34;groupName15589614481232657&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyb5xh61oj4.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961448373, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfybrjbomcaj&#34;, &#34;groupName&#34;: &#34;groupName15589614348003814&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfybrjbomcaj.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961434909, &#34;updateTime&#34;: null}]}, &#34;requestId&#34;: &#34;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#34;}, &#34;type&#34;: &#34;application/json&#34;, &#34;delaysecs&#34;: 20}
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1/mockserver/request
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 7136
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.15.4 Python/3.6.5
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 13 Dec 2019 06:05:24 GMT
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;code&#39;: 200, &#39;error&#39;: None, &#39;id&#39;: &#39;mock-data-test-oSThg&#39;, &#39;request&#39;: {&#39;allow_redirects&#39;: True, &#39;auth&#39;: None, &#39;base_url&#39;: &#39;http://127.0.0.1/mockserver/request&#39;, &#39;cookies&#39;: {}, &#39;data&#39;: &#39;b\&#39;{&#34;headers&#34;: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;token&#34;: &#34;mytoken&#34;}, &#34;id&#34;: &#34;mock-data-test-oSThg&#34;, &#34;code&#34;: 200, &#34;body&#34;: {&#34;result&#34;: {&#34;totalCount&#34;: 669, &#34;apiGroups&#34;: [{&#34;apiGroupId&#34;: &#34;ag-wfyi5xdvyjby&#34;, &#34;groupName&#34;: &#34;APIGW_MONITOR_GROUP_NAME&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyi5xdvyjby.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: null, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962121046, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyi74ic7zg2&#34;, &#34;groupName&#34;: &#34;groupName1558962099019409&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyi74ic7zg2.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;NONE&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962099220, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyiydka20vy&#34;, &#34;groupName&#34;: &#34;groupName15589620770851552&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyiydka20vy.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962077208, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyiwl7dzl44&#34;, &#34;groupName&#34;: &#34;groupName15589620499702694&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyiwl7dzl44.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962050167, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyixekqmomy&#34;, &#34;groupName&#34;: &#34;groupName15589620360730371&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyixekqmomy.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962036213, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyifxgvek8j&#34;, &#34;groupName&#34;: &#34;groupName155896200862328&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyifxgvek8j.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962008831, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfybkb7n0utj&#34;, &#34;groupName&#34;: &#34;groupName15589614962608504&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfybkb7n0utj.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;NONE&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961496407, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyb2agzmubn&#34;, &#34;groupName&#34;: &#34;groupName15589614746484423&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyb2agzmubn.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961474802, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyb5xh61oj4&#34;, &#34;groupName&#34;: &#34;groupName15589614481232657&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyb5xh61oj4.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961448373, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfybrjbomcaj&#34;, &#34;groupName&#34;: &#34;groupName15589614348003814&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfybrjbomcaj.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961434909, &#34;updateTime&#34;: null}]}, &#34;requestId&#34;: &#34;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#34;}, &#34;type&#34;: &#34;application/json&#34;, &#34;delaysecs&#34;: 20}\&#39;&#39;, &#39;environ&#39;: &#34;{&#39;wsgi.version&#39;: (1, 0), &#39;wsgi.url_scheme&#39;: &#39;http&#39;, &#39;wsgi.input&#39;: &lt;_io.BufferedReader name=1664&gt;, &#39;wsgi.errors&#39;: &lt;_io.TextIOWrapper name=&#39;&lt;stderr&gt;&#39; mode=&#39;w&#39; encoding=&#39;utf-8&#39;&gt;, &#39;wsgi.multithread&#39;: True, &#39;wsgi.multiprocess&#39;: False, &#39;wsgi.run_once&#39;: False, &#39;werkzeug.server.shutdown&#39;: &lt;function WSGIRequestHandler.make_environ.&lt;locals&gt;.shutdown_server at 0x0000018A893E16A8&gt;, &#39;SERVER_SOFTWARE&#39;: &#39;Werkzeug/0.15.4&#39;, &#39;REQUEST_METHOD&#39;: &#39;POST&#39;, &#39;SCRIPT_NAME&#39;: &#39;&#39;, &#39;PATH_INFO&#39;: &#39;/mockserver/request&#39;, &#39;QUERY_STRING&#39;: &#39;&#39;, &#39;REQUEST_URI&#39;: &#39;/mockserver/request&#39;, &#39;RAW_URI&#39;: &#39;/mockserver/request&#39;, &#39;REMOTE_ADDR&#39;: &#39;127.0.0.1&#39;, &#39;REMOTE_PORT&#39;: 56614, &#39;SERVER_NAME&#39;: &#39;0.0.0.0&#39;, &#39;SERVER_PORT&#39;: &#39;80&#39;, &#39;SERVER_PROTOCOL&#39;: &#39;HTTP/1.1&#39;, &#39;HTTP_HOST&#39;: &#39;127.0.0.1&#39;, &#39;HTTP_USER_AGENT&#39;: &#39;python-requests/2.21.0&#39;, &#39;HTTP_ACCEPT_ENCODING&#39;: &#39;gzip, deflate&#39;, &#39;HTTP_ACCEPT&#39;: &#39;*/*&#39;, &#39;HTTP_CONNECTION&#39;: &#39;keep-alive&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER&#39;: &#39;enable&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_ID&#39;: &#39;mock-data-test-oSThg&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_FORCE_COVERED&#39;: &#39;enable&#39;, &#39;CONTENT_LENGTH&#39;: &#39;4165&#39;, &#39;CONTENT_TYPE&#39;: &#39;application/json&#39;, &#39;werkzeug.request&#39;: &lt;Request &#39;http://127.0.0.1/mockserver/request&#39; [POST]&gt;}&#34;, &#39;files&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;form&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;full_path&#39;: &#39;/mockserver/request?&#39;, &#39;headers&#39;: {&#39;Accept&#39;: &#39;*/*&#39;, &#39;Accept-Encoding&#39;: &#39;gzip, deflate&#39;, &#39;Connection&#39;: &#39;keep-alive&#39;, &#39;Content-Length&#39;: &#39;4165&#39;, &#39;Content-Type&#39;: &#39;application/json&#39;, &#39;Host&#39;: &#39;127.0.0.1&#39;, &#39;User-Agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Force-Covered&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Id&#39;: &#39;mock-data-test-oSThg&#39;}, &#39;hooks&#39;: None, &#39;host&#39;: &#39;127.0.0.1&#39;, &#39;host_url&#39;: &#39;http://127.0.0.1/&#39;, &#39;method&#39;: &#39;POST&#39;, &#39;params&#39;: &#34;b&#39;&#39;&#34;, &#39;path&#39;: &#39;/mockserver/request&#39;, &#39;proxies&#39;: None, &#39;remote_addr&#39;: &#39;127.0.0.1&#39;, &#39;scheme&#39;: &#39;http&#39;, &#39;url&#39;: &#39;http://127.0.0.1/mockserver/request&#39;, &#39;url_charset&#39;: &#39;utf-8&#39;, &#39;user_agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;verify&#39;: None}}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>7136</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>46.87</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>39.278</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+    
+    
+    <tr id="record_1_2">
+      <th class="success" style="width:5em;">success</th>
+      <td colspan="2">获取资源list</td>
+      <td style="text-align:center;width:6em;">17.95 ms</td>
+      <td class="detail">
+
+        
+        
+        <a class="button" href="#popup_log_1_2_1">log-1</a>
+        <div id="popup_log_1_2_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_1_2_1">&times;</a>
+
+            <div class="content">
+              <h3>Name: 获取资源list</h3>
+
+              
+
+              
+
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1/mockserver/request
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          GET
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.21.0
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Getter</strong>: mock-data-test-oSThg
+                          </div>
+                          
+                          <div>
+                            <strong>X-Jdcloud-Test-Configs-Request-Getter-Remove</strong>: enable
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1/mockserver/request
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 6982
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.15.4 Python/3.6.5
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 13 Dec 2019 06:05:24 GMT
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>content_type</th>
+                        <td>
+                          
+                            application/json
+                          
+                        </td>
+                      </tr>
+                    
+                      <tr>
+                        <th>json</th>
+                        <td>
+                          
+                              <pre>{&#39;allow_redirects&#39;: True, &#39;auth&#39;: None, &#39;base_url&#39;: &#39;http://127.0.0.1/mockserver/request&#39;, &#39;cookies&#39;: {}, &#39;data&#39;: &#39;b\&#39;{&#34;headers&#34;: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;token&#34;: &#34;mytoken&#34;}, &#34;id&#34;: &#34;mock-data-test-oSThg&#34;, &#34;code&#34;: 200, &#34;body&#34;: {&#34;result&#34;: {&#34;totalCount&#34;: 669, &#34;apiGroups&#34;: [{&#34;apiGroupId&#34;: &#34;ag-wfyi5xdvyjby&#34;, &#34;groupName&#34;: &#34;APIGW_MONITOR_GROUP_NAME&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyi5xdvyjby.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: null, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962121046, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyi74ic7zg2&#34;, &#34;groupName&#34;: &#34;groupName1558962099019409&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyi74ic7zg2.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;NONE&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962099220, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyiydka20vy&#34;, &#34;groupName&#34;: &#34;groupName15589620770851552&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyiydka20vy.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962077208, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyiwl7dzl44&#34;, &#34;groupName&#34;: &#34;groupName15589620499702694&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyiwl7dzl44.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962050167, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyixekqmomy&#34;, &#34;groupName&#34;: &#34;groupName15589620360730371&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyixekqmomy.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962036213, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyifxgvek8j&#34;, &#34;groupName&#34;: &#34;groupName155896200862328&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyifxgvek8j.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558962008831, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfybkb7n0utj&#34;, &#34;groupName&#34;: &#34;groupName15589614962608504&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfybkb7n0utj.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;NONE&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961496407, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyb2agzmubn&#34;, &#34;groupName&#34;: &#34;groupName15589614746484423&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyb2agzmubn.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961474802, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfyb5xh61oj4&#34;, &#34;groupName&#34;: &#34;groupName15589614481232657&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfyb5xh61oj4.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961448373, &#34;updateTime&#34;: null}, {&#34;apiGroupId&#34;: &#34;ag-wfybrjbomcaj&#34;, &#34;groupName&#34;: &#34;groupName15589614348003814&#34;, &#34;description&#34;: &#34;description&#34;, &#34;prefix&#34;: &#34;todo/api/v1&#34;, &#34;domain&#34;: &#34;wfybrjbomcaj.cn-north-1.jdcloud-api.net&#34;, &#34;authType&#34;: &#34;JD_CLOUD&#34;, &#34;keyCheck&#34;: &#34;CHECK_EXIST&#34;, &#34;version&#34;: &#34;0.0.1&#34;, &#34;revision&#34;: &#34;0.0.1&#34;, &#34;revisionNote&#34;: null, &#34;environment&#34;: &#34;online&#34;, &#34;groupStatus&#34;: 1, &#34;createTime&#34;: 1558961434909, &#34;updateTime&#34;: null}]}, &#34;requestId&#34;: &#34;bjmv2fpcodnb3adquieqrtnaqsv50wnq&#34;}, &#34;type&#34;: &#34;application/json&#34;, &#34;delaysecs&#34;: 20}\&#39;&#39;, &#39;environ&#39;: &#34;{&#39;wsgi.version&#39;: (1, 0), &#39;wsgi.url_scheme&#39;: &#39;http&#39;, &#39;wsgi.input&#39;: &lt;_io.BufferedReader name=1664&gt;, &#39;wsgi.errors&#39;: &lt;_io.TextIOWrapper name=&#39;&lt;stderr&gt;&#39; mode=&#39;w&#39; encoding=&#39;utf-8&#39;&gt;, &#39;wsgi.multithread&#39;: True, &#39;wsgi.multiprocess&#39;: False, &#39;wsgi.run_once&#39;: False, &#39;werkzeug.server.shutdown&#39;: &lt;function WSGIRequestHandler.make_environ.&lt;locals&gt;.shutdown_server at 0x0000018A893E16A8&gt;, &#39;SERVER_SOFTWARE&#39;: &#39;Werkzeug/0.15.4&#39;, &#39;REQUEST_METHOD&#39;: &#39;POST&#39;, &#39;SCRIPT_NAME&#39;: &#39;&#39;, &#39;PATH_INFO&#39;: &#39;/mockserver/request&#39;, &#39;QUERY_STRING&#39;: &#39;&#39;, &#39;REQUEST_URI&#39;: &#39;/mockserver/request&#39;, &#39;RAW_URI&#39;: &#39;/mockserver/request&#39;, &#39;REMOTE_ADDR&#39;: &#39;127.0.0.1&#39;, &#39;REMOTE_PORT&#39;: 56614, &#39;SERVER_NAME&#39;: &#39;0.0.0.0&#39;, &#39;SERVER_PORT&#39;: &#39;80&#39;, &#39;SERVER_PROTOCOL&#39;: &#39;HTTP/1.1&#39;, &#39;HTTP_HOST&#39;: &#39;127.0.0.1&#39;, &#39;HTTP_USER_AGENT&#39;: &#39;python-requests/2.21.0&#39;, &#39;HTTP_ACCEPT_ENCODING&#39;: &#39;gzip, deflate&#39;, &#39;HTTP_ACCEPT&#39;: &#39;*/*&#39;, &#39;HTTP_CONNECTION&#39;: &#39;keep-alive&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER&#39;: &#39;enable&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_ID&#39;: &#39;mock-data-test-oSThg&#39;, &#39;HTTP_X_JDCLOUD_TEST_CONFIGS_REQUEST_SETTER_FORCE_COVERED&#39;: &#39;enable&#39;, &#39;CONTENT_LENGTH&#39;: &#39;4165&#39;, &#39;CONTENT_TYPE&#39;: &#39;application/json&#39;, &#39;werkzeug.request&#39;: &lt;Request &#39;http://127.0.0.1/mockserver/request&#39; [POST]&gt;}&#34;, &#39;files&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;form&#39;: &#39;ImmutableMultiDict([])&#39;, &#39;full_path&#39;: &#39;/mockserver/request?&#39;, &#39;headers&#39;: {&#39;Accept&#39;: &#39;*/*&#39;, &#39;Accept-Encoding&#39;: &#39;gzip, deflate&#39;, &#39;Connection&#39;: &#39;keep-alive&#39;, &#39;Content-Length&#39;: &#39;4165&#39;, &#39;Content-Type&#39;: &#39;application/json&#39;, &#39;Host&#39;: &#39;127.0.0.1&#39;, &#39;User-Agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Force-Covered&#39;: &#39;enable&#39;, &#39;X-Jdcloud-Test-Configs-Request-Setter-Id&#39;: &#39;mock-data-test-oSThg&#39;}, &#39;hooks&#39;: None, &#39;host&#39;: &#39;127.0.0.1&#39;, &#39;host_url&#39;: &#39;http://127.0.0.1/&#39;, &#39;method&#39;: &#39;POST&#39;, &#39;params&#39;: &#34;b&#39;&#39;&#34;, &#39;path&#39;: &#39;/mockserver/request&#39;, &#39;proxies&#39;: None, &#39;remote_addr&#39;: &#39;127.0.0.1&#39;, &#39;scheme&#39;: &#39;http&#39;, &#39;url&#39;: &#39;http://127.0.0.1/mockserver/request&#39;, &#39;url_charset&#39;: &#39;utf-8&#39;, &#39;user_agent&#39;: &#39;python-requests/2.21.0&#39;, &#39;verify&#39;: None}</pre>
+                          
+                        </td>
+                      </tr>
+                    
+                  </table>
+              </div>
+              
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="passed">
+                      
+                        LazyString($scode)
+                      </td>
+                      <td>equals</td>
+                      <td>200</td>
+                      <td>200</td>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>6982</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>17.95</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>16.125</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        
+
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+</body>

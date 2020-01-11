@@ -1,0 +1,36 @@
+testcases:
+    IP来源维度：主账号和子账号-不同key-IP白名单开启-配置ip白名单非本机-网关禁止访问后端:
+        testcase:  api/ipprotect-opened-deny.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {"userpin" : "huangyichun0018", "keytype" : "CompanySelfKey", "AK" : "6215839D85DE2B6D348F9806F210CFAF", "SK" : "278CC7371F602C8965B70C9E76B98E32"}
+
+                # 控制台用户- 传x-jdcloud-user-ip
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "huangyichun0018",
+                        "x-jdcloud-user-ip" : "11.226.132.133",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 传x-jdcloud-user-ip=
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin",
+                    "AK" : "6996C51A54B8D05CB0A5A924F9A78629",
+                    "SK" : "14B63D66B94B81D25F8819244CE44E97",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "huangyichun0018",
+                        "x-jdcloud-user-ip" : "11.226.132.133",
+                        }
+                  }
+            ipaddress:
+                - 10.226.132.139

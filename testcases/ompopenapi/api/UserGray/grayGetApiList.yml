@@ -1,0 +1,27 @@
+name: 查询接口灰度列表
+description: 查询接口灰度列表
+operationId: get-basic-api-gray-list
+
+variables:
+    host: ${ENV(ENV_OPENAPI_MANAGE_HOST)}
+#    product: vm
+#    apiVersion: v1
+#    regionId: cn-north-1
+#    openapi_yaml: nofile
+#    expected_status_code: 200
+#    AK: xxx
+#    SK: xxx
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-admin-token: 5d77902ed3f64e3fb205b2cda8797529
+    serviceLine: XXXserviceLine
+
+request:
+    url: $host/hmap/basic-api-gray-list/key/$serviceLine
+    method: GET
+    headers: $header
+
+#setup_hooks:
+#    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

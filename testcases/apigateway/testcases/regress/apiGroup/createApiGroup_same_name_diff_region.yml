@@ -1,0 +1,81 @@
+- config:
+    name: 不同region下创建同名分组，创建成功
+    variables:
+        serviceLine_apim: apigateway
+        regionId_apim_1: cn-north-1
+        regionId_apim_2: cn-south-1
+        groupName: JIASHUO_SAME_GROUPNAME_DIFF_REGION
+        authType: jd_cloud
+        filters1: groupName
+        filters1values: JIASHUO_SAME_GROUPNAME_DIFF_REGION
+    verify: False
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_2
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 创建分组成功，分组名：$groupName
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_1
+        groupName_cag: $groupName
+        description_cag: 不同region下创建同名分组，创建成功
+        authType_cag: $authType
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+
+- test:
+    name: 不同region下创建同名分组，分组名：$groupName，创建成功
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_2
+        groupName_cag: $groupName
+        description_cag: 不同region下创建同名分组，创建成功
+        authType_cag: $authType
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_2
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values

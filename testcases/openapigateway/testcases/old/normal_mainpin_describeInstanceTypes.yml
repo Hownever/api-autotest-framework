@@ -1,0 +1,31 @@
+- config:
+    name: normal_mainpin_describeInstanceTypes.yml
+    variables:
+        - regionId: ${ENV(regionId)}
+        - exist_main_pin: ${ENV(exist_main_pin)}
+        - openapiGwUrl: ${ENV(openapiGwUrl_vm_external)}
+        - domain: ${ENV(domain)}
+        - access_key_normal: ${ENV(access_key_normal_main)}
+        - secret_key_normal: ${ENV(secret_key_normal_main)}
+
+- test:
+    name: 普通用户aksk，传存在的pin，调用外部接口describeInstanceTypes，网关报错do not use illegal header
+    request:
+        url: /v1/regions/$regionId/instanceTypes
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $exist_main_pin
+        params: ~
+    setup_hooks:
+        - ${update_JD_headers($request, $openapiGwUrl, None, vm, $access_key_normal, $secret_key_normal, $regionId)}
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+        - error_message: content.error.message
+        - error_status: content.error.status
+    validate:
+        - eq: [$scode, 403]
+        - eq: [$error_status, HTTP_FORBIDDEN]
+        - eq: [$error_message, "do not use illegal header [gw]"]
+        - len_eq: [$requestId, 32]

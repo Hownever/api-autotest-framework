@@ -1,0 +1,28 @@
+- config:
+    name: 调用convertImage接口
+    base_url: $base_url
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+    verify: False
+
+- test:
+    name: ${get_value_from_userinfo($userinfo, info)}调用convertImage接口，$result
+    api: api/convertImage.yml
+    variables:
+        header: ${get_value_from_userinfo($userinfo, header)}
+        AK: ${get_value_from_userinfo($userinfo, AK)}
+        SK: ${get_value_from_userinfo($userinfo, SK)}
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+        - error_message: content.error.message
+        - error_status: content.error.status
+    validate:
+        - eq: [$scode, 403]
+        - eq: [$error_status, HTTP_FORBIDDEN]
+        - eq: [$error_message, "this user is not allowed [gw]"]
+        - len_eq: [$requestId, 32]

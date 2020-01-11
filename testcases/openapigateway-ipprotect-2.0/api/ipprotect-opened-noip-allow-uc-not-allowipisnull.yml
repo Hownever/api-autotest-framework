@@ -1,0 +1,163 @@
+- config:
+    # 测试用例名称
+    name: 查询IP保护地址
+    # config中request中的参数是对当前yaml文件中的所有test共用的
+    request:
+         base_url: ${ENV(ENV_BASE_URL_GW_INTER)}
+         regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+
+    variables:
+        # *定义API对应的业务线名称，必须与yaml对应，必须项
+        - product: ${ENV(ENV_PRODUCT)}
+        # *定义API的版本，必须项
+        - apiVersion: ${ENV(ENV_VERSION)}
+        # 接口定义的swagger项目地址
+        - openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+
+
+    # setup_hooks: 在整个用例开始执行前触发 hook 函数，主要用于准备工作。
+    setup_hooks:
+        # - ${hook_print("user： user")}
+
+    # teardown_hooks: 在整个用例结束执行后触发 hook 函数，主要用于测试后的清理工作。
+    teardown_hooks:
+        # - ${hook_print("teardown_hooks for config")}
+
+- test:
+    # 测试步骤名称
+    name:  关闭IP保护-${get_user_pin($userinfos)}
+
+    # request中的key不区分大小写
+    request:
+        url:  ${ENV(ENV_BASE_URL_UC)}/v1/user/ipProtect:close
+        method: POST
+        headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${get_user_pin($userinfos)}
+        json:
+            pin: ${get_user_account_main($userinfos)}
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        #- request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    # 测试步骤名称
+    name:  查询IP保护地址并确认用户ip保护地址为关闭状态-${get_user_pin($userinfos)}
+
+    # request中的key不区分大小写
+    request:
+        url:  ${ENV(ENV_BASE_URL_UC_APIM)}/gateway/queryInfo?keyword=huangyichun0018&type=5
+        method: GET
+        headers:
+            Content-Type: application/json;charset=UTF-8
+            token: ${ENV(UC_TOKEN)}
+        params:
+            pin: ${get_user_account_main($userinfos)}
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        #- request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    validate:
+        - eq: ["status_code", 200]
+        # 保证用户未配置IP白名单
+        - eq: [content.data.openIpProtect, False]
+
+- test:
+    # 测试步骤名称
+    name:  开启IP保护并设置用户ip保护地址为空-${get_user_pin($userinfos)}
+
+    # request中的key不区分大小写
+    request:
+        url:  ${ENV(ENV_BASE_URL_UC)}/v1/user/ipProtect:open
+        method: POST
+        headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${get_user_pin($userinfos)}
+        json:
+            pin: ${get_user_account_main($userinfos)}
+            ipProtectAddress: []
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        #- request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    validate:
+        # 如果配置IP地址为空，那么UC必须返回错误，需要的话，可以限制必须返回特定信息内容的错误，目前不要求
+        - ne: ["status_code", 200]
+
+- test:
+    # 测试步骤名称
+    name:  查询IP保护地址并确认用户ip保护地址为空-${get_user_pin($userinfos)}
+
+    # request中的key不区分大小写
+    request:
+        url:  ${ENV(ENV_BASE_URL_UC_APIM)}/gateway/queryInfo
+        method: GET
+        headers:
+            Content-Type: application/json;charset=UTF-8
+            token: ${ENV(UC_TOKEN)}
+        params:
+            keyword: ${get_user_account_main($userinfos)}
+            type: 5
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        #- request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    validate:
+        - eq: ["status_code", 200]
+        # 保证用户未配置IP白名单
+        - len_ge: [content.data.ipProtectAddress, 0]
+
+- test:
+    # 测试步骤名称
+    name:  等待0s-内部网关允许调用-${get_user_keytype($userinfos)}-${get_user_pin($userinfos)}
+
+    skipIf: ${skip_inter_gw($userinfos)}
+    # request中的key不区分大小写
+    request:
+        url: ${ENV(ENV_BASE_URL_GW_INTER)}/v1/regions/cn-north-1/instanceTypes
+        method: GET
+        headers: ${get_user_header($userinfos)}
+        json:
+            filters:
+                - {name: "az", values: ["cn-north-1b"], operator: "eq"}
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - AK: ${get_user_ak($userinfos)}
+        - SK: ${get_user_sk($userinfos)}
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    # 测试步骤名称
+    name:  等待0s-外部网关允许调用-${get_user_keytype($userinfos)}-${get_user_pin($userinfos)}
+    skipIf: ${skip_outer_gw($userinfos)}
+
+    # request中的key不区分大小写
+    request:
+        url: ${ENV(ENV_BASE_URL_GW_OUTER)}/v1/regions/cn-north-1/instanceTypes
+        method: GET
+        headers: ${get_user_header($userinfos)}
+        json:
+            filters:
+                - {name: "az", values: ["cn-north-1b"], operator: "eq"}
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - AK: ${get_user_ak($userinfos)}
+        - SK: ${get_user_sk($userinfos)}
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+
+    validate:
+        - eq: ["status_code", 200]

@@ -1,0 +1,42 @@
+name: mock server set value
+description: |
+    设置mock server保存当前的请求（request）内容，用于后续通过id来获取，确认转发到mock server 的request的正确性等方面，
+    常用方式比如请求转换时，确认网关转换的结果是否正确，确认网关转换的request给后端的内容
+
+variables:
+    mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+    # 值必须为enable，否则mock server不会存储
+    setter: enable
+    # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+    force_covered: enable
+
+    mock_header:  {
+            "Content-Type": application/json,
+            "token": mytoken
+        }
+
+    # mock存储的id，使用时的id
+    mock_id: you_mock_data_id
+    # mock返回结果时的http status code
+    mock_code: your_mocker_return_code
+    # mock返回结果的内容
+    mock_data: your_mock_return_datas
+    # mock值的http协议中的数据类型
+    mock_type: application/json
+
+    expected_status_code: 200
+
+request:
+    url: $mock_host/mockserver/request
+    method: POST
+    headers:
+        # X-Jdcloud-Test-Configs-Mock-Setter
+        X-Jdcloud-Test-Configs-Request-Setter: $setter
+        X-Jdcloud-Test-Configs-Request-Setter-Id: $mock_id
+        X-Jdcloud-Test-Configs-Request-Setter-Force-Covered: $force_covered
+
+setup_hooks:
+    # - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    - ${hook_print("teardown_hooks for config")
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

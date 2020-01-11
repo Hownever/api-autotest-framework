@@ -1,0 +1,48 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId/revision/$revision/adminApis/$apiId_head_task
+    method: PUT
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        api:
+            apiId: $apiId_head_task
+            apiGroupId: $apiGroupId
+            action: HEAD
+            apiName: head_task
+            description: head_task
+            path: "/tasks/getHead/{taskid}"
+            matchType: absolute
+            reqParams:
+              - defaultValue: taskid
+                description: taskid
+                isRequired: true
+                name: taskid
+                paramType: Int
+                paramLocation: path
+              - defaultValue: Authorization
+                description: Authorization
+                isRequired: true
+                name: Author_test
+                paramType: String
+                paramLocation: head
+            reqBody: ~
+            resBody: ~
+            reqBodyType: 1
+            resBodyType: 1
+            backServiceType: $backServiceType
+            backServicePath: $backServicePath
+            backServiceId: $backServiceId
+            backServiceName: $backServiceName
+            backUrl: $backUrl
+            backServiceConfig: $backServiceConfig
+            backServiceVersion: $backServiceVersion
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - apiId_head_task: content.result.apiId
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

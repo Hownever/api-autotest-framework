@@ -1,0 +1,44 @@
+- config:
+    name: 创建分组-成功
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        groupName: ${ENV(ENV_GROUP_NAME)}
+    verify: False
+    output:
+        - apiGroupId
+        - revision
+
+- test:
+    name: 创建分组前，删除旧数据
+    testcase: testcases/monitor/prepare_for_test.yml
+    variables:
+        groupName: $groupName
+
+- test:
+    name: 创建分组
+    api: api/monitor/createApiGroup.yml
+    variables:
+        groupName: $groupName
+        description: description
+        prefix: todo/api/v1
+        keyCheck: check_exist
+        authType: $authType
+    extract:
+        - apiGroupId: content.result.apiGroupId
+        - revision: content.result.revision
+        - requestId: content.requestId
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId, 15]
+        - eq: [$revision, 0.0.1]
+        - contains: [$apiGroupId, ag-]
+    output:
+        - apiGroupId

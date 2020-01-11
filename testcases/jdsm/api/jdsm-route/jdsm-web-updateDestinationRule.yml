@@ -1,0 +1,38 @@
+name: 根据云翼服务树中应用名称配置服务网格的路由配置项的逻辑子集-$product-$env-$host
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: jdmesh-reviews-test
+    env: pre
+
+    subsets: []
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/openApi/jdmesh/updateDestinationRule
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    # {"params":{"appId":"jdmesh-reviews-test","env":"pre","destinationRuleSpec":{"appId":"jdmesh-reviews-test","subsets":[]}}}
+    # {"params":{"appName":"jdmesh-productpage-test","env":"pre","destinationRuleSpec":{"appName":"jdmesh-productpage-test","subsets":[{"labels":{"meshVersion":"product"},"subsetId":"product"},{"labels":{"meshVersion":"gray"},"subsetId":"gray"},{"labels":{"region":"az1"},"subsetId":"az1"},{"labels":{"meshTestHealthCheck":"fail"},"subsetId":"healthcheckfailed"},{"labels":{"region":"az2"},"subsetId":"az2"}]}}}
+    json:
+        params:
+            appName: $product
+            env: $env
+
+            destinationRuleSpec:
+                appName: $product
+                subsets: $subsets
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+validate:
+    - eq: ["status_code", $expected_status_code]

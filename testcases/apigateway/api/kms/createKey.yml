@@ -1,0 +1,34 @@
+name: 创建key
+description: 创建key
+operationId: createKey
+
+variables:
+#    url
+    host_ck: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_ck: ${ENV(ENV_API_VERSION)}
+    regionId_ck: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_ck:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    keyName_ck: keyName
+    keyDesc_ck: keyDesc
+#    hooks
+    serviceLine_ck: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_ck: nofile
+    openApiAk_ck: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_ck: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_ck: v1
+
+request:
+    url: $host_ck/$apiVer_ck/regions/cn-north-1/kms
+    method: POST
+    headers: $header_ck
+    json:
+        keyName: $keyName_ck
+        keyDesc: $keyDesc_ck
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_ck, $openApiSk_ck, $serviceLine_ck, $apiVersion_ck, $openapiYaml_ck, cn-north-1)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

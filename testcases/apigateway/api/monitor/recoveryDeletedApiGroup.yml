@@ -1,0 +1,19 @@
+variables:
+    api_ver: $api_ver
+    regionId: $regionId
+    pin: $pin
+    apiGroupId: $apiGroupId
+    AK: $AK
+    SK: $SK
+    apiVersion: $apiVersion
+    openapi_yaml: $openapi_yaml
+request:
+    url: /$api_ver/regions/$regionId/deletedApiGroups/$apiGroupId:recovery
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, apigateway, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

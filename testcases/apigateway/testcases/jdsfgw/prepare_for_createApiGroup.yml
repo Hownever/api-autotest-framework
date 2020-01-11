@@ -1,0 +1,68 @@
+- config:
+    name: 创建分组前，删除旧分组
+    variables:
+    #    path
+        regionId_apim_pcag: AAA
+    #    json
+        filters1_pcag: groupName
+        filters1values_pcag: AAA
+        serviceLine_apim_pcag: ${ENV(ENV_SERVICELINE_APIM)}
+    verify: False
+
+- test:
+    name: 删除旧数据,查询分组，获取分组ID
+    api: api/apiGroup/describeApiGroups.yml
+    variables:
+        regionId_descags: $regionId_apim_pcag
+        filters1_descags: $filters1_pcag
+        filters1values_descags: $filters1values_pcag
+        serviceLine_descags: $serviceLine_apim_pcag
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - apiGroups_descags: content.result.apiGroups
+        - totalCount_descags: content.result.totalCount
+    output:
+        - apiGroups_descags
+        - totalCount_descags
+
+- test:
+    name: 如果分组已创建，下线online
+    skipIf: ${validate_skip($totalCount_descags, 0, eq)}
+    api: api/Deployment/offline.yml
+    variables:
+        regionId_o: $regionId_apim_pcag
+        deploymentId_o: ${get_value_from_struct($apiGroups_descags, apiGroupId, 0)}-online
+        apiGroupId_o: ${get_value_from_struct($apiGroups_descags, apiGroupId, 0)}
+        serviceLine_o: $serviceLine_apim_pcag
+
+- test:
+    name: 如果分组已创建，下线preview
+    skipIf: ${validate_skip($totalCount_descags, 0, eq)}
+    api: api/Deployment/offline.yml
+    variables:
+        regionId_o: $regionId_apim_pcag
+        deploymentId_o: ${get_value_from_struct($apiGroups_descags, apiGroupId, 0)}-preview
+        apiGroupId_o: ${get_value_from_struct($apiGroups_descags, apiGroupId, 0)}
+        serviceLine_o: $serviceLine_apim_pcag
+
+- test:
+    name: 如果分组已创建，下线test
+    skipIf: ${validate_skip($totalCount_descags, 0, eq)}
+    api: api/Deployment/offline.yml
+    variables:
+        regionId_o: $regionId_apim_pcag
+        deploymentId_o: ${get_value_from_struct($apiGroups_descags, apiGroupId, 0)}-test
+        apiGroupId_o: ${get_value_from_struct($apiGroups_descags, apiGroupId, 0)}
+        serviceLine_o: $serviceLine_apim_pcag
+
+- test:
+    name: 如果分组已创建，删除分组
+    skipIf: ${validate_skip($totalCount_descags, 0, eq)}
+    api: api/apiGroup/deleteApiGroup.yml
+    variables:
+        regionId_deleag: $regionId_apim_pcag
+        apiGroupId_deleag: ${get_value_from_struct($apiGroups_descags, apiGroupId, 0)}
+        serviceLine_deleag: $serviceLine_apim_pcag
+    validate:
+          - eq: ["status_code", 200]

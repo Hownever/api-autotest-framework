@@ -1,0 +1,399 @@
+- config:
+    name: 创建分组-成功
+    variables:
+    #    path
+        regionId_apim_userpin: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_userpin: ${ENV(ENV_SERVICELINE_APIM)}
+        serviceLine_iam_userpin: ${ENV(ENV_SERVICELINE_IAM)}
+    #    json
+        groupName_userpin: JIASHUO_TEST_USERPIN
+        description_userpin: 测试USERPIN，勿删
+        prefix_userpin:
+        keyCheck_userpin: check_exist
+        authType_userpin: jd_cloud
+        prefixStrip_userpin: 0
+        groupType_userpin: api_group
+        jdsfName_userpin:
+        jdsfRegistryName_userpin:
+        jdsfId_userpin:
+        environment_userpin:
+        backendServiceType_userpin: unique
+        backendUrl_userpin: ${ENV(ENV_BACK_SERVICE_PATH)}
+
+        user_pin_1_userpin: ${ENV(ENV_USER_PIN_1)}
+        user_pin_1_AK_userpin: ${ENV(ENV_USER_PIN_1_AK)}
+        user_pin_1_SK_userpin: ${ENV(ENV_USER_PIN_1_SK)}
+        user_pin_1_AK_son_userpin: ${ENV(ENV_USER_PIN_SON_1_AK)}
+        user_pin_1_SK_son_userpin: ${ENV(ENV_USER_PIN_SON_1_SK)}
+        user_pin_2_userpin: ${ENV(ENV_USER_PIN_2)}
+
+    verify: False
+
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim_userpin
+        regionId_apim_pcag: $regionId_apim_userpin
+        filters1values_pcag: $groupName_userpin
+
+- test:
+    name: 创建分组成功，分组名：$groupName_userpin，分组类型：$groupType_userpin
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+    #    path
+        regionId_cag: $regionId_apim_userpin
+    #    json
+        groupName_cag: $groupName_userpin
+        description_cag: $description_userpin
+        prefix_cag: $prefix_userpin
+        keyCheck_cag: $keyCheck_userpin
+        authType_cag: $authType_userpin
+        prefixStrip_cag: $prefixStrip_userpin
+        groupType_cag: $groupType_userpin
+        jdsfName_cag: $jdsfName_userpin
+        jdsfRegistryName_cag: $jdsfRegistryName_userpin
+        jdsfId_cag: $jdsfId_userpin
+        serviceLine_cag: $serviceLine_apim_userpin
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 创建API_create_task_json
+    api: api/createApis/createApis_create_task_json.yml
+    variables:
+        apiGroupId_ctj: $apiGroupId_cag
+        revision_ctj: $revision_cag
+        regionId_ctj: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_delete_task
+    api: api/createApis/createApis_delete_task.yml
+    variables:
+        apiGroupId_dt: $apiGroupId_cag
+        revision_dt: $revision_cag
+        regionId_dt: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_get_all_task
+    api: api/createApis/createApis_get_all_task.yml
+    variables:
+        apiGroupId_gat: $apiGroupId_cag
+        revision_gat: $revision_cag
+        regionId_gat: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_head_task
+    api: api/createApis/createApis_head_task.yml
+    variables:
+        apiGroupId_ht: $apiGroupId_cag
+        revision_ht: $revision_cag
+        regionId_ht: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_patch_task_json
+    api: api/createApis/createApis_patch_task_json.yml
+    variables:
+        apiGroupId_ptj: $apiGroupId_cag
+        revision_ptj: $revision_cag
+        regionId_ptj: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_put_task_json
+    api: api/createApis/createApis_put_task_json.yml
+    variables:
+        apiGroupId_puttj: $apiGroupId_cag
+        revision_puttj: $revision_cag
+        regionId_puttj: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_test_all_type_get
+    api: api/createApis/createApis_test_all_type_get.yml
+    variables:
+        apiGroupId_tatg: $apiGroupId_cag
+        revision_tatg: $revision_cag
+        regionId_tatg: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API_test_all_type_post
+    api: api/createApis/createApis_test_all_type_post.yml
+    variables:
+        apiGroupId_tatp: $apiGroupId_cag
+        revision_tatp: $revision_cag
+        regionId_tatp: $regionId_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 发布分组到线上环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_userpin
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: online
+        backendServiceType_dba: $backendServiceType_userpin
+        backendUrl_dba: $backendUrl_userpin
+        description_dba:
+        jdsfName_dba:
+        jdsfRegistryName_dba:
+        jdsfId_dba:
+        serviceLine_dba: $serviceLine_apim_userpin
+    validate:
+        - eq: ["status_code", 200]
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 删除旧访问授权数据
+    testcase: testcases/pinauth/prepare_for_createAccessAuth_pin.yml
+    variables:
+        accessKey_pcaap: $user_pin_1_userpin
+        serviceLine_pcaap: $serviceLine_apim_userpin
+        regionId_apim_pcaap: $regionId_apim_userpin
+        filters2values_pcaap: $user_pin_1_userpin
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建用户pin访问授权，绑定分组线上环境
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $user_pin_1_userpin
+        authUserType_caa: jd_cloud_pin
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: $user_pin_1_userpin+jd_cloud_pin+${return_string($apiGroupId_cag, online)}
+        serviceLine_caa: $serviceLine_apim_userpin
+        regionId_caa: $regionId_apim_userpin
+    extract:
+        - accessAuthId_caa: content.result.accessAuthId
+    validate:
+        - eq: ["status_code", 200]
+    output:
+        - accessAuthId_caa
+
+#-使用已存在的AK访问成功-------------------------------------------------------------------------------------------------
+- test:
+    name: 使用已存在的AK，请求线上环境微服务网关，请求成功
+    testcase: testcases/jdsfgw/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: online
+        regionId_apim_raa: $regionId_apim_userpin
+        accessKey_raa: $user_pin_1_AK_userpin
+        secretKey_raa: $user_pin_1_SK_userpin
+        description_raa: description_userpin
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+#-使用子账号的AK访问成功-------------------------------------------------------------------------------------------------
+- test:
+    name: 使用子账号的AK，请求线上环境微服务网关，请求成功
+    testcase: testcases/jdsfgw/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: online
+        regionId_apim_raa: $regionId_apim_userpin
+        accessKey_raa: $user_pin_1_AK_son_userpin
+        secretKey_raa: $user_pin_1_SK_son_userpin
+        description_raa: description_userpin
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+#-使用新创建的AK访问成功-------------------------------------------------------------------------------------------------
+- test:
+    name: 创建用户AK
+    api: api/iam/createUserAccessKey.yml
+    variables:
+        header_cuak:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $user_pin_1_userpin
+        serviceLine_cuak: $serviceLine_iam_userpin
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 查询用户AK
+    api: api/iam/describeUserAccessKeys.yml
+    variables:
+        header_descuak:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $user_pin_1_userpin
+        serviceLine_descuak: $serviceLine_iam_userpin
+    extract:
+        - userAccessKeys_descuak: content.result.userAccessKeys
+        - newak_descuak: content.result.userAccessKeys.0.accessKey
+        - newsk_descuak: content.result.userAccessKeys.0.accessKeySecret
+    validate:
+        - eq: ["status_code", 200]
+    output:
+        - newak_descuak
+        - newsk_descuak
+
+- test:
+    name: 使用新创建的AK，请求线上环境微服务网关，请求成功
+    testcase: testcases/jdsfgw/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: online
+        regionId_apim_raa: $regionId_apim_userpin
+        accessKey_raa: $newak_descuak
+        secretKey_raa: $newsk_descuak
+        description_raa: description_userpin
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+#-使用解绑的AK访问失败-------------------------------------------------------------------------------------------------
+- test:
+    name: 解绑分组
+    api: api/Author/updateAccessAuth.yml
+    variables:
+        authUserType_uaa: jd_cloud_pin
+        accessKey_uaa: $user_pin_1_userpin
+        accessAuthId_uaa: $accessAuthId_caa
+        serviceLine_uaa: $serviceLine_apim_userpin
+        regionId_uaa: $regionId_apim_userpin
+        deploymentIds_uaa: ~
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 解绑的AK，请求线上环境微服务网关，请求失败
+    api: api/requestBackend/getAllTask.yml
+    variables:
+        subscriptionKey: aaa
+        gw_host: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_userpin)}
+        USERAK: $newak_descuak
+        USERSK: $newsk_descuak
+    extract:
+        - scode: status_code
+        - error_message: content.error.message
+        - error_status: content.error.status
+    validate:
+        - eq: [$scode, 401]
+        - eq: [$error_status, ACCESS_ERROR]
+        - eq: [$error_message, "Invalid authentication credentials [gw]"]
+- test:
+    name: 绑定分组
+    api: api/Author/updateAccessAuth.yml
+    variables:
+        authUserType_uaa: jd_cloud_pin
+        accessKey_uaa: $user_pin_1_userpin
+        accessAuthId_uaa: $accessAuthId_caa
+        serviceLine_uaa: $serviceLine_apim_userpin
+        regionId_uaa: $regionId_apim_userpin
+        deploymentIds_uaa: ${return_string($apiGroupId_cag, online)}
+    validate:
+        - eq: ["status_code", 200]
+#-使用禁用的AK访问失败-------------------------------------------------------------------------------------------------
+- test:
+    name: 禁用用户AK
+    api: api/iam/disabledUserAccessKey.yml
+    variables:
+        header_duak:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $user_pin_1_userpin
+        serviceLine_duak: $serviceLine_iam_userpin
+        accessKey_duak: $newak_descuak
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 使用禁用的AK，请求线上环境微服务网关，请求失败
+    api: api/requestBackend/getAllTask.yml
+    variables:
+        subscriptionKey: aaa
+        gw_host: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_userpin)}
+        USERAK: $newak_descuak
+        USERSK: $newsk_descuak
+    extract:
+        - scode: status_code
+        - error_message: content.error.message
+        - error_status: content.error.status
+    validate:
+        - eq: [$scode, 401]
+        - eq: [$error_status, ACCESS_ERROR]
+        - eq: [$error_message, "Invalid authentication credentials [gw]"]
+
+#-使用禁用后又开启的AK访问成功-------------------------------------------------------------------------------------------------
+- test:
+    name: 启用已禁用的用户AK
+    api: api/iam/enabledUserAccessKey.yml
+    variables:
+        header_euak:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $user_pin_1_userpin
+        serviceLine_euak: $serviceLine_iam_userpin
+        accessKey_euak: $newak_descuak
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 使用启用已禁用的AK，请求线上环境微服务网关，请求成功
+    testcase: testcases/jdsfgw/requestAllApis.yml
+    variables:
+        apiGroupId_raa: $apiGroupId_cag
+        env_raa: online
+        regionId_apim_raa: $regionId_apim_userpin
+        accessKey_raa: $newak_descuak
+        secretKey_raa: $newsk_descuak
+        description_raa: description_userpin
+        title_raa: tc_title
+        subscriptionKey_raa: subscriptionKey
+        done_raa: False
+
+#-使用删除的AK访问失败-------------------------------------------------------------------------------------------------
+- test:
+    name: 删除用户AK
+    api: api/iam/deleteUserAccessKey.yml
+    variables:
+        header_duak:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $user_pin_1_userpin
+        serviceLine_duak: $serviceLine_iam_userpin
+        accessKey_duak: $newak_descuak
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 使用删除的AK，请求线上环境微服务网关，请求失败
+    api: api/requestBackend/getAllTask.yml
+    variables:
+        subscriptionKey: aaa
+        gw_host: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_userpin)}
+        USERAK: $newak_descuak
+        USERSK: $newsk_descuak
+    extract:
+        - scode: status_code
+        - error_message: content.error.message
+        - error_status: content.error.status
+    validate:
+        - eq: [$scode, 401]
+        - eq: [$error_status, ACCESS_ERROR]
+        - eq: [$error_message, "Invalid authentication credentials [gw]"]
+
+#----------------------------------------------------------------------------------------------------------------
+- test:
+    name: 删除已创建的API分组
+    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_apim_pcag: $serviceLine_apim_userpin
+        regionId_apim_pcag: $regionId_apim_userpin
+        filters1values_pcag: $groupName_userpin

@@ -1,0 +1,27 @@
+- config:
+    name: back_mainpin_not_in_operationlist_QueryWebsiteVul.yml
+    variables:
+        - regionId: ${ENV(regionId)}
+        - exist_main_pin: ${ENV(exist_main_pin)}
+        - openapiGwUrl: ${ENV(openapiGwUrl)}
+        - domain: ${ENV(domain)}
+        - access_key_back: ${ENV(access_key_back)}
+        - secret_key_back: ${ENV(secret_key_back)}
+
+- test:
+    name: 运营后台aksk，传存在的pin，调用不在白名单中的接口，请求通过
+    request:
+        url: /v2/websiteVuls/11
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $exist_main_pin
+        params: ~
+    setup_hooks:
+        - ${update_JD_headers($request, $openapiGwUrl, None, csa, $access_key_back, $secret_key_back, $regionId)}
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+    validate:
+        - eq: [$scode, 200]
+        - len_eq: [$requestId, 32]

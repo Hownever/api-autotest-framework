@@ -1,0 +1,38 @@
+name: 查询分组
+description: 查询分组
+operationId: describeApiGroups
+
+variables:
+#    url
+    host_descags: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_descags: ${ENV(ENV_API_VERSION)}
+    regionId_descags: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_descags:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    params
+    pageNumber_descags: 1
+    pageSize_descags: 100
+    filters1_descags: groupName
+    filters1values_descags: groupName
+#    hooks
+    serviceLine_descags: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_descags: nofile
+    openApiAk_descags: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_descags: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_descags: v1
+
+request:
+    url: $host_descags/$apiVer_descags/regions/$regionId_descags/apiGroups
+    method: GET
+    headers: $header_descags
+    params:
+        pageNumber: $pageNumber_descags
+        pageSize: $pageSize_descags
+        filters.1.name: $filters1_descags
+        filters.1.values.1: $filters1values_descags
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_descags, $openApiSk_descags, $serviceLine_descags, $apiVersion_descags, $openapiYaml_descags, $regionId_descags)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

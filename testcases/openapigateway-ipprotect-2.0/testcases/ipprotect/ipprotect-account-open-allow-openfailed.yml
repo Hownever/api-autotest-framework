@@ -1,0 +1,45 @@
+testcases:
+    非企业账号-不同key-IP白名单开启失败-不影响网关使用-网关允许访问后端:
+        testcase:  api/ipprotect-opened-allow-fail-to-open.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 同一个用户的不同用户key
+#                - {"userpin" : "嘟嘟0402", "keytype" : "NormalUserSelfKey", "AK" : "F6C7772CB12AA40DE78B0CEB89CB0D38", "SK" : "C1F8C4C5AC9325BD8D250A8705C98FCC"}
+#                - {"userpin" : "嘟嘟0402", "keytype" : "NormalUserSelfKey", "AK" : "B3B347399DA1D019BFD0D834992DECF7", "SK" : "91C00B05134EC04F83D4B01C453786A8"}
+
+                # 普通用户-主账号
+                - {"userpin" : "jiashuo-ite-1", "keytype" : "NormalUserSelfKey", "AK" : "2AC2808D7CC475CF460218D039297035", "SK" : "497A9DCD05FCF3CD8391061BBE58D40B"}
+                # 普通用户-子账号
+                - {"userpin" : "jcloud_nQFNRJi @ jiashuo-ite-1", "keytype" : "NormalSubUserSelfKey", "AK" : "0FB34F02461BEA59E773AE7CA9E97C6D", "SK" : "BFB12604080AD48FC97272B3C5715110"}
+
+                # 控制台账号
+                - {
+                    "userpin" : "jiashuo-ite-1",
+                    "keytype" : "ConsoleUserSelfkey",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        # 此处的pin可以和userpin字段中的值不一致
+                        "x-jdcloud-pin" : "jiashuo-ite-1",
+                        "x-jdcloud-erp" : "likui34",
+                        "x-jdcloud-user-ip" : "invalid_ip_address",
+                        }
+                  }
+
+                # 运营后台
+                # - {"userpin" : "jiashuo-ite-1", "keytype" : "ConsoleUserSelfKey", "AK" : "6996C51A54B8D05CB0A5A924F9A78629", "SK" : "14B63D66B94B81D25F8819244CE44E97"}
+                # - {"userpin" : "?", "keytype" : "ConsoleUserSelfKey", "AK" : "6996C51A54B8D05CB0A5A924F9A78629", "SK" : "14B63D66B94B81D25F8819244CE44E97"}
+            ipaddress:
+                - 127.0.0.1
+                - 255.255.255.0
+                - 10.0.0.1/32
+                - 10.0.0.0/24
+                - 168.0.0.0/24
+                - 255.0.0.0/24
+                - ${get_user_ip()}/8
+                - ${get_user_ip()}/12
+                - ${get_user_ip()}/15
+                - ${get_user_ip()}/24
+                - ${get_user_ip()}/25

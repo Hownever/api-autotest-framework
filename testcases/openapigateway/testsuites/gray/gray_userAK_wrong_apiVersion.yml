@@ -1,0 +1,198 @@
+config:
+  name: 使用主账号AKSK不传pin的方式请求外部网关，传错误的版本
+  variables:
+    serviceLine: [apigateway]
+    apis: [v2-describeApiGroups]
+    ser_ver_api: [apigateway-v2-describeApiGroups]
+    serviceLinePin:
+      - ${ENV(ENV_USER_AK_PIN)}
+    apisPin:
+      - ${ENV(ENV_USER_AK_PIN)}
+    openapi_manage_host:
+      - ${ENV(ENV_OPENAPI_OUTER_MANAGE_HOST)}
+    openapi_data_host:
+      - ${ENV(ENV_OPENAPI_OUTER_DATA_HOST)}
+
+testcases:
+  describeApiGroups接口，使用主账号AKSK不传pin的方式请求外部网关，传错误的版本，网关允许:
+    testcase: testcases/authAllow/describeApiGroups_gw_pass_back_200.yml
+    parameters:
+      result: ["网关允许"]
+      openapi_manage_host: $openapi_manage_host
+      openapi_data_host: $openapi_data_host
+      serviceLine: $serviceLine
+      apis: $apis
+      ser_ver_api: $ser_ver_api
+      serviceLinePin: $serviceLinePin
+      apisPin: $apisPin
+      userinfo:
+
+        - prepareinfo: 添加业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>添加接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: True
+          apisFlag: True
+          apisPinFlag: True
+
+        - prepareinfo: 添加业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>删除接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: True
+          apisFlag: False
+          apisPinFlag: True
+
+        - prepareinfo: 添加业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>删除接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: True
+          apisFlag: False
+          apisPinFlag: False
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>添加接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: True
+          apisFlag: True
+          apisPinFlag: True
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>删除接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: True
+          apisFlag: False
+          apisPinFlag: True
+
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>删除接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: True
+          apisFlag: False
+          apisPinFlag: False
+
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>添加接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: False
+          apisFlag: True
+          apisPinFlag: True
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>删除接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: False
+          apisFlag: False
+          apisPinFlag: True
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>删除接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: False
+          apisFlag: False
+          apisPinFlag: False
+
+  describeApiGroups接口，使用主账号AKSK不传pin的方式请求外部网关，传错误的版本，网关允许(正常情况报错的用例):
+    testcase: testcases/authAllow/describeApiGroups_gw_pass_back_200.yml
+    parameters:
+      result: ["传错误的版本，网关允许"]
+      openapi_manage_host: $openapi_manage_host
+      openapi_data_host: $openapi_data_host
+      serviceLine: $serviceLine
+      apis: $apis
+      ser_ver_api: $ser_ver_api
+      serviceLinePin: $serviceLinePin
+      apisPin: $apisPin
+      userinfo:
+        - prepareinfo: 添加业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>添加接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: True
+          apisFlag: True
+          apisPinFlag: False
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>添加业务线用户-$serviceLinePin；<br>添加接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: True
+          apisFlag: True
+          apisPinFlag: False
+
+        - prepareinfo: 删除业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>添加接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: False
+          serviceLinePinFlag: False
+          apisFlag: True
+          apisPinFlag: False
+
+  describeApiGroups接口，使用主账号AKSK不传pin的方式请求外部网关，传错误的版本，网关拦截，报错信息 pin is not allowed in service gray:
+    testcase: testcases/authDeny/describeApiGroups_gw_deny_403_pin_not_allowed_service_gray.yml
+    parameters:
+      result: ["网关拦截，报错信息 pin is not allowed in service gray"]
+      openapi_manage_host: $openapi_manage_host
+      openapi_data_host: $openapi_data_host
+      serviceLine: $serviceLine
+      apis: $apis
+      ser_ver_api: $ser_ver_api
+      serviceLinePin: $serviceLinePin
+      apisPin: $apisPin
+      userinfo:
+        - prepareinfo: 添加业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>添加接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: False
+          apisFlag: True
+          apisPinFlag: True
+
+        - prepareinfo: 添加业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>添加接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: False
+          apisFlag: True
+          apisPinFlag: False
+
+        - prepareinfo: 添加业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>删除接口$apis，<br>添加接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: False
+          apisFlag: False
+          apisPinFlag: True
+
+        - prepareinfo: 添加业务线-$serviceLine，<br>删除业务线用户-$serviceLinePin；<br>删除接口$apis，<br>删除接口用户-$apisPin<br>
+          info: 使用主账号AKSK-${ENV(ENV_USER_AK_PIN)}，不传PIN
+          AK: ${ENV(ENV_USER_AK)}
+          SK: ${ENV(ENV_USER_SK)}
+          serviceLineFlag: True
+          serviceLinePinFlag: False
+          apisFlag: False
+          apisPinFlag: False

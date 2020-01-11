@@ -1,0 +1,26 @@
+name: 查询实例类型
+description: 查询实例类型
+operationId: queryWebsiteVul
+
+variables:
+    product: csa
+    api_ver: v1
+    regionId: cn-north-1
+    openapi_yaml: nofile
+    AK: xxx
+    SK: xxx
+    header:
+        Content-Type: application/json;charset=UTF-8
+#        x-jdcloud-pin: $pin
+
+    expected_status_code: 200
+
+
+request:
+    url: /v2/websiteVuls/11
+    method: GET
+    headers: $header
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, csa, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

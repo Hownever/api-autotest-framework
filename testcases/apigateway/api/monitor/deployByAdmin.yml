@@ -1,0 +1,48 @@
+name: 发布版本（管理员）
+description: 发布版本（管理员），可以发布内网后端地址
+operationId: deployByAdmin
+
+variables:
+#    url
+    host_dba: ${ENV(ENV_BASE_URL)}
+    apiVer_dba: ${ENV(ENV_API_VERSION)}
+    regionId_dba: ${ENV(ENV_DEFAULT_REGIONID)}
+    apiGroupId_dba: ~
+#    header
+    header_dba:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    revision_dba: ~
+    environment_dba: ~
+    backendServiceType_dba: ~
+    backendUrl_dba: ~
+    description_dba: ~
+    jdsfName_dba: ~
+    jdsfRegistryName_dba: ~
+    jdsfId_dba: ~
+#    hooks
+    serviceLine_dba: ${ENV(ENV_PRODUCT)}
+    openapiYaml_dba: nofile
+    openApiAk_dba: ${ENV(ENV_AK)}
+    openApiSk_dba: ${ENV(ENV_SK)}
+    apiVersion_dba: v1
+
+
+request:
+    url: $host_dba/$apiVer_dba/regions/$regionId_dba/apiGroups/$apiGroupId_dba/adminDeployments
+    method: POST
+    headers: $header_dba
+    json:
+        revision: $revision_dba
+        environment: $environment_dba
+        backendServiceType: $backendServiceType_dba
+        backendUrl: $backendUrl_dba
+        description: $description_dba
+        jdsfName: $jdsfName_dba
+        jdsfRegistryName: $jdsfRegistryName_dba
+        jdsfId: $jdsfId_dba
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dba, $openApiSk_dba, $serviceLine_dba, $apiVersion_dba, $openapiYaml_dba, $regionId_dba)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

@@ -1,0 +1,33 @@
+name: 添加白名单
+description: 添加白名单
+operationId: createGrayWhilteList
+
+variables:
+#    url
+    host_cgwl: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cgwl: ${ENV(ENV_API_VERSION)}
+    regionId_cgwl: cn-south-1
+#    header
+    header_cgwl:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    userPins_cgwl: ~
+    apiGroupId_cgwl: ~
+#    hooks
+    serviceLine_cgwl: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_cgwl: nofile
+    openApiAk_cgwl: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cgwl: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cgwl: v1
+
+request:
+    url: $host_cgwl/$apiVer_cgwl/regions/$regionId_cgwl/apiGroups/$apiGroupId_cgwl/apiCenterGrayWhilteList
+    method: POST
+    headers: $header_cgwl
+    json:
+        userPins: $userPins_cgwl
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cgwl, $openApiSk_cgwl, $serviceLine_cgwl, $apiVersion_cgwl, $openapiYaml_cgwl, $regionId_cgwl)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

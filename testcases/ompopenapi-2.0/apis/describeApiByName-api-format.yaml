@@ -1,0 +1,65 @@
+- config:
+    # 测试用例名称
+    name: 查询某个业务线下提供的API列表,检查对应path和internel属性是否一致
+    # config中request中的参数是对当前yaml文件中的所有test共用的
+    request:
+         base_url: ${ENV(ENV_BASE_URL)}
+         regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+
+    variables:
+        # *定义API对应的业务线名称，必须与yaml对应，必须项
+        - product: ${ENV(ENV_PRODUCT)}
+        # *定义API的版本，必须项
+        - apiVersion: ${ENV(ENV_VERSION)}
+        # 用户pin
+        - userpin: ${ENV(ENV_USER_PIN)}
+        # 内部调用时，部分接口需要传的erp
+        - usererp: ${ENV(ENV_USER_ERP)}
+        # accessKey， 可选， 还可以从env环境变量中获取
+        - AK: ${ENV(ENV_AK)}
+        # SecretKey， 可选， 还可以从env环境变量中获取
+        - SK: ${ENV(ENV_SK)}
+        # 接口定义的swagger项目地址
+        - openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        - external_list_file: E:\WorkSpace\SourceCode\Python\api-autotest-framework\testcases\ompopenapi\env\api_operation_list_external-release.txt
+
+
+- test:
+    # 测试步骤名称
+    name: 对应业务线api列表-$productline
+
+    # request中的key不区分大小写
+    request:
+        # operationId:  describeApiByName
+        # name: $productline
+        url: /api/$productline
+        method: GET
+
+        headers:
+            x-jdcloud-pin: $userpin
+            x-jdcloud-erp: $usererps
+
+    # 在开始API调用前，执行的hook操作：
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+        # **每个请求前，等待1s
+        # - waittime: ${sleep_N_secs(1)}
+
+    # 在测试API调用完成后，执行的hook操作：
+    teardown_hooks:
+        # **支持更新和赋值某些变量：
+        - productline: $productline
+        # **根据yaml（swagger）项目中的yaml文件来判断业务线和业务线开放的API
+        - checkpf: ${serviceline_external_api_validate2($response, $productline, $openapi_yaml)}
+        # **根据yaml项目的api_operation_list_external.txt文件判断业务线和对外公开的API
+        # - checkpf: ${serviceline_external_api_validate3($response, $productline, $external_list_file)}
+
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+
+    validate:
+        - eq: ["status_code", 200]
+        - type_match: [content.result.dataList, list]
+        - eq: [$checkpf, 1]

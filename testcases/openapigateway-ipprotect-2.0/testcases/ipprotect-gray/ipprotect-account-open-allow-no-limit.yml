@@ -1,0 +1,108 @@
+testcases:
+    不限制用户：始终IP白名单不限制的用户类型-网关允许访问后端:
+        testcase:  api/ipprotect-opened-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+
+                # 服务角色
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "ServiceRoleUserSelfKey-HeaderNoIP",
+                    "AK" : "A33E9D85EE0B33EA",
+                    "SK" : "kZvuxvSCDwSfacWdBVPKPqdQlBCrAgDjcTUsGIcT",
+                    "headers" : {
+                        "x-jdcloud-session-token" : "${base64encode(nxdLOQEkY8xXxLvkAk0tOCdHUSrkunMEfhR8h95xrL5UstMYqOrufQ/_AgR7llocJPLBqOBuUwJRA/kkP6zL4G1m-MWn796LJvE3wJic4C9o3KVWBgsQMNPsjykBdQaooorPx1OnvauTnk5v24jvbiB1Ny0irh0h-hIE86KNR7Rk0Uu-0UC_O5uhgHjpxp6opczG9cHTXdf_1rqTeFxuaMY_01QIBS6xuIy5Zvls15lB13AFnDhQyOtrzAmEwcOhEeTuFVtUZaX37eYVNI323S9LHf1EUCCKJYO_qKAI7NDzo8AKDuOKMbQVYoKtHyAOwJcOP38U79jNBClDRc2xJAnxx85o9n1N4dhaECkg8r0jPMJwGPzVJE3LCJZhXNCwtcwGgysWdvxDjd982vbol633Sl-kmwUhOZeI6iIbeiBxPVmoAW3IoQlo6EHDZdi2bc0SYcexpf0wya/GH3P3VwT4pU5zVp2pj-GTA)}",
+                    },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 服务角色
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "ServiceRoleUserSelfKey-HeaderWithWrongIP",
+                    "AK" : "A33E9D85EE0B33EA",
+                    "SK" : "kZvuxvSCDwSfacWdBVPKPqdQlBCrAgDjcTUsGIcT",
+                    "headers" : {
+                        "x-jdcloud-session-token" : "${base64encode(nxdLOQEkY8xXxLvkAk0tOCdHUSrkunMEfhR8h95xrL5UstMYqOrufQ/_AgR7llocJPLBqOBuUwJRA/kkP6zL4G1m-MWn796LJvE3wJic4C9o3KVWBgsQMNPsjykBdQaooorPx1OnvauTnk5v24jvbiB1Ny0irh0h-hIE86KNR7Rk0Uu-0UC_O5uhgHjpxp6opczG9cHTXdf_1rqTeFxuaMY_01QIBS6xuIy5Zvls15lB13AFnDhQyOtrzAmEwcOhEeTuFVtUZaX37eYVNI323S9LHf1EUCCKJYO_qKAI7NDzo8AKDuOKMbQVYoKtHyAOwJcOP38U79jNBClDRc2xJAnxx85o9n1N4dhaECkg8r0jPMJwGPzVJE3LCJZhXNCwtcwGgysWdvxDjd982vbol633Sl-kmwUhOZeI6iIbeiBxPVmoAW3IoQlo6EHDZdi2bc0SYcexpf0wya/GH3P3VwT4pU5zVp2pj-GTA)}",
+                        "x-jdcloud-user-ip" : "168.95.1.1",
+                    },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 服务角色
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "ServiceRoleUserSelfKey-HeaderWithLimitIP",
+                    "AK" : "A33E9D85EE0B33EA",
+                    "SK" : "kZvuxvSCDwSfacWdBVPKPqdQlBCrAgDjcTUsGIcT",
+                    "headers" : {
+                        "x-jdcloud-session-token" : "${base64encode(nxdLOQEkY8xXxLvkAk0tOCdHUSrkunMEfhR8h95xrL5UstMYqOrufQ/_AgR7llocJPLBqOBuUwJRA/kkP6zL4G1m-MWn796LJvE3wJic4C9o3KVWBgsQMNPsjykBdQaooorPx1OnvauTnk5v24jvbiB1Ny0irh0h-hIE86KNR7Rk0Uu-0UC_O5uhgHjpxp6opczG9cHTXdf_1rqTeFxuaMY_01QIBS6xuIy5Zvls15lB13AFnDhQyOtrzAmEwcOhEeTuFVtUZaX37eYVNI323S9LHf1EUCCKJYO_qKAI7NDzo8AKDuOKMbQVYoKtHyAOwJcOP38U79jNBClDRc2xJAnxx85o9n1N4dhaECkg8r0jPMJwGPzVJE3LCJZhXNCwtcwGgysWdvxDjd982vbol633Sl-kmwUhOZeI6iIbeiBxPVmoAW3IoQlo6EHDZdi2bc0SYcexpf0wya/GH3P3VwT4pU5zVp2pj-GTA)}",
+                        "x-jdcloud-user-ip" : "${get_user_ip()}",
+                    },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 其他非控制台系统用户-不限制- 传x-jdcloud-user-ip-错误ip
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin-HeaderWithInValidIP",
+                    "AK" : "3778A7BA996B63369B457675DDE9A41B",
+                    "SK" : "39E1E11836286DC208AD770340DA2BEE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_uaRNqHd",
+                        "x-jdcloud-user-ip" : "168.95.1.1",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+
+                # 其他非控制台系统用户-不限制- 传x-jdcloud-user-ip-错误ip
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin-HeaderWithLimitIP",
+                    "AK" : "3778A7BA996B63369B457675DDE9A41B",
+                    "SK" : "39E1E11836286DC208AD770340DA2BEE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_uaRNqHd",
+                        "x-jdcloud-user-ip" : "${get_user_ip()}",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+
+                # 其他非控制台系统用户-不限制- 传x-jdcloud-user-ip-错误ip
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "OmpUserSelfKey-LBKey-HeaderWithValidPin-HeaderWithInValidIP",
+                    "AK" : "28CF7F6D323C25AF9352CB9811C45D64",
+                    "SK" : "0CC3D72A9D44D0CBB121403CE2C03D7A",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_uaRNqHd",
+                        "x-jdcloud-user-ip" : "168.95.1.1",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+
+            ipaddress:
+                # 指定IP
+                - ${get_user_ip()}

@@ -1,0 +1,69 @@
+config:
+    name: istio安装逻辑测试 - install, uninstall, update
+    variables:
+        s_web_host: ${ENV(ENV_MESH_WEB_BASE_URL)}
+        s_k8s_cluster_name: istio-test-likui
+        s_node_extra_header: {"user": "gray"}
+        s_region: cn-north-1
+testcases:
+    未安装的k8s集群，部署istio组件，部署和卸载功能正常:
+        testcase: testcases/istio-status/apply-istio-settings.yml
+        parameters:
+            c_web_host:
+                - $s_web_host
+            c_k8s_cluster_name:
+                - $s_k8s_cluster_name
+            c_k8s_cluster_id:
+                - null
+            c_regionid:
+                - $s_region
+            c_node_extra_header:
+                - $s_node_extra_header
+            c_version:
+                - 1.2.5
+            c_wait_time_for_istio_status_changing:
+                - 30
+            c_summary-c_istio_install-c_isAutoInject-c_isExternalAccess-c_isMTLS-c_isPolicyCheck-c_kiali_enabled-c_kiali_username-c_kiali_password-c_grafana_enabled-c_grafana_username-c_grafana_password-c_tracing_enabled-c_tracing_sampling-c_bookinfo_enabled:
+                #  summary, install, inject, external, mtls, policy, kiali, kuser, kpasswd, grafana, guser,gpasswd, tracing, sampling, bookinfo
+                - ["移除istio", False, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["安装全部组件", True, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]  #
+                - ["移除istio", False, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["仅安装kiali", True, False, False, False, False, True, "look", "qwer1234", False, "look", "qwer1234", False, 10, False  ]
+                - ["移除istio", False, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["仅安装grafana", True, False, False, False, False, False, "look", "qwer1234", True, "look", "qwer1234", False, 10, False  ]
+                - ["移除istio", False, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["仅安装tracing", True, False, False, False, False, False, "look", "qwer1234", False, "look", "qwer1234", True, 10,  False  ]
+                - ["移除istio", False, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["仅安装bookinfo", True, False, False, False, False, False, "look", "qwer1234", False, "look", "qwer1234", False, 10, True  ]
+                - ["移除istio", False, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["不开外网安装全部组件", True, True, False, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+
+    已安装istio的k8s集群，更新istio组件，更新成功:
+        testcase: testcases/istio-status/apply-istio-settings.yml
+        parameters:
+            c_web_host:
+                - $s_web_host
+            c_k8s_cluster_name:
+                - $s_k8s_cluster_name
+            c_k8s_cluster_id:
+                - null
+            c_regionid:
+                - $s_region
+            c_node_extra_header:
+                - $s_node_extra_header
+            c_version:
+                - 1.2.5
+            c_wait_time_for_istio_status_changing:
+                - 30
+
+            c_summary-c_istio_install-c_isAutoInject-c_isExternalAccess-c_isMTLS-c_isPolicyCheck-c_kiali_enabled-c_kiali_username-c_kiali_password-c_grafana_enabled-c_grafana_username-c_grafana_password-c_tracing_enabled-c_tracing_sampling-c_bookinfo_enabled:
+                #  summary, install, inject, external, mtls, policy, kiali, kuser, kpasswd, grafana, guser,gpasswd, tracing, sampling, bookinfo
+                - ["移除istio", False, True, True,  True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["安装全部组件", True,  True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["更新成仅安装kiali", True,  False, False, False, False, True, "look", "qwer1234", False, "look", "qwer1234", False, 10, False  ]
+                - ["更新成仅安装grafana", True, False, False, False, False, False, "look", "qwer1234", True, "look", "qwer1234", False, 10, False  ]
+                - ["更新成仅安装tracing", True, False, False, False, False, False, "look", "qwer1234", False, "look", "qwer1234", True, 10, False  ]
+                - ["更新成仅安装bookinfo", True, False, False, False, False, False, "look", "qwer1234", False, "look", "qwer1234", False, 10, True  ]
+                - ["更新成安装全部组件", True, True, True, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+                - ["更新成不开外网安装全部组件", True, True, False, True, True, True, "look", "qwer1234", True, "look", "qwer1234", True, 10, True  ]
+

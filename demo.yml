@@ -1,0 +1,172 @@
+- config:
+    # 测试用例名称
+    name: API demo test
+    # config中request中的参数是对当前yaml文件中的所有test共用的
+    request:
+         base_url: http://10.226.145.66:8000
+         regionId: jdcloud-api
+
+    variables:
+        # *定义API对应的业务线名称，必须与yaml对应，必须项
+        - product: lb
+        # *定义API的版本，必须项
+        - apiVersion: v1
+        # accessKey， 可选， 还可以从env环境变量中获取
+        - AK: DD1B0BFA7BAA5DAED057ACF4817AF55B
+        # SecretKey， 可选， 还可以从env环境变量中获取
+        - SK: 6FC47989E4F4B1F489004F12FFFD89DE
+        # 用户pin
+        - userpin: jcloud_zoYctLh @ guhao002
+        # 内部调用时，部分接口需要传的erp
+        - usererp: likui34
+        # Content-Type, 一般为application/json
+        - contenttype: application/json
+        #
+        # 接口定义的swagger项目地址
+        - openapi_yaml: E:\WorkSpace\SourceCode\others\jcloud-open-api-yaml
+
+        - backendname: iam-auto-${gen_random_string(5)}
+
+    # setup_hooks: 在整个用例开始执行前触发 hook 函数，主要用于准备工作。
+    setup_hooks:
+        - ${hook_print("setup_hooks for config")}
+
+    # teardown_hooks: 在整个用例结束执行后触发 hook 函数，主要用于测试后的清理工作。
+    teardown_hooks:
+        - ${hook_print("teardown_hooks for config")}
+
+- test:
+    # 测试步骤名称
+    name:  yaml demo for jdcloud openapi and sdk
+
+    # 支持测试用例跳过逻辑判断，复杂逻辑需要使用函数方式：
+    #   - skip:
+    #   - skipIf: 当skip if后面条件满足（非空，非0）时，跳过当前test
+    #   - skipUnless: 当skip if后面条件不满足（为空，为0）时，跳过当前test
+    # skipIf: 1  # not sikipped
+    # skipIf: $func(*arg, **kargs)  # if $func(*arg, **kargs) return Ture, skipped else not
+    # skipIf: 0  # skipped
+    # skipIf:   # skipped
+    # skipUnless: 0  # skipped
+    # skipUnless:   # skipped
+    # skipUnless: $func(*arg, **kargs)  # if $func(*arg, **kargs) return False, skipped else not
+    # skipIf: $func_check_var_len_eq_spec($requestId, 32) # The func defined in the debugtalk.py
+
+    # request中的key不区分大小写
+    request:
+        # 测试的主机和端口，可选，
+        # **如果填了，则测试此test时，使用此base_url作为接口调用时的base_url,如果没有填写（空，或者无此字段）
+        # **则使用config中request的base_url:
+        # base_url: http://10.160.68.128:8000
+
+        # 测试的接口名称，此项可选，
+        # **如果设置了，那么此test的url和method配置将不起作用
+        operationId: CreateBackend
+
+        # regionId, 部分接口中需要使用，
+        # **如果test中未定义，则会查找config中是否定义，
+        # **如果都未定义，则使用默认值jdcloud-api填充
+        regionId: cn-north-1
+
+        # agId, 部分接口uri中可能包含了变量，如："/availabilityGroups/{agId}:abandonInstances"， 类似这样的
+        # swagger接口定义时，需要提供对应的agId
+        # agId: ag001
+
+        # 定义测试的API名称，
+        # **如果设置了operationId，那么此处的配置无效
+        # **将会根据operationId去查找对应接口在swagger中定义的url
+        # url: /uri/to/api
+
+        # method如果不提供，那么就会使用yaml中定义的method来进行请求，
+        # **如果设置了operationId，那么此处的配置无效
+        # **将会根据operationId去查找对应接口在swagger中定义的method
+        method:
+
+        # 提供cookie支持：
+        # cookies:
+        #    key: value
+
+        headers:
+            x-jdcloud-pin: $userpin
+            # x-jdcloud-user-ip: ${get_ip()}
+            # Content-Type: $contenttype
+
+        # GET, POST, PUT等方法需要传参数时，使用json格式：
+        json:
+            backendName: $backendname
+            loadBalancerId: alb-c8h046potf
+            protocol: Tcp
+            port: 12306
+            healthCheckSpec: {"protocol": "Tcp"}
+
+    # 在开始API调用前，执行的hook操作：
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+        # 支持更新和赋值某些变量：
+        - index: 1
+        # 支持调用其他函数等
+        - ${hook_sleep_n_secs(1)}
+
+    # 在测试API调用完成后，执行的hook操作：
+    teardown_hooks:
+        # 支持更新和赋值某些变量：
+        - index: 2
+        # 支持调用其他函数等
+        - ${hook_sleep_n_secs(1)}
+
+    # 针对返回的response， 可以提取结果中的值保存为变量，供后续的test引用，
+    # 针对extract的格式，可以参考：https://debugtalk.com/post/HttpRunner-validator-optimization/
+    # 支持json的"."运算符和正则表达式取特定值
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+        - returncode: '\"code\":(.*)},'
+        # - backendNameCreated: content.result.backendId
+
+    # 结果校验：
+    # 针对结果校验的格式，可以参考：https://debugtalk.com/post/HttpRunner-validator-optimization/
+    # 支持json的"."运算符和text的正则表达式取特定值
+    validate:
+        - eq: ["status_code", 200]
+        - {"check": "status_code", "comparator": "eq", "expect": 200}
+        # - len_eq: [content.requestId, 32]
+        # - len_gt: [content.result, 0 ]
+        # - startswith: [content.result.backendId, "backend-" ]
+
+
+- test:
+    name:  重复创建时返回409
+    skipIf: ${validate($scode, 403, "eq")}
+    # skipIf: ${hook_sleep_n_secs(1)}
+    request:
+        operationId: CreateBackend
+        regionId: cn-north-1
+        method:
+
+        headers:
+            x-jdcloud-pin: $userpin
+
+        json:
+            backendName: $backendname
+            loadBalancerId: alb-c8h046potf
+            protocol: Tcp
+            port: 12306
+            healthCheckSpec: {"protocol": "Tcp"}
+    setup_hooks:
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    teardown_hooks:
+        - ${hook_sleep_n_secs(1)}
+
+    extract:
+        - lastrequestid: content.requestId
+
+    validate:
+        - eq: ["status_code", 409]
+        - {"check": "status_code", "comparator": "eq", "expect": 409}
+        - len_eq: [content.requestId, 32]
+        - contains: [content.error.message, $backendname ]
+        - contains: [content.error.message, "already exist" ]
+        - eq: [content.error.status, "CONFLICT" ]

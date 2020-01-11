@@ -1,0 +1,33 @@
+name: 删除白名单
+description: 删除白名单
+operationId: deleteGrayWhilteList
+
+variables:
+#    url
+    host_dgwl: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dgwl: ${ENV(ENV_API_VERSION)}
+    regionId_dgwl: cn-south-1
+#    header
+    header_dgwl:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: jdcloud-api-test
+#    json
+    userPins_dgwl: ~
+    apiGroupId_dgwl: ~
+#    hooks
+    serviceLine_dgwl: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_dgwl: nofile
+    openApiAk_dgwl: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dgwl: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dgwl: v1
+
+request:
+    url: $host_dgwl/$apiVer_dgwl/regions/$regionId_dgwl/apiGroups/$apiGroupId_dgwl/apiCenterGrayWhilteList
+    method: DELETE
+    headers: $header_dgwl
+    json:
+        userPins: $userPins_dgwl
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dgwl, $openApiSk_dgwl, $serviceLine_dgwl, $apiVersion_dgwl, $openapiYaml_dgwl, $regionId_dgwl)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

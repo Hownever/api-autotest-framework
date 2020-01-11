@@ -1,0 +1,121 @@
+config:
+    name: 服务调用
+    variables:
+        s_mock_id: jdmesh-invocation-test-${gen_random_string(5)}
+        s_remove_after_get: enable
+
+        s_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+
+testcases:
+    服务调用-时间特性测试-HTTP-延时-未达到60s时正常响应-多region:
+        testcase: testcases/productpage/productpage-remotecall-to-mock-server-return-content-and-code-verify.yml
+        parameters:
+            #loop: ${gen_list(1)}
+
+            c_mock_host:
+                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            # 值必须为1，否则mock server不会存储
+            c_mock_setter:
+                - enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered:
+                - enable
+
+            c_mock_header:
+                - {}
+            # mock存储的id，使用时的id
+            c_mock_id:
+                - $s_mock_id
+            # mock返回结果时的http status code
+            c_mock_code:
+                - 200
+            # mock返回结果的内容
+            c_mock_data:
+                - {"result":{"totalCount":0,"apiGroups":[]},"requestId":"bjmv2fpcodnb3adquieqrtnaqsv50wnq"}
+            # mock值的http协议中的数据类型
+            c_mock_type:
+                - application/json
+
+            c_host-c_mock_delay:
+                - [http://productpage.jdcloud.com, 0]
+                - [http://productpage.ingress.mesh.cn-north-1.jdcloud.com, 3]
+                - [http://productpage.ingress.mesh.cn-north-1.jdcloud.com, 55]
+                - [http://productpage.ingress.mesh.cn-north-1.jcloud.com, 15]
+#                - [http://productpage.ingress.mesh.cn-north-1.jcloud.com, 55]
+                - [http://productpage.ingress.mesh.cn-east-1.jdcloud.com, 30]
+#                - [http://productpage.ingress.mesh.cn-east-1.jdcloud.com, 57]
+                - [http://productpage.ingress.mesh.cn-east-2.jdcloud.com, 20]
+#                - [http://productpage.ingress.mesh.cn-east-2.jdcloud.com, 55]
+                - [http://productpage.ingress.mesh.cn-south-1.jdcloud.com, 5]
+#                - [http://productpage.ingress.mesh.cn-south-1.jdcloud.com, 56]
+            c_summary:
+                - productpage和后端mock配置返回延时时间为${c_mock_delay}s
+            c_protocol-c_headers-c_datas:
+                - [HTTP,
+                  {},
+                  {
+                    "url": "${ENV(ENV_MOCK_SERVER_BASE_URL)}/mockserver",
+                    "method": "GET",
+                    "headers":{
+                      "X-Jdcloud-Test-Configs-Mock-Getter": $s_mock_id,
+                      "X-Jdcloud-Test-Configs-Mock-Getter-Remove": $s_remove_after_get
+                    }
+                  }
+                  ]
+            c_expected_status_code:
+                - 200,302
+
+
+    服务调用-时间特性测试-HTTP-延时-超过60s时返回408 or 504-多region:
+        testcase: testcases/productpage/productpage-remotecall-to-mock-server-return-content-and-code-verify.yml
+        parameters:
+            #loop: ${gen_list(1)}
+
+            c_mock_host:
+                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            # 值必须为1，否则mock server不会存储
+            c_mock_setter:
+                - enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered:
+                - enable
+
+            c_mock_header:
+                - {}
+            # mock存储的id，使用时的id
+            c_mock_id:
+                - $s_mock_id
+            # mock返回结果时的http status code
+            c_mock_code:
+                - 200
+            # mock返回结果的内容
+            c_mock_data:
+                - {"result":{"totalCount":0,"apiGroups":[]},"requestId":"bjmv2fpcodnb3adquieqrtnaqsv50wnq"}
+            # mock值的http协议中的数据类型
+            c_mock_type:
+                - application/json
+
+            c_host-c_mock_delay:
+                - [http://productpage.jdcloud.com, 61]
+                - [http://productpage.ingress.mesh.cn-north-1.jdcloud.com, 61]
+                - [http://productpage.ingress.mesh.cn-north-1.jcloud.com, 90]
+                - [http://productpage.ingress.mesh.cn-east-1.jdcloud.com, 63]
+                - [http://productpage.ingress.mesh.cn-east-2.jdcloud.com, 62]
+                - [http://productpage.ingress.mesh.cn-south-1.jdcloud.com, 61]
+
+            c_summary:
+                - productpage和后端mock配置返回延时时间为${c_mock_delay}s
+            c_protocol-c_headers-c_datas:
+                - [HTTP,
+                  {},
+                  {
+                    "url": "${ENV(ENV_MOCK_SERVER_BASE_URL)}/mockserver",
+                    "method": "GET",
+                    "headers":{
+                      "X-Jdcloud-Test-Configs-Mock-Getter": $s_mock_id,
+                      "X-Jdcloud-Test-Configs-Mock-Getter-Remove": $s_remove_after_get
+                    }
+                  }
+                  ]
+            c_expected_status_code:
+                -  408,504

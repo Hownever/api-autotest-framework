@@ -1,0 +1,65 @@
+name: 获取k8s集群中的istio安装状态
+description: |
+    POST http://mesh-console-g.jdcloud.com/openApi/mesh/deleteIstio?regionId=cn-north-1&_t=1576069577260 HTTP/1.1
+    Host: mesh-console-g.jdcloud.com
+    Connection: keep-alive
+    Content-Length: 98
+    Accept: application/json
+    timeout: 3000
+    Origin: http://mesh-console-g.jdcloud.com
+    x-csrf-token: RzlqhuCYeqTbgrQBWsS2HiJr
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36
+    Content-Type: application/json;charset=UTF-8
+    Referer: http://mesh-console-g.jdcloud.com/istio?regionId=cn-north-1
+    Accept-Encoding: gzip, deflate
+    Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,pl;q=0.7
+    Cookie: _ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; NewMenuGuild=finished; jdcloud_sitelang=cn; jdcloud_sitelang_server=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1573027114,1573639986,1574406735,1575339381; jdcloud-api-testversion=v2; apigatewayvisitedMenu=containers; ucCurrPage=consumehistoryd2; apigatewayconsole_label=1; apigatewayversion=v2; pin=jdcloud-api-test; unick=jdcloud-api-test; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1575534177; __jdv=176089151|direct|-|none|-|1576053084568; _gid=GA1.2.370776566.1576053090; thor=520D78BDB6E3106915005393D9283339AB820C281E44189BBA969B0B11966F4DB71F0D8D9A0793992729396AC540B30181595A50065FF53135FA0279D9CBD80B43435E620D9E3CC25EB7B36389FFA2713D546A66FE5691F246848E8B6A8ECC4DD4C7433D0F1AD88F7167753C8850984D2697550EEFA30B0753B0CF9AFEDDA7E22BD21976928776F48A57FD4E5E99CBDB12E2C775B7C29EE74C11D76BDE3A672F; csrfToken=RzlqhuCYeqTbgrQBWsS2HiJr; ipv6_iaas=1; jdcloud-api-testconsole_label=undefined; jdcloud-api-testareaCode=cn-north-1; jdcloud-api-testvisitedMenu=Mesh%2CKubernetesCluster%2Cvpc%2CelasticSearch%2Cjdsf%2Ccontainers%2Cdisk; currPage=Mesh; __jda=257992726.1554091325970812602438.1554091326.1557283719.1559796648.14; __jdc=257992726; __jdb=257992726.15.1554091325970812602438|14.1559796648
+
+    {"params":{"regionId":"cn-north-1","clusterId":"k8s-9iu5eg9wje","x-extra-header":{"user":"gray"}}}
+variables:
+    host: ${ENV(ENV_MESH_WEB_BASE_URL)}
+    regionid: cn-north-1
+    clusterid: k8s-9iu5eg9wje
+    node_extra_header: {"user": "gray"}
+    timestamps: ${get_delta_timestamp(13,0)}
+
+    requestid: ${gen_random_string(19)}${get_timestamp(13)}
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    headers:  { "timeout": "3000" }
+    cookies:
+        _ga: ${ENV(ENV_WEB_COOKIES_JDCLOUD_COM)}
+
+request:
+    url: $host/openApi/mesh/deleteIstio
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    params:
+        regionId: $regionid
+        _t: $timestamps
+    json:
+        params:
+            regionId: $regionid
+            clusterId: $clusterid
+            x-extra-header: $node_extra_header
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+response: |
+    HTTP/1.1 200 OK
+    x-jdcloud-traceid: ee2f9825c7a4b7f029fe8866ae7276cd
+    content-type: application/json; charset=utf-8
+    x-frame-options: SAMEORIGIN
+    x-xss-protection: 1; mode=block
+    x-content-type-options: nosniff
+    x-download-options: noopen
+    x-readtime: 298
+    content-length: 164
+    date: Wed, 11 Dec 2019 13:06:18 GMT
+    x-envoy-upstream-service-time: 304
+    server: istio-envoy
+    connection: close
+
+    {"requestId":"bopejicb1ciqm8vpiw4i5jwvdsohp1i3","result":{"message":"deleting"},"responseObj":{"size":0,"timeout":0,"nonce":"4a2a511f-3ed5-4d2c-9734-bdf9399de49c"}}

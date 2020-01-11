@@ -1,0 +1,26 @@
+name: 批量查询信息
+description: 批量详细信息
+operationId: convertImage
+
+variables:
+    product: vm
+    api_ver: v1
+    regionId: cn-north-1
+    openapi_yaml: nofile
+    AK: xxx
+    SK: xxx
+    header:
+        Content-Type: application/json;charset=UTF-8
+#        x-jdcloud-pin: $pin
+
+    expected_status_code: 200
+
+request:
+    url: /$api_ver/regions/$regionId/images/tancong:convertImage
+    method: POST
+    headers: $header
+setup_hooks:
+
+    - ${hook_update_jdcloud_request($request, $AK, $SK, vm, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

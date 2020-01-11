@@ -1,0 +1,36 @@
+name: 根据云翼服务树中应用名称查询白名单列表-$appname-$host
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+    starttimestamp: $starttimestamp
+    endtimestamp: $endtimestamp
+    query:
+        filters:
+            - {"name":"eventType","value":[],"op":"eq"}
+            - {"name":"nsType","value":[],"op":"eq"}
+            - {"name":"ns","value":[],"op":"eq"}
+        orgQueryReq: {"nsType":"APP","ns":"productpage"}
+        key: ""
+
+    pageNumber: 0
+    pageSize: 20
+    orderBy: time
+    orderMethod: desc
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+
+request:
+    url: $host/hawkeye/api/v1/events
+    method: POST
+    cookies: $cookies
+    # {"start":1559525866904,"end":1559529466903,"query":{"filters":[{"name":"eventType","value":[],"op":"eq"},{"name":"nsType","value":[],"op":"eq"},{"name":"ns","value":[],"op":"eq"}],"orgQueryReq":{"nsType":"APP","ns":"productpage"},"key":""},"pageSize":20,"pageNumber":0,"orderBy":"time","orderMethod":"desc"}
+    json:
+        start: $starttimestamp
+        end: $endtimestamp
+        query: $query
+
+        pageNumber: $pageNumber
+        pageSize: $pageSize
+        orderBy: $orderBy
+        orderMethod: $orderMethod

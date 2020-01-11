@@ -1,0 +1,33 @@
+- config:
+    # 测试用例名称
+    name: productpage reviews api
+
+    variables:
+        host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        productid: 0
+        headers: {}
+        reviewcnt: 1
+        times: 0
+        jsonRes: []
+
+    output:
+        - jsonResponse
+        - hostname
+
+- test:
+    name: get reviews - $host - $headers
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $host
+        productid: $productid
+        headers: $headers
+
+    extract:
+        - jsonResponse: content
+        - hostname: content.hostname
+
+#    teardown_hooks:
+#        - ${hook_print(test test test)}
+    validate:
+        - len_ge: [content.reviews, $reviewcnt]

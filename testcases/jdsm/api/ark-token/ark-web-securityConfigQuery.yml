@@ -1,0 +1,30 @@
+name: 根据云翼服务树中应用ID查询应用安全配置
+description: |
+    cf: https://cf.jd.com/pages/viewpage.action?pageId=213608699
+
+    curl -X GET --header 'Accept: application/json'
+    --header 'Cookie: sso.js.com=yourCookie'
+    'http://lord.hd-tst.ark.jd.com:8021/web-api/v1/lord/securityConfig/query?appId=3587'
+
+    # GET http://ark.jdcloud.com/api/lord/v1/lord/securityConfig/query?appId=7204 HTTP/1.1
+    # GET http://ark.jdcloud.com/api/lord/v1/lord/securityConfig/query?appId=7203
+
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+    appid: 7202
+    headers: {}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/lord/api/v1/lord/securityConfig/query
+    method: GET
+    cookies: $cookies
+    headers: $headers
+    params:
+        appId: $appid
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+    # JSON

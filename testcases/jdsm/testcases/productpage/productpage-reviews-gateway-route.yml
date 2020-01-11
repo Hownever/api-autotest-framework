@@ -1,0 +1,41 @@
+- config:
+    # 测试用例名称
+    name: 经过网关路由场景
+
+    variables:
+        c_host: ${ENV(ENV_OUTER_GW_BASE_URL)}
+        c_product: productpage-mesh
+        c_apiVersion: v1
+        c_regionId: cn-north-1
+        c_openapi_yaml: nofile
+        c_AK: ${ENV(ENV_USER_AK_MAIN)}
+        c_SK: ${ENV(ENV_USER_SK_MAIN)}
+        c_user_pin: ${ENV(ENV_USER_PIN_MAIN)}
+        c_header:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $c_user_pin
+            authtoken: "234567"
+        c_productid: 0
+        # 函数延迟执行秒数
+        c_sleeptime: 0
+        c_expected_status_code: 200
+
+- test:
+    name: 经过网关路由场景 - get reviews - gw is $host - pin is $c_user_pin
+    api: api/productpage/apigateway-to-producpage.yml
+
+    variables:
+        host: $c_host
+        product: $c_product
+        apiVersion: $c_apiVersion
+        regionId: $c_regionId
+        openapi_yaml: $c_openapi_yaml
+        AK: $c_AK
+        SK: $c_SK
+        user_pin: $c_user_pin
+        header: $c_header
+        productid: $c_productid
+        sleeptime: $c_sleeptime
+
+    validate:
+        - eq: [status_code, $c_expected_status_code]

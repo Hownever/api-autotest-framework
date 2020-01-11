@@ -1,0 +1,77 @@
+config:
+    name: 核心功能监控
+    variables:
+        testenv: ${ENV(ENV_TEST_ENV)}
+        testproduct: ${ENV(ENV_TEST_PRODUCT)}
+        test_provider_app: ${ENV(ENV_TEST_PRODUCT)}
+        test_consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+        mock_server_url: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        mock_server_host: ${get_host_from_url($mock_server_url)}
+        s_sleeptime: 30
+
+testcases:
+    网格默认允许调用网格外服务验证-网格外服务依赖配置为空，调用网格外HTTP服务，允许调用:
+        testcase: testcases/jdmesh-basicconfig/serviceentry-config-verify.yml
+        variables:
+            jdsm_ui_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            expected_status_code: [200, 301, 302]
+            product: $testproduct
+            env: $testenv
+            serviceentrys: []
+            test_protocol: HTTP
+            sleeptime: $s_sleeptime
+            findstr_in_config_dump: ark.jdcloud.com
+            test_datas: {"method": "GET", "url": "http://ark.jdcloud.com", "allow_redirects": False}
+
+    网格默认允许调用网格外服务验证-网格外服务依赖配置为空，调用网格外TCP服务，允许调用:
+        testcase: testcases/jdmesh-basicconfig/serviceentry-config-verify.yml
+        variables:
+            jdsm_ui_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            expected_status_code: [200]
+            product: $testproduct
+            env: $testenv
+            serviceentrys: []
+            test_protocol: TCP
+            sleeptime: $s_sleeptime
+            findstr_in_config_dump: "$mock_server_host"
+            tcp_return_content: "TCP SEND DATA"
+            test_datas: {
+                "host": "$mock_server_host",
+                "port": 65534,
+                "data": "TCP SEND DATA"
+                  }
+
+    服务依赖配置后，允许调用验证-配置HTTP, ark.jdcloud.com, 80时，调用网格外HTTP服务，允许调用:
+        testcase: testcases/jdmesh-basicconfig/serviceentry-config-verify.yml
+        variables:
+            jdsm_ui_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            expected_status_code: [200, 301, 302]
+            product: $testproduct
+            env: $testenv
+            serviceentrys: [{"protocol":"HTTP","host":"ark.jdcloud.com","port": 80}]
+            test_protocol: HTTP
+            sleeptime: $s_sleeptime
+            findstr_in_config_dump: ark.jdcloud.com
+            test_datas: {"method": "GET", "url": "http://ark.jdcloud.com", "allow_redirects": False}
+
+    服务依赖配置后，允许调用验证-配置TCP, $mock_server_host, 9999时，调用网格外TCP服务，允许调用:
+        testcase: testcases/jdmesh-basicconfig/serviceentry-config-verify.yml
+        variables:
+            jdsm_ui_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            expected_status_code: [200]
+            product: $testproduct
+            env: $testenv
+            serviceentrys: [{"protocol":"TCP","host":"$mock_server_host","port": 9999}]
+            test_protocol: TCP
+            sleeptime: $s_sleeptime
+            findstr_in_config_dump: "$mock_server_host"
+            tcp_return_content: "TCP SEND DATA"
+            test_datas: {
+                "host": "$mock_server_host",
+                "port": 65534,
+                "data": "TCP SEND DATA"
+                  }

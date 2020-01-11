@@ -1,0 +1,77 @@
+- config:
+    name: 创建分组-创建kms访问授权-debugApi成功
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+    verify: False
+    output:
+        - apiGroupId
+        - revision
+        - environment
+        - kmsaccessKey
+        - kmssecretKey
+        - authUserType
+        - deploymentIds
+
+- test:
+    name: 创建分组-创建kms访问授权-成功
+    testcase: testcases/monitor/createAccessAuth_kms_mock_online.yml
+    output:
+        - apiGroupId
+        - revision
+        - environment
+        - kmsaccessKey
+        - kmssecretKey
+        - authUserType
+        - deploymentIds
+
+- test:
+    name: 查找apiId
+    api: api/monitor/queryApis.yml
+    variables:
+        filters1: apiName
+        filters1values: create_task_json
+    extract:
+        - apiId: content.result.apis.0.apiId
+    output:
+        - apiId
+
+- test:
+    name: 查找apiId
+    api: api/monitor/gwSyncCheck/deploy_sync.yml
+    variables:
+        managerUrl: manager.$regionId.jdcloud.com
+        token: ${ENV(ENV_GW_TOKEN)}
+        aaa: $apiGroupId-online
+#    output:
+#        - result
+
+- test:
+    name: debugApi-createTaskJson
+    api: api/monitor/debugApi.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+        assessKey: $kmsaccessKey
+        secretKey: $kmssecretKey
+        host: ${return_string($apiGroupId, env=$environment, host=1, regionId=$regionId)}
+        uri: /todo/api/v1/tasks/createTask/json
+        method: POST
+        authType: $authUserType
+        region: $regionId
+        queryString:
+        body: eyJkZXNjcmlwdGlvbiI6ImRlc2NyaXB0aW9uIiwidGl0bGUiOiJ0aXRsZSJ9
+        reqBodyType: 1
+        headerString:
+    extract:
+        - responseCodeStatus: content.result.responseCodeStatus
+#    validate:
+#        - eq: [$responseCodeStatus, 200 OK]

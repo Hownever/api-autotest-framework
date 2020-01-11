@@ -1,0 +1,19 @@
+config:
+    name: 接口测试
+    variables:
+        times: 0
+        testenv: pre
+        s_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+
+testcases:
+    remotecall test:
+        testcase: testcases/productpage/productpage-reviews-cnt-ge-n.yml
+        parameters:
+            host:
+                - $s_host
+            productid: [0]
+            headers:
+                # - {"authtoken": "1231222", "Keep-Alive": "timeout=10, max=1000"}
+                - {"authtoken": "1231222", "Connection": "close"}
+                - {"authtoken": "1231222",}
+            reviewcnt: [1]

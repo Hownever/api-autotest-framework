@@ -1,0 +1,1141 @@
+- config:
+    name: describeApisByFunctionId Test
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        groupName: ${get_name(groupName)}
+
+
+- test:
+    name: createApiGroup_200
+    request:
+        url: /v1/regions/$regionId/apiGroups
+        method: POST
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            groupName: $groupName
+            authType: jd_cloud
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiGroupId: content.result.apiGroupId
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: createApi_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/revision/0.0.1/apis
+        method: POST
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            apiGroupId: $apiGroupId
+            revision: 0.0.1
+            api:
+                action: POST
+                apiName:  testdescribeApisByFunctionId
+                description: testdescribeApisByFunctionId
+                path: "/router/service"
+                reqParams:
+                  -
+                    defaultValue: customerId
+                    description: customerId
+                    isRequired: true
+                    name: customerId
+                    paramType: String
+                    paramLocation: query
+                  -
+                    defaultValue: method
+                    description: method
+                    isRequired: true
+                    name: method
+                    paramType: String
+                    paramLocation: query
+                resBody: ~
+                reqBody: ~
+                reqBodyType: 1
+                resBodyType: 1
+                hufuAppTypeId: ~
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiId: content.result.apiId
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: createFunction_200
+    request:
+        url: /v1/regions/$regionId/functions
+        method: POST
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            name: $groupName
+            description: $groupName
+            entrance: index.handler
+            memory: 128
+            runTime: python3.6
+            overTime: 100
+            version: LATEST
+            logSetId: ~
+            logTopicId: ~
+            subnetId: ~
+            vpcId: ~
+            code:
+                zipFile: ~
+                bucketName: ~
+                objectName: ~
+                onlineCode: "I2NvZGluZz11dGYtOFxuXG5pbXBvcnQganNvblxuXG5kZWYgaGFuZGxlcihldmVudCwgY29udGV4dCk6XG4gICAgcmVzdWx0ID0ge1xuICAgICAgICAnc3RhdHVzQ29kZSc6IDIwMCxcbiAgICAgICAgJ2hlYWRlcnMnOiB7fSxcbiAgICAgICAgICAnYm9keSc6IGV2ZW50WydkZXRhaWwnXVsnYm9keSddLFxuICAgIH1cbiAgICByZXR1cm4gcmVzdWx0"
+            environment:
+                data: ~
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, function, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - functionId: content.result.data.functionId
+        - name: content.result.data.name
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: createFunction_1_200
+    request:
+        url: /v1/regions/$regionId/functions
+        method: POST
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            name: ${get_uuid1()}
+            description: ${get_uuid1()}
+            entrance: index.handler
+            memory: 128
+            runTime: python3.6
+            overTime: 100
+            version: LATEST
+            logSetId: ~
+            logTopicId: ~
+            subnetId: ~
+            vpcId: ~
+            code:
+                zipFile: ~
+                bucketName: ~
+                objectName: ~
+                onlineCode: "I2NvZGluZz11dGYtOFxuXG5pbXBvcnQganNvblxuXG5kZWYgaGFuZGxlcihldmVudCwgY29udGV4dCk6XG4gICAgcmVzdWx0ID0ge1xuICAgICAgICAnc3RhdHVzQ29kZSc6IDIwMCxcbiAgICAgICAgJ2hlYWRlcnMnOiB7fSxcbiAgICAgICAgICAnYm9keSc6IGV2ZW50WydkZXRhaWwnXVsnYm9keSddLFxuICAgIH1cbiAgICByZXR1cm4gcmVzdWx0"
+            environment:
+                data: ~
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, function, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - functionId_1: content.result.data.functionId
+        - name_1: content.result.data.name
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: updateApi_function_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/revision/0.0.1/apis/$apiId
+        method: PUT
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            api:
+                action: POST
+                apiGroupId: $apiGroupId
+                apiId: $apiId
+                apiName: create_task_json
+                description: create_task_json
+                path: "/tasks/createTask/json"
+                reqParams:
+                  -
+                    defaultValue: Authorization
+                    description: Authorization
+                    isRequired: true
+                    name: Author_test
+                    paramType: String
+                    paramLocation: head
+                reqBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"title\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"description\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+                resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"task\": {\n\t\t\t\"type\": \"object\",\n\t\t\t\"properties\": {\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"description\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"done\": {\n\t\t\t\t\t\"type\": \"boolean\"\n\t\t\t\t},\n\t\t\t\t\"uri\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+                reqBodyType: 1
+                resBodyType: 1
+                backServiceConfig: False
+                backServiceId: $functionId
+                backServiceName: $name
+                backServicePath: ~
+                backServiceType: function
+                backServiceVersion: LATEST
+                apiBackendConfig:
+                    backendAction: GET
+                    backendConstParams:
+                      -
+                        ""
+                    backendParams:
+                      -
+                        ""
+                    backendPath: "/resourceM/{resourceIdM}"
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_function_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.-1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: describeApi_function_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis/$apiId
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.funtionApi
+        - apiinfo_action: content.result.funtionApi.action
+        - apiinfo_apiGroupId: content.result.funtionApi.apiGroupId
+        - apiinfo_apiId: content.result.funtionApi.apiId
+        - apiinfo_apiName: content.result.funtionApi.apiName
+        - apiinfo_deploymentStatus: content.result.funtionApi.deploymentStatus
+        - apiinfo_description: content.result.funtionApi.description
+        - apiinfo_groupName: content.result.funtionApi.groupName
+        - apiinfo_path: content.result.funtionApi.path.-1
+        - apiinfo_revision: content.result.funtionApi.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: describeApisByFunctionId_function_1__200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - len_eq: [content.result.apis, 0]
+
+- test:
+    name: describeApisByFunctionId_wrong_func_200
+    request:
+        url: /v1/regions/$regionId/function/WRONG/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - len_eq: [content.result.apis, 0]
+
+- test:
+    name: updateApi_function_1_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/revision/0.0.1/apis/$apiId
+        method: PUT
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            api:
+                action: POST
+                apiGroupId: $apiGroupId
+                apiId: $apiId
+                apiName: create_task_json
+                description: create_task_json
+                path: "/tasks/createTask/json"
+                reqParams:
+                  -
+                    defaultValue: Authorization
+                    description: Authorization
+                    isRequired: true
+                    name: Author_test
+                    paramType: String
+                    paramLocation: head
+                reqBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"title\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"description\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+                resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"task\": {\n\t\t\t\"type\": \"object\",\n\t\t\t\"properties\": {\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"description\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"done\": {\n\t\t\t\t\t\"type\": \"boolean\"\n\t\t\t\t},\n\t\t\t\t\"uri\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+                reqBodyType: 1
+                resBodyType: 1
+                backServiceConfig: False
+                backServiceId: $functionId_1
+                backServiceName: $name_1
+                backServicePath: ~
+                backServiceType: function
+                backServiceVersion: LATEST
+                apiBackendConfig:
+                    backendAction: GET
+                    backendConstParams:
+                      -
+                        ""
+                    backendParams:
+                      -
+                        ""
+                    backendPath: "/resourceM/{resourceIdM}"
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_function_1_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.-1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - endswith: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: describeApisByFunctionId_function_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - len_eq: [content.result.apis, 0]
+
+- test:
+    name: deploy_test_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/deployments
+        method: POST
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            revision: 0.0.1
+            environment: test
+            backendServiceType: mock
+            backendUrl: ~
+            description: ~
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_test_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.2
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 1]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - endswith: [$apiinfo_path, "-test.cn-north-1.jdcloud-api.net/tasks/createTask/json"]
+#        - contained_by: [$apiinfo_path, $apiGroupId]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: deploy_preview_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/deployments
+        method: POST
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            revision: 0.0.1
+            environment: preview
+            backendServiceType: mock
+            backendUrl: ~
+            description: ~
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_preview_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 1]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - endswith: [$apiinfo_path, "-preview.cn-north-1.jdcloud-api.net/tasks/createTask/json"]
+#        - contained_by: [$apiinfo_path, $apiGroupId]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: deploy_online_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/deployments
+        method: POST
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            revision: 0.0.1
+            environment: online
+            backendServiceType: mock
+            backendUrl: ~
+            description: ~
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_online_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.0
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 1]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - endswith: [$apiinfo_path, ".cn-north-1.jdcloud-api.net/tasks/createTask/json"]
+#        - contained_by: [$apiinfo_path, $apiGroupId]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: offline_online_200
+    request:
+      url: /v1/regions/$regionId/apiGroups/$apiGroupId/deployments/${return_deploymentId($apiGroupId, online, 1)}
+      method: POST
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_offline_online_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.0
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 1]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, ""]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: offline_preview_200
+    request:
+      url: /v1/regions/$regionId/apiGroups/$apiGroupId/deployments/${return_deploymentId($apiGroupId, preview, 1)}
+      method: POST
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_offline_preview_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 1]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, ""]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: offline_test_200
+    request:
+      url: /v1/regions/$regionId/apiGroups/$apiGroupId/deployments/${return_deploymentId($apiGroupId, test, 1)}
+      method: POST
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_offline_test_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.2
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, ""]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: describeApisByFunctionId_offline_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.-1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - endswith: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: updateApi_unbind_func_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/revision/0.0.1/apis/$apiId
+        method: PUT
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            api:
+                action: POST
+                apiGroupId: $apiGroupId
+                apiId: $apiId
+                apiName: create_task_json
+                description: create_task_json
+                path: "/tasks/createTask/json"
+                reqParams:
+                  -
+                    defaultValue: Authorization
+                    description: Authorization
+                    isRequired: true
+                    name: Author_test
+                    paramType: String
+                    paramLocation: head
+                reqBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"title\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"description\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+                resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"task\": {\n\t\t\t\"type\": \"object\",\n\t\t\t\"properties\": {\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"description\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"done\": {\n\t\t\t\t\t\"type\": \"boolean\"\n\t\t\t\t},\n\t\t\t\t\"uri\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+                reqBodyType: 1
+                resBodyType: 1
+                backServiceConfig: True
+                backServiceId: ~
+                backServiceName: ~
+                backServicePath: ~
+                backServiceType: ~
+                backServiceVersion: ~
+                apiBackendConfig:
+                    backendAction: GET
+                    backendConstParams:
+                      -
+                        ""
+                    backendParams:
+                      -
+                        ""
+                    backendPath: "/resourceM/{resourceIdM}"
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_unbind_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - len_eq: [content.result.apis, 0]
+
+- test:
+    name: updateApi_bind_after_unbind_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/revision/0.0.1/apis/$apiId
+        method: PUT
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            api:
+                action: POST
+                apiGroupId: $apiGroupId
+                apiId: $apiId
+                apiName: create_task_json
+                description: create_task_json
+                path: "/tasks/createTask/json"
+                reqParams:
+                  -
+                    defaultValue: Authorization
+                    description: Authorization
+                    isRequired: true
+                    name: Author_test
+                    paramType: String
+                    paramLocation: head
+                reqBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"title\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"description\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+                resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"task\": {\n\t\t\t\"type\": \"object\",\n\t\t\t\"properties\": {\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"description\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"done\": {\n\t\t\t\t\t\"type\": \"boolean\"\n\t\t\t\t},\n\t\t\t\t\"uri\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+                reqBodyType: 1
+                resBodyType: 1
+                backServiceConfig: False
+                backServiceId: $functionId
+                backServiceName: $name
+                backServicePath: ~
+                backServiceType: function
+                backServiceVersion: LATEST
+                apiBackendConfig:
+                    backendAction: GET
+                    backendConstParams:
+                      -
+                        ""
+                    backendParams:
+                      -
+                        ""
+                    backendPath: "/resourceM/{resourceIdM}"
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_bind_after_unbind_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.-1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: deleteFunction_200
+    request:
+      url: /v1/regions/$regionId/functions/$name
+      method: DELETE
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, function, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+      - eq: [content.error.code, 400]
+      - eq: [content.error.status, FunctionHasExistingTrigger]
+
+- test:
+    name: describeApisByFunctionId_deleteFunction_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.-1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: unbindApi_200
+    request:
+      url: /v1/regions/$regionId/function/$functionId/apis/$apiId
+      method: DELETE
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_unbindApi_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+      - len_eq: [content.result.apis, 0]
+
+- test:
+    name: bindApi_after_unbindApi_200
+    request:
+      url: /v1/regions/$regionId/function/$functionId/apis/$apiId
+      method: POST
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+      json:
+        functionName: $name
+        versionName: LATEST
+
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_bindApi_after_unbindApi_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.-1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - eq: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: updateApi_another_func_200
+    request:
+        url: /v1/regions/$regionId/apiGroups/$apiGroupId/revision/0.0.1/apis/$apiId
+        method: PUT
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+        json:
+            api:
+                action: POST
+                apiGroupId: $apiGroupId
+                apiId: $apiId
+                apiName: create_task_json
+                description: create_task_json
+                path: "/tasks/createTask/json"
+                reqParams:
+                  -
+                    defaultValue: Authorization
+                    description: Authorization
+                    isRequired: true
+                    name: Author_test
+                    paramType: String
+                    paramLocation: head
+                reqBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"title\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"description\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+                resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"task\": {\n\t\t\t\"type\": \"object\",\n\t\t\t\"properties\": {\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"description\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"done\": {\n\t\t\t\t\t\"type\": \"boolean\"\n\t\t\t\t},\n\t\t\t\t\"uri\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+                reqBodyType: 1
+                resBodyType: 1
+                backServiceConfig: False
+                backServiceId: $functionId_1
+                backServiceName: $name_1
+                backServicePath: ~
+                backServiceType: function
+                backServiceVersion: LATEST
+                apiBackendConfig:
+                    backendAction: GET
+                    backendConstParams:
+                      -
+                        ""
+                    backendParams:
+                      -
+                        ""
+                    backendPath: "/resourceM/{resourceIdM}"
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId_1/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    extract:
+        - apiinfo: content.result.apis.-1
+        - apiinfo_action: content.result.apis.-1.action
+        - apiinfo_apiGroupId: content.result.apis.-1.apiGroupId
+        - apiinfo_apiId: content.result.apis.-1.apiId
+        - apiinfo_apiName: content.result.apis.-1.apiName
+        - apiinfo_deploymentStatus: content.result.apis.-1.deploymentStatus
+        - apiinfo_description: content.result.apis.-1.description
+        - apiinfo_groupName: content.result.apis.-1.groupName
+        - apiinfo_path: content.result.apis.-1.path.-1
+        - apiinfo_revision: content.result.apis.-1.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [$apiinfo_action, "POST"]
+        - eq: [$apiinfo_apiGroupId, $apiGroupId]
+        - eq: [$apiinfo_apiId, $apiId]
+        - eq: [$apiinfo_apiName, "create_task_json"]
+        - eq: [$apiinfo_deploymentStatus, 0]
+        - eq: [$apiinfo_description, "create_task_json"]
+        - eq: [$apiinfo_groupName, $groupName]
+        - endswith: [$apiinfo_path, "/tasks/createTask/json"]
+        - eq: [$apiinfo_revision, "0.0.1"]
+
+- test:
+    name: deleteApiGroup_200
+    request:
+      url: /v1/regions/$regionId/apiGroups/$apiGroupId
+      method: DELETE
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+
+- test:
+    name: describeApisByFunctionId_deleteApiGroup_200
+    request:
+        url: /v1/regions/$regionId/function/$functionId/apis
+        method: GET
+        headers:
+            Content-Type: application/json
+            x-jdcloud-pin: $pin
+    setup_hooks:
+        - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]
+      - len_eq: [content.result.apis, 0]
+
+- test:
+    name: deleteFunction_1_200
+    request:
+      url: /v1/regions/$regionId/functions/$name_1
+      method: DELETE
+      headers:
+        Content-Type: application/json
+        x-jdcloud-pin: $pin
+    setup_hooks:
+      - ${hook_update_jdcloud_request($request, $AK, $SK, function, $apiVersion, $openapi_yaml, $regionId)}
+    validate:
+      - eq: ["status_code", 200]
+      - len_eq: [content.requestId, 32]

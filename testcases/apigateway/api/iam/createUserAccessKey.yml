@@ -1,0 +1,28 @@
+name: 创建主账号AccessKey
+description: 创建主账号AccessKey
+operationId: createUserAccessKey
+
+variables:
+#    url
+    host_cuak: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cuak: ${ENV(ENV_API_VERSION)}
+    regionId_cuak: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_cuak:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_cuak: ${ENV(ENV_SERVICELINE_IAM)}
+    openapiYaml_cuak: nofile
+    openApiAk_cuak: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cuak: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cuak: v1
+
+request:
+    url: $host_cuak/$apiVer_cuak/regions/$regionId_cuak/userAccessKey
+    method: POST
+    headers: $header_cuak
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cuak, $openApiSk_cuak, $serviceLine_cuak, $apiVersion_cuak, $openapiYaml_cuak, $regionId_cuak)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

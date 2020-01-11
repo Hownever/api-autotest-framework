@@ -1,0 +1,10 @@
+testcases:
+    错误的userpin调用删除，返回401:
+        testcase: testcases\jdsf\apis\deleteTraceCluster-401.yaml
+        parameters:
+            userpin:
+                - jcloud_00
+            usererps:
+                - ${ENV(ENV_USER_ERP)}
+            instanceid:
+                - reg-notexist

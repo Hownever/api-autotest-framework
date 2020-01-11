@@ -1,0 +1,65 @@
+testcases:
+    Pin来源：不同账号类型-不同key-IP白名单开启-配置ip白名单非本机-网关禁止访问后端:
+        testcase:  api/ipprotect-opened-deny.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "B4D36386BD9931771F01F5857775CADC",
+                    "SK" : "CD5B008C5C82BCE5D345744A9FA41D46",
+                    "headers" : {
+                        "x-jdcloud-pin" : "user_not_exist",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 企业用户-子账号
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "NormalSubUserSelfKey",
+                    "AK" : "485A20FB993547EBF8F9890F71AFC932",
+                    "SK" : "0E63A51119A6CBCB4C1A40F5186EAD51",
+                    "headers" : {
+                        "x-jdcloud-pin" : "user_not_exist",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 用户角色
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "RoleSubUserSelfKey",
+                    "AK" : "90A1EF4551B4296C",
+                    "SK" : "wojpvjoePVyzbVVbuwBApkmqLAvvwwnMAYZukyAe",
+                    "headers" : {
+                        "x-jdcloud-session-token" : "${base64encode(1Kko8wMEXBgPkISmqVyIHRCdAFsrq-hd3s8YhGydSnKGBFCqRAt7AA/_RYTBp3lDXIvE5J8w-XKSg/GoGA0XYF3HbHSBDS5YUPdfCAW7CzQzwS8HdgnUi5sVwy5OgegPF_deYj7KULlH4fNi7CEtqHBe9npx0e60DkiQbuhcpBdzxUbCpxAT7Nj-_S_dFINtdlymZgSqw4pstpgGSgeOUgH_KdotFzDCCtIPNzeX5iLg9NpxyT6CwQRG6X9tlE17QbHYrweXxLako83jpEFl6tiLDw7rFhiQz2rUtglzPKxFr7-sMcEH7GzcUt8IhYf9otOPUtr0SjCg-hy8aIDxD1E_ZhPs3CBCcyd9ukrcrAIBjQEd-3GF_KSRlBkIhDs5Z6sH2bs3aqKl2kwaZT0axzyqzB1xCo3PYVjF3ekQnvWydDCQ-rgaaNLyg/grrvj50UDQhdbKLKG5pqjg)}",
+                    },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 非控制台用户（运营后台）- 不传x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin",
+                    "AK" : "F5A33732B0AA87C35A41C58412BBA485",
+                    "SK" : "72E095F9CFECD741E6D35FF34DFFB4E5",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_LUrXyzr",
+                        }
+                  }
+            ipaddress:
+                # 无效的IP地址
+                - 11.226.132.138

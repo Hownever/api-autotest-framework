@@ -1,0 +1,183 @@
+- config:
+    name: 创建分组-成功
+    variables:
+    #    path
+        tc_regionId_apim: ${ENV(ENV_APIM_REGIONID)}
+        tc_serviceLine_apim: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        tc_groupName: JIASHUO_TEST_JDSF
+        tc_description: 测试微服务网关，勿删
+        tc_prefix:
+        tc_keyCheck: check_exist
+        tc_authType: jd_cloud
+        tc_prefixStrip: 0
+        tc_groupType: jdsf_group
+        tc_jdsfName:
+        tc_jdsfRegistryName:
+        tc_jdsfId:
+        tc_environment: online
+        tc_backendServiceType: jdsf
+        tc_backendUrl:
+        #-----------------------------------------------------
+        tc_filters1values: JIASHUO_TEST_JDSF
+        tc_serviceLine_jdsf: ${ENV(ENV_SERVICELINE_JDSF)}
+        tc_regionId_jdsf: ${ENV(ENV_JDSF_REGIONID)}
+        tc_gatewayName: JIASHUO_TEST_JDSF
+        tc_gatewayType: MICROSERVICE
+        tc_vpcId: vpc-7hrcljzkli
+        tc_subnetId: subnet-jqsaas34xn
+        tc_gatewaySpec: QPS_100
+        tc_gatewayVersion: 1.0.0
+        tc_rz: prod_bj02
+        tc_rzType: SYSTEM
+        tc_chargeMode: CONFIG
+        tc_chargeUnit:
+        tc_apiGroupRegion: cn-north-1
+        tc_registryId: reg-1r67qqm63nc3k
+        tc_proxyAddress:
+        tc_timeSpan:
+        tc_serviceNames:
+            - jdsf-server4
+        #-----------------------------------------------------
+        tc_authFlag: jd_apikms
+        tc_accessKey: ${ENV(ENV_USER_AK)}
+        tc_secretKey: ${ENV(ENV_USER_SK)}
+        #-----------------------------------------------------
+        tc_kmsName: ${ENV(ENV_KMS_NAME)}
+        tc_subsName: ${ENV(ENV_SUBS_KEY_NAME)}
+        #-----------------------------------------------------
+    verify: False
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine: $tc_serviceLine_apim
+        regionId: $tc_regionId_apim
+        filters1values: $tc_groupName
+
+- test:
+    name: 创建分组成功，分组名：$tc_groupName，分组类型：$tc_groupType
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+    #    path
+        regionId: $tc_regionId_apim
+    #    json
+        groupName: $tc_groupName
+        description: $tc_description
+        prefix: $tc_prefix
+        keyCheck: $tc_keyCheck
+        authType: $tc_authType
+        prefixStrip: $tc_prefixStrip
+        groupType: $tc_groupType
+        jdsfName: $tc_jdsfName
+        jdsfRegistryName: $tc_jdsfRegistryName
+        jdsfId: $tc_jdsfId
+        serviceLine: $tc_serviceLine_apim
+    extract:
+        - apiGroupId: content.result.apiGroupId
+        - revision: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId, 15]
+        - eq: [$revision, 0.0.1]
+        - contains: [$apiGroupId, ag-]
+    output:
+        - apiGroupId
+        - revision
+
+- test:
+    name: 查询此分组是否可绑定
+    api: api/apiGroup/describeBindableApiGroups.yml
+    variables:
+    #    path
+        regionId: $tc_regionId_apim
+    #    json
+        filters1: groupType
+        filters1values: jdsf_group
+    extract:
+        - apiGroups: content.result.apiGroups
+    validate:
+        - eq: ["status_code", 200]
+    output:
+        - apiGroupId
+        - revision
+
+#
+#- test:
+#    name: 查询微服务网关各信息，绑定分组
+#    testcase: testcases/jdsfgw/prepare_for_createGateway.yml
+#    variables:
+#        regionId: $tc_regionId_jdsf
+#        filters1values: $tc_gatewayName
+#    #-----------------------------------------------------
+#        gatewayName: $tc_gatewayName
+#        gatewayType: $tc_gatewayType
+#        vpcId: $tc_vpcId
+#        subnetId: $tc_subnetId
+#        gatewaySpec: $tc_gatewaySpec
+#        gatewayVersion: $tc_gatewayVersion
+#        rz: $tc_rz
+#        rzType: $tc_rzType
+#        chargeMode: $tc_chargeMode
+#        chargeUnit: $tc_chargeUnit
+#        apiGroupId: $apiGroupId
+#        apiGroupRegion: $tc_regionId_apim
+#        registryId: $tc_registryId
+#        proxyAddress: $tc_proxyAddress
+#        timeSpan: $tc_timeSpan
+#        serviceNames: $tc_serviceNames
+#        serviceLine: $tc_serviceLine_jdsf
+#    output:
+#        - gatewayId
+#        - registryId
+#        - gatewayName
+#
+#- test:
+#    name: 查询分组，绑定信息正确
+#    api: api/apiGroup/describeApiGroup.yml
+#    variables:
+#    #    url
+#        regionId: $tc_regionId_apim
+#    #    json
+#        apiGroupId: $apiGroupId
+#        serviceLine: $tc_serviceLine_apim
+#    extract:
+#        - apiGroup: content.result.apiGroup
+#        - describeApiGroup_jdsfId: content.result.apiGroup.jdsfId
+#        - describeApiGroup_jdsfName: content.result.apiGroup.jdsfName
+##        - describeApiGroup_jdsfRegistryName: content.result.apiGroup.jdsfRegistryName
+#    validate:
+#        - eq: ["status_code", 200]
+#        - eq: [$describeApiGroup_jdsfId, $gatewayId]
+#        - eq: [$describeApiGroup_jdsfName, $gatewayName]
+##        - eq: [$describeApiGroup_jdsfRegistryName, $registryName]
+#
+#- test:
+#    name: 发布分组到测试环境
+#    api: api/Deployment/deployByAdmin.yml
+#    variables:
+#    #    url
+#        regionId: $tc_regionId_apim
+#        apiGroupId: $apiGroupId
+#    #    json
+#        revision: $revision
+#        environment: test
+#        backendServiceType: $tc_backendServiceType
+#        backendUrl:
+#        description:
+#        jdsfName:
+#        jdsfRegistryName:
+#        jdsfId:
+#        serviceLine: $tc_serviceLine_apim
+#    validate:
+#        - eq: ["status_code", 200]
+#
+##----------------------------------------------------------------------------------------------------------------
+#- test:
+#    name: 删除已创建的API分组
+#    testcase: testcases/jdsfgw/end_of_test_deleteApiGroup.yml
+#    variables:
+#        serviceLine: $tc_serviceLine_apim
+#        regionId: $tc_regionId_apim
+#        filters1values: $tc_groupName

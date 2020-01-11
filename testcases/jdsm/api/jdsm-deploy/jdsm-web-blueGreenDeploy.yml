@@ -1,0 +1,66 @@
+name: 根据云翼服务树中应用名称配置服务网格的基本配置项-$product-$env-$host
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: productpage
+    fullname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_productpage
+    env: pre
+
+    bluegroup: []
+    greengroup: []
+    enablebluegroup: False
+    enablegreengroup: False
+
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    headers: {}
+
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    # http://mesh-online.ark.jdcloud.com/openApi/jdmesh/blueGreenDeploy HTTP/1.1
+    url: $host/openApi/jdmesh/blueGreenDeploy
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    # {"params":{
+    #    "appName":"productpage",
+    #    "env":"pre",
+    #    "deployment":{
+    #         "appName":"productpage",
+    #         "blueGroup":[{"groupName":"east2-pre","imageVersion":"istio1.2.2-develop-35b7c873-0906174008"}],
+    #         "greenGroup":[{"groupName":"east2-pre-az2","imageVersion":"istio1.2.2-develop-35b7c873-0815104718"}],
+    #         "enableBlueGroup":true,
+    #         "enableGreenGroup":false
+    #         }}}
+    json:
+        params:
+            appName: $product
+            env: $env
+            deployment:
+                appName: $product
+                blueGroup: $bluegroup
+                greenGroup: $greengroup
+                enableBlueGroup: $enablebluegroup
+                enableGreenGroup: $enablegreengroup
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+# response
+# {
+#    "requestId":"bmsot44h7dgafuuvvignpsm5275336jn",
+#    "error":null,
+#    "result":{
+#        "deployment":{
+#            "blueGroup":[{"groupName":"east2-pre","imageVersion":"istio1.2.2-develop-35b7c873-0906174008"}],
+#            "greenGroup":[{"groupName":"east2-pre-az2","imageVersion":"istio1.2.2-develop-35b7c873-0815104718"}],
+#            "enableBlueGroup":false,
+#            "enableGreenGroup":true
+#        }
+#  }

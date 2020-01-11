@@ -1,0 +1,57 @@
+name: 根据云翼登录
+variables:
+    host: ${ENV(ENV_ARK_WEB_LOGIN_BASE_URL)}
+    returnurl: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    fp: N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I
+    username: your_username
+    password: your_passwrod
+
+
+#POST http://ssa.ark.jcloud.com/sso/login?ReturnUrl=http://ark.jcloud.com/ HTTP/1.1
+#Host: ssa.ark.jcloud.com
+#Connection: keep-alive
+#Content-Length: 134
+#Cache-Control: max-age=0
+#Origin: http://ssa.ark.jcloud.com
+#Upgrade-Insecure-Requests: 1
+#Content-Type: application/x-www-form-urlencoded
+#User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36
+#Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3
+#Referer: http://ssa.ark.jcloud.com/sso/login?ReturnUrl=http://ark.jcloud.com/
+#Accept-Encoding: gzip, deflate
+#Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,pl;q=0.7
+#Cookie: 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; _ga=GA1.2.1834072695.1556605020; jd.erp.lang=zh_CN; thor=266D4182C9765ABA472EE445C9393A6072316FD5ADD525ACDE85E8B9FC35493DBC8E40BA370754B69820BB49534C118FAC7ACCEF9B5C03560442DE324F2CD308FE3931BCD3FCA8CC4A5EA8A488D6C52BCFD090A001528FFC4616CC82151F41C12D3ECB8360D510E7B109800E1FAE466F4DD56334776CD99ADC29AC32E2F9B9D1F051A0E5110B577C102C389F83E714C9; pin=jcloud_00; unick=jcloud_00; erp1.jd.com=68E18CCA648E147EC9645F7EC03B6131D2B9E2FE18211A19B3D04FE9DF06CC9BEDC366133C25B94E79B6902292CCFAAC9DF03850166CA81DCB3DDB2032001586783CC666A65FD4243F1B77B65C0B12E6
+#
+#fp=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I&username=likui34&password=xxxxxx
+#
+
+# Response:
+#HTTP/1.1 302 Found
+#Server: Tengine
+#Date: Mon, 19 Aug 2019 02:27:54 GMT
+#Content-Length: 0
+#Connection: close
+#Pragma: No-cache
+#Cache-Control: max-age=0
+#Expires: Mon, 19 Aug 2019 02:27:54 GMT
+#Set-Cookie: erp1.jd.com=FA193C010D6C2FAA10F8DFFAB5DF641BABE7C11DF04CADA0E8084E85E51D9E7C784ED42A349DDDBDB253ECE9128DA3161595911C183E8B63B9DE755B05FDE151C757F9818E4BC0447A519D58A1413397; Domain=.ark.jcloud.com; Path=/
+#Set-Cookie: sso.jd.com=BJ.383c80b08b2a42b28f8907ba9e3d8769; Domain=.ark.jcloud.com; Path=/
+#Set-Cookie: jd.erp.lang=zh_CN; Domain=.ark.jcloud.com; Expires=Tue, 18-Aug-2020 02:37:54 GMT; Path=/
+#Location: http://ark.jcloud.com/?sso_service_ticket=BJ.bab6a9f5f44b43a1803e2d3e4135f96b
+#Content-Language: zh-CN
+
+
+request:
+    # product：http://ssa.ark.jcloud.com/sso/login?ReturnUrl=http://ark.jcloud.com/
+    #
+    # gray：http://pre.ssa.ark.jdcloud.com/sso/login?returnUrl=http://1box.ark.jdcloud.com/#
+    url: $host/sso/login?ReturnUrl=$returnurl
+    method: POST
+#    cookies:
+#         _ga: ${ENV(ENV_COOKIES)}
+
+    allow_redirects: False
+    params:
+        fp: $fp
+        username: $username
+        password: $password

@@ -1,0 +1,47 @@
+name: 修改后端配置
+description: 修改后端配置
+operationId: updateBackendConfig
+
+variables:
+#    url
+    host_maga: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    api_ver_maga: v1
+    regionId_maga: cn-north-1
+#    header
+    header_maga:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: mt_device
+#    json
+    apiGroupId_maga: ag-wndnlq0y4ia3
+    backendConfigId: bc-wn1j3zp3swx2
+#    groupName_maga: groupName_maga
+#    description_maga: description_maga
+#    prefix_maga: prefix_maga
+#    keyCheck_maga: keyCheck_maga
+#    authType_maga: authType_maga
+#    prefixStrip_maga: prefixStrip_maga
+#    groupType_maga: groupType_maga
+#    jdsfName_maga: jdsfName_maga
+#    jdsfRegistryName_maga: jdsfRegistryName_maga
+#    jdsfId_maga: jdsfId_maga
+#    hooks
+    serviceLine_maga: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_maga: nofile
+    openApiAk_maga: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_maga: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_maga: v1
+    
+request:
+    url: $host_maga/$api_ver_maga/regions/$regionId_maga/apiGroups/$apiGroupId_maga/backendConfig/$backendConfigId:admin
+    method: PATCH
+    headers: $header_maga
+    json:
+        baseGroupId: ag-wndnlq0y4ia3
+        backendUrl: http://p2p-platform-api-internal.jdcloud.com
+        backendServiceType: HTTP/HTTPS
+        sort: 0
+        environment: online
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_maga, $openApiSk_maga, $serviceLine_maga, $apiVersion_maga, $openapiYaml_maga, $regionId_maga)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

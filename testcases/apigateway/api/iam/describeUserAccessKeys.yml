@@ -1,0 +1,28 @@
+name: 查询主账号AccessKey列表
+description: 查询主账号AccessKey列表
+operationId: describeUserAccessKeys
+
+variables:
+#    url
+    host_descuak: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_descuak: ${ENV(ENV_API_VERSION)}
+    regionId_descuak: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_descuak:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_descuak: ${ENV(ENV_SERVICELINE_IAM)}
+    openapiYaml_descuak: nofile
+    openApiAk_descuak: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_descuak: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_descuak: v1
+
+request:
+    url: $host_descuak/$apiVer_descuak/regions/$regionId_descuak/userAccessKeys
+    method: GET
+    headers: $header_descuak
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_descuak, $openApiSk_descuak, $serviceLine_descuak, $apiVersion_descuak, $openapiYaml_descuak, $regionId_descuak)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

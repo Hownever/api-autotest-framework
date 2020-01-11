@@ -1,0 +1,137 @@
+config:
+    name: openapi-core-console
+    variables:
+      base_url:
+        - ${ENV(ENV_BASE_URL)}
+
+testcases:
+    deleteInstance接口，网关报错403,this user is not allowed:
+        testcase: testcases/authDeny/deleteInstance_gw_block_403_user_not_allowed.yml
+        parameters:
+            base_url: $base_url
+            instanceId: [tancong]
+            result: ["网关报错403，this user is not allowed"]
+            userinfo:
+                - info: "控制台AK+不传Pin"
+                  pin:
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    deleteInstance接口，网关报错403,You are not authorized:
+        testcase: testcases/authDeny/deleteInstance_gw_block_403_not_authorized.yml
+        parameters:
+            base_url: $base_url
+            instanceId: [tancong]
+            result: ["网关报错403，You are not authorized"]
+            userinfo:
+                - info: "控制台AK+无权限的子账号"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_NO_PERMISSION)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+                - info: "控制台AK+不存在的子账号"
+                  pin: ${ENV(ENV_NOT_EXIST_CHILD_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    deleteInstance接口，网关不拦截，后端返回404，not found:
+        testcase: testcases/authAllow/deleteInstance_gw_pass_back_404_not_found.yml
+        parameters:
+            base_url: $base_url
+            instanceId: [tancong]
+            result: ["网关不拦截，后端返回404，not found"]
+            userinfo:
+                - info: "控制台AK+有权限的子用户"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+                - info: "控制台AK+主账号Pin"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    deleteInstance接口，网关不拦截，后端返回404，not exists:
+        testcase: testcases/authAllow/deleteInstance_gw_pass_back_404_not_exists.yml
+        parameters:
+            base_url: $base_url
+            instanceId: [tancong]
+            result: ["网关不拦截，后端返回404，not exists"]
+            userinfo:
+                - info: "运营后台AK+pin中包含@"
+                  pin: ${ENV(ENV_AT_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+                - info: "控制台AK+不存在的主账号"
+                  pin: ${ENV(ENV_NOT_EXIST_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    describeInstanceTypes接口，网关报错403,this user is not allowed:
+        testcase: testcases/authDeny/describeInstanceTypes_gw_block_403_user_not_allowed.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关报错403，this user is not allowed"]
+            userinfo:
+                - info: "控制台AK+不传Pin"
+                  pin:
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    describeInstanceTypes接口，网关报错403，You are not authorized:
+        testcase: testcases/authDeny/describeInstanceTypes_gw_block_403_not_authorized.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关报错403，You are not authorized"]
+            userinfo:
+#                - info: "控制台AK+无权限的子账号"
+#                  pin: ${ENV(ENV_CHILD_PIN_HAVE_NO_PERMISSION)}
+#                  AK: ${ENV(ENV_AK_CONSOLE)}
+#                  SK: ${ENV(ENV_SK_CONSOLE)}
+                - info: "控制台AK+不存在的子账号"
+                  pin: ${ENV(ENV_NOT_EXIST_CHILD_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    describeInstanceTypes接口，网关不拦截，后端返回200:
+        testcase: testcases/authAllow/describeInstanceTypes_gw_pass_back_200.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关不拦截，后端返回200"]
+            userinfo:
+                - info: "控制台AK+有权限的子用户"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+                - info: "控制台AK+主账号Pin"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    describeInstanceTypes接口，网关不拦截，后端返回404，not exists:
+        testcase: testcases/authAllow/describeInstanceTypes_gw_pass_back_404_not_exists.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关不拦截，后端返回404，not exists"]
+            userinfo:
+                - info: "控制台AK+pin中包含@"
+                  pin: ${ENV(ENV_AT_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+                - info: "控制台AK+不存在的主账号"
+                  pin: ${ENV(ENV_NOT_EXIST_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+
+    queryWebsiteVul接口，网关不拦截，后端返回200:
+        testcase: testcases/authAllow/queryWebsiteVul_gw_pass_back_200.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关不拦截，后端返回200"]
+            userinfo:
+                - info: "控制台AK+有权限的子用户+调用不在白名单中的接口"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}
+                - info: "控制台AK+主账号"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_CONSOLE)}
+                  SK: ${ENV(ENV_SK_CONSOLE)}

@@ -1,0 +1,102 @@
+- config:
+    # 测试用例名称
+    name: 配置token开启或者关闭，验证token功能
+
+    variables:
+        c_productpage_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        c_ark_host: ${ENV(ENV_ARK_API_BASE_URL)}
+        c_expected_status_code: 200
+        c_headers: {}
+
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        c_product_productpage: productpage
+        c_env: pre
+
+        c_docheck: $c_token_productpage
+        c_whitelist: 0
+        c_checkip: 0
+        c_ipwhitelist: 0
+        c_sendlog: 0
+        c_tenantname: jcloud
+
+        c_payload: {}
+        c_token_verify_waittime: 0
+
+        c_enableWhiteListCheck: False
+        c_enableNegativeHealthCheck: False
+        c_healthCheckInterval: 10
+        c_healthCheckconsecutiveErrors: 5
+        c_healthCheckmaxEjectionPercent: 30
+        c_healthCheckbaseEjectionTime: 180
+        c_serviceEntries: []
+        c_update_basicconfig_waittime: 0
+        c_update_token_settings_waittime: ${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}
+
+        is_need_sleep: null
+        tokensetting_productpage: None
+        tokensetting_reviews: None
+        casesummary: your_case_summary
+        created_token: your_create_token
+
+- test:
+    name: 配置安全token设置 - $c_product_productpage - $c_env - docheck=$c_docheck - 等待$c_update_token_settings_waittime s
+    testcase: testcases/ark-token/apply-ark-token-settings.yml
+
+    variables:
+        c_ark_api_host: ${ENV(ENV_ARK_API_BASE_URL)}
+        c_ark_web_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+
+        c_headers: {}
+
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        c_appname: $c_product_productpage
+        c_appfullname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_$c_appname
+        c_env: $c_env
+
+        c_update_token_settings_waittime: $c_update_token_settings_waittime
+
+        c_docheck: $c_docheck
+        c_whitelist: $c_whitelist
+        c_checkip: $c_checkip
+        c_ipwhitelist: $c_ipwhitelist
+        c_sendlog: $c_sendlog
+        c_tenantname: $c_tenantname
+
+    extract:
+        - tokensetting_productpage: content.result.basicConfig.enableAuthToken
+
+    teardown_hooks:
+        - is_need_sleep: False
+    validate:
+        - eq: [status_code, 200]
+
+
+- test:
+    name: create token - $c_payload
+    api: api/keyservice-token/createtokenindependent-deadline-transfer-to-int.yml
+
+    variables:
+        payload: $c_payload
+
+    extract:
+        - created_token: content.result.token
+    validate:
+        - eq: [status_code, 200]
+
+
+- test:
+    name: $casesummary - call productpage api
+    api: api/productpage/productpage-api-products.yml
+
+    variables:
+        host: $c_productpage_host
+        productid: 0
+        headers:
+            authtoken: $created_token
+        expected_status_code: $c_expected_status_code
+
+    setup_hooks:
+        - ${sleep_N_secs($c_token_verify_waittime)}
+    validate:
+        - eq: [status_code, $c_expected_status_code]

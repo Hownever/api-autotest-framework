@@ -1,0 +1,50 @@
+testcases:
+    主账号和子账号-不同key-IP白名单开启-配置ip白名单非本机-网关禁止访问后端:
+        testcase:  api/ipprotect-opened-deny-check-uc-api-realtime.yml
+        parameters:
+            userinfos:
+                # 企业用户
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "B4D36386BD9931771F01F5857775CADC",
+                    "SK" : "CD5B008C5C82BCE5D345744A9FA41D46",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 企业用户-子账号
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "NormalSubUserSelfKey",
+                    "AK" : "485A20FB993547EBF8F9890F71AFC932",
+                    "SK" : "0E63A51119A6CBCB4C1A40F5186EAD51",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 用户角色
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "RoleSubUserSelfKey",
+                    "AK" : "9A322A39EF3B9887",
+                    "SK" : "SXAMHbSwnjFnsjfZkdzrBPemmYHyzrFJkZiHvJEs",
+                    "headers" : {
+                        "x-jdcloud-session-token" : "${base64encode(1Kko8wMEXBgPkISmqVyIHRCdAFsrq-hd3s8YhGydSnKGBFCqRAt7AA/_RYTBp3lDXIvE5J8w-XKSg/GoGA0XYF3HbHSBDS5YUPdfCAW7CzQzwS8HdgnUi5sVwy5OgegPF_deYj7KULlH4fNi7CEtqHBe9npx0e60DkiQbuhcpBdzxUbCpxAT7Nj-_S_dFINtdlymZgSqw4pstpgGSgeOUgH_KdotFzDCCtIPNzeX5iLg9NpxyT6CwQRG6X9tlE17QbHYrweXxLako83jpEFl6tiLDw7rFhiQz2rUtglzPKxFr7-sMcEH7GzcUt8IhYf9otOPUtr0SjCg-hy8aIDxD1E_ZhPs3CBCcyd9ukrcrAIBjQEd-3GF_KSRlBkIhDs5Z6sH2bs3aqKl2kwaZT0axzyqzB1xCo3PYVjF3ekQnvWydDCQ-rgaaNLyg/grrvj50UDQhdbKLKG5pqjg)}",
+                    },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+            ipaddress:
+                - 168.95.1.1
+                - 168.95.1.2
+                - 168.95.1.3
+                - 168.95.1.4
+                - 168.95.1.5

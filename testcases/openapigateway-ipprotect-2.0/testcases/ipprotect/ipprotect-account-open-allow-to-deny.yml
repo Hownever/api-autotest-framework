@@ -1,0 +1,35 @@
+testcases:
+    开启IP白名单后，用户被允许使用，然后通过更新IP，限制使用的场景:
+        testcase:  api/ipprotect-opened-allow-to-deny.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "6215839D85DE2B6D348F9806F210CFAF",
+                    "SK" : "278CC7371F602C8965B70C9E76B98E32",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 普通用户-子账号
+                - {
+                    "userpin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                    "keytype" : "NewSubUserSelfKey",
+                    "AK" : "C704A8A22A56346860B9671415FAD54E",
+                    "SK" : "113009268A7FA97C41CF9EBEE8B7D794",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+            ipaddressallow:
+                # 指定IP
+                - ${get_user_ip()}
+            ipaddressdeny:
+                - 168.95.1.1

@@ -1,0 +1,13 @@
+request:
+    url: /$api_ver/subUser/$subUser:detachSubUserPolicy
+    method: DELETE
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    params:
+        policyName: $policyName
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, iam, $apiVersion, $openapi_yaml, $regionId)}
+    - ${sleep_N_secs(40)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

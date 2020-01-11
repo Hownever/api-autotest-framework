@@ -1,0 +1,26 @@
+- config:
+    # 测试用例名称
+    name: productpage reviews api
+
+    variables:
+        host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        productid: 0
+        headers: {}
+        expected_status_code: 200
+
+    output:
+        - jsonResponse
+
+- test:
+    name: get reviews - $host - headers:$headers
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $host
+        productid: $productid
+        headers: $headers
+
+    extract:
+        - jsonResponse: content
+    validate:
+        - eq: ["status_code", $expected_status_code]

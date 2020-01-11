@@ -1,0 +1,43 @@
+name: 创建Upstream
+description: 创建Upstream
+operationId: upstreamCreate
+
+variables:
+#    url
+    host_uc: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_uc: ${ENV(ENV_API_VERSION)}
+#    header
+    header_uc:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    customerId_uc: ~
+    method_uc: ~
+    upstreamUrl_uc: ~
+    relationId_uc: ~
+    jdsfGwId_uc: ~
+    jdsfUrl_uc: ~
+    jdsfPin_uc: ~
+#    hooks
+    serviceLine_uc: ${ENV(ENV_SERVICELINE_HUFU)}
+    openapiYaml_uc: nofile
+    openApiAk_uc: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_uc: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_uc: v1
+
+request:
+    url: $host_uc/$apiVer_uc/hufuupstream
+    method: POST
+    headers: $header_uc
+    json:
+        customerId: $customerId_uc
+        method: $method_uc
+        upstreamUrl: $upstreamUrl_uc
+        relationId: $relationId_uc
+        jdsfGwId: $jdsfGwId_uc
+        jdsfUrl: $jdsfUrl_uc
+        jdsfPin: $jdsfPin_uc
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_uc, $openApiSk_uc, $serviceLine_uc, $apiVersion_uc, $openapiYaml_uc, $regionId_uc)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

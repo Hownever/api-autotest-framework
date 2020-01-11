@@ -1,0 +1,30 @@
+name: 根据业务线，版本号，api名称，查询开启API的用户pin
+description: 根据业务线，版本号，api名称，查询开启API的用户pin
+operationId: describeUserApiGray
+
+variables:
+#    url
+    host: ${ENV(ENV_BASE_URL)}
+    api_ver: ${ENV(ENV_API_VERSION)}
+    serviceName: $serviceName
+    apiVersion: $apiVersion
+    apiName: $apiName
+#    header
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+#    hooks
+    product: ompopenapi
+    openapi_yaml: nofile
+    AK: ${ENV(ENV_AK)}
+    SK: ${ENV(ENV_SK)}
+
+request:
+    url: $host/$api_ver/userApiGray/$serviceName/version/$apiVersion/apiName/$apiName
+    method: GET
+    headers: $header
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

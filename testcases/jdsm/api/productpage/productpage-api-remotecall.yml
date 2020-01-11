@@ -1,0 +1,24 @@
+name: 调用$host的remotecall接口-$protocol
+variables:
+    host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+    expected_status_code: 200
+
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    headers: {}
+    protocol: HTTP
+    datas:
+        url: http://httpbin.org/get
+        method: GET
+        headers:
+            h1: testheader
+request:
+    url: $host/api/v1/remotecall
+    headers: $headers
+    method: POST
+    json:
+        protocol: $protocol
+        datas: $datas
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}

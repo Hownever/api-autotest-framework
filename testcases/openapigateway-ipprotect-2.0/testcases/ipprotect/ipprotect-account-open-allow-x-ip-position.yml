@@ -1,0 +1,110 @@
+testcases:
+    IP地址来源：不同KEY账号-IP白名单-本机IP地址-网关允许访问后端:
+        testcase:  api/ipprotect-opened-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {"userpin" : "huangyichun0018", "keytype" : "CompanySelfKey", "AK" : "6215839D85DE2B6D348F9806F210CFAF", "SK" : "278CC7371F602C8965B70C9E76B98E32"}
+
+                # 新建主账号
+                - {"userpin" : "bd2492f6969c4225a404", "keytype" : "NewUserSelfKey", "AK" : "16A207637C231C6AB28249735A996E6F", "SK" : "13758092DCDE5C49797319459E8CB897 "}
+
+                # 普通用户-子账号
+                - {
+                    "userpin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                    "keytype" : "NormalSubUserSelfKey",
+                    "AK" : "C704A8A22A56346860B9671415FAD54E",
+                    "SK" : "113009268A7FA97C41CF9EBEE8B7D794",
+                  }
+
+                # 控制台用户- 不传x-jdcloud-user-ip
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "huangyichun0018",
+                        }
+                  }
+
+                # 控制台用户- 传无效x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderWithInvalidIP",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                        "x-jdcloud-user-ip" : "invalid_ip_address",
+                        }
+                  }
+
+                # 控制台用户- 传正确x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderWithInvalidIP",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                        "x-jdcloud-user-ip" : "${get_user_ip()}",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 不传x-jdcloud-user-ip
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin",
+                    "AK" : "6996C51A54B8D05CB0A5A924F9A78629",
+                    "SK" : "14B63D66B94B81D25F8819244CE44E97",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "huangyichun0018",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 不传x-jdcloud-user-ip
+                - {
+                    "userpin" : "bd2492f6969c4225a404",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin",
+                    "AK" : "6996C51A54B8D05CB0A5A924F9A78629",
+                    "SK" : "14B63D66B94B81D25F8819244CE44E97",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 传无效x-jdcloud-user-ip
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin-HeaderWithInvalidIP",
+                    "AK" : "6996C51A54B8D05CB0A5A924F9A78629",
+                    "SK" : "14B63D66B94B81D25F8819244CE44E97",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "huangyichun0018",
+                        "x-jdcloud-user-ip" : "invalid_ip_address",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 传无效x-jdcloud-user-ip
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin-HeaderWithValidIP",
+                    "AK" : "6996C51A54B8D05CB0A5A924F9A78629",
+                    "SK" : "14B63D66B94B81D25F8819244CE44E97",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "huangyichun0018",
+                        "x-jdcloud-user-ip" : "${get_user_ip()}",
+                        }
+                  }
+            ipaddress:
+                # 指定IP
+                - ${get_user_ip()}

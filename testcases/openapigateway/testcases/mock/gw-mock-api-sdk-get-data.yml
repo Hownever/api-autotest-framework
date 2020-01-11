@@ -1,0 +1,38 @@
+- config:
+    name: mock data get from gateway
+    variables:
+        c_mock_host: ${ENV(ENV_GW_BASE_URL)}
+        c_mock_id: tags_describeTagResourcesInfo
+        c_post_body: {}
+
+        c_AK: ${ENV(ENV_USER_AK_MAIN)}
+        c_SK: ${ENV(ENV_USER_SK_MAIN)}
+        productline: apigatewaytestproductline
+        apiversion: v1
+        openapi_yaml: nofile
+        regionid: cn-north-1
+
+    output:
+        - mockdata
+
+- test:
+    name:  mock data get from gateway
+    api: api/mock/gw-mock-api-sdk-get-data.yml
+    variables:
+        mock_host: $c_mock_host
+        # mock存储的id，使用时的id
+        mock_id: $c_mock_id
+        body: $c_post_body
+
+        AK: $c_AK
+        SK: $c_SK
+        productline: $productline
+        apiversion: $apiversion
+        openapi_yaml: $openapi_yaml
+        regionid: $regionid
+
+    extract:
+        - scode: status_code
+        - mockdata: content
+    validate:
+        - eq: [$scode, 200]

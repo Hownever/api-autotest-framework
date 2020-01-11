@@ -1,0 +1,33 @@
+testcases:
+    系统用户-IP白名单开启-header中配置IP白名单非开启地址-网关禁止访问后端:
+        testcase:  api/ipprotect-opened-deny.yml
+        parameters:
+            userinfos:
+
+                # 控制台用户- 传错误x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderWithInvalidIP",
+                    "AK" : "379E1234E8EBB9942284FBA0F84EB6A2",
+                    "SK" : "36D959BFF6BD6D86E83E5BD8A899E25E",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                        "x-jdcloud-user-ip" : "11.226.132.133",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 传错误x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin",
+                    "AK" : "F5A33732B0AA87C35A41C58412BBA485",
+                    "SK" : "72E095F9CFECD741E6D35FF34DFFB4E5",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_LUrXyzr",
+                        "x-jdcloud-user-ip" : "11.226.132.133",
+                        }
+                  }
+            ipaddress:
+                - 11.226.132.138

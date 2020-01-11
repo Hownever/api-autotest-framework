@@ -1,0 +1,30 @@
+name: 编辑API灰度用户PIN
+description: 编辑API灰度用户PIN
+operationId: patch-basic-api-gray-list-pin
+
+variables:
+    host: ${ENV(ENV_OPENAPI_MANAGE_HOST)}
+#    product: vm
+#    apiVersion: v1
+#    regionId: cn-north-1
+#    openapi_yaml: nofile
+#    expected_status_code: 200
+#    AK: xxx
+#    SK: xxx
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-admin-token: 5d77902ed3f64e3fb205b2cda8797529
+    ser_ver_api: apigateway-v1-createApis
+    value: pin_after_base64
+
+request:
+    url: $host/hmap/basic-api-gray/key/$ser_ver_api
+    method: PATCH
+    headers: $header
+    json:
+        value: $value
+
+#setup_hooks:
+#    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

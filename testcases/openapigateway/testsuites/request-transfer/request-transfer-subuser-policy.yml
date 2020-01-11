@@ -1,0 +1,471 @@
+config:
+    name: As a main user or sub user, set the request transfer enabled, apply the resources policy to subuser, then use mainuser or subuser to get resources, should return the resources within policy for subuser, return all the resource for mainuser
+    variables:
+        product: apigatewaytestproductline
+        s_suffix: ${gen_random_string(5)}
+        s_mock_request_id: mock-data-request-id-$s_suffix
+        # 值必须为enable，否则mock server不会存储
+        s_setter: enable
+        # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+        s_force_covered: enable
+        s_remove_after_get: enable
+
+        # 网关缓存同步时间（s）
+        s_gw_cache_refresh_time: 300
+
+        s_policy_two: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstances"],"Resource":["jrn:apigatewaytestproductline:*:${ENV(ENV_ACCOUNT_MAIN_ID)}:instances/id001","jrn:apigatewaytestproductline:*:${ENV(ENV_ACCOUNT_MAIN_ID)}:instances/id002"],"Condition":{}}]}'
+        s_policy_all: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstances"],"Resource":["*"],"Condition":{}}]}'
+
+testcases:
+    初始化Tag服务相关接口数据:
+        testcase: testcases/mock/mock-mockdata-set-get.yml
+        parameters:
+            c_mock_host:
+                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            c_mock_setter:
+                - enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered:
+                - enable
+            c_mock_remove_after_get:
+                - disable
+            c_mock_header:
+                - {
+                    "Content-Type": application/json,
+                    "token": mytoken
+                  }
+            # mock值的http协议中的数据类型
+            c_mock_type:
+                - application/json
+
+            # mock返回结果时的http status code
+            c_mock_code:
+                - 200
+            # mock data id 和 mock数据的内容
+            c_mock_id-c_mock_data:
+                - [tags_validateTags,
+                  {"apiGatewayTestProductLineResult":
+                    [
+                    {
+                      "resourceId": "id001",
+                      "valid": True,
+                      "resourceName": "name001",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id002",
+                      "valid": True,
+                      "resourceName": "name002",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id003",
+                      "valid": True,
+                      "resourceName": "name003",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id004",
+                      "valid": True,
+                      "resourceName": "name004",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id005",
+                      "valid": True,
+                      "resourceName": "name005",
+                      "az": "cn-north-1",
+                    },
+                    ]}
+                  ]
+                - [tags_describeTagResourcesInfo,
+                    {"apiGatewayTestProductLineResult":
+                    [
+                    {
+                      "resourceName": "name001",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name002",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name003",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name004",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name005",
+                      "az": "cn-north-1",
+                    },
+                    ]}
+                  ]
+
+    子账号授权策略场景测试-所有资源及部分资源时，请求转换功能:
+        testcase: testcases/request-transfer/request-transfer-subuser.yml
+        parameters:
+            c_suffix:
+                - $s_suffix
+            c_gw_host:
+                - ${ENV(ENV_INTER_GW_BASE_URL)}
+            c_product:
+                - $product
+            c_apiversion:
+                - v1
+            c_regionid:
+                - cn-north-1
+            c_openapi_yaml:
+                - nofile
+            c_AK:
+                - ${ENV(ENV_USER_AK_SYS)}
+            c_SK:
+                - ${ENV(ENV_USER_SK_SYS)}
+            c_iam_host:
+                - ${ENV(ENV_IAM_SERVER_BASE_URL)}
+            c_iam_product:
+                - iam
+            c_iam_apiversion:
+                - v1
+            c_userpin:
+                - ${ENV(ENV_USER_PIN_MAIN)}
+            c_iam_headers:
+                - {
+                  Content-Type: application/json;charset=UTF-8,
+                  x-jdcloud-pin: $c_userpin,
+                  }
+            c_subuser_name:
+                - auto_subuser_$s_suffix
+
+            c_policy_name:
+                - policyname_$s_suffix
+
+            c_policy_description:
+                - your_policy_description_$s_suffix
+
+            # 网关配置host， 一般是8001接口
+            c_gw_control_host:
+                - ${ENV(ENV_GW_CONTROL_BASE_URL)}
+
+            c_operationid:
+                - describeInstances
+            c_is_internal:
+                - False
+            c_setter_header:
+                - {
+                    "x-jdcloud-pin": "${ENV(ENV_USER_PIN_MAIN)}",
+                    "X-Jdcloud-Test-Configs-Request-Setter": $s_setter,
+                    "X-Jdcloud-Test-Configs-Request-Setter-Id": $s_mock_request_id,
+                    "X-Jdcloud-Test-Configs-Request-Setter-Force-Covered": $s_force_covered,
+
+                  }
+
+            c_getter_header:
+                - {
+                    "x-jdcloud-pin": "${ENV(ENV_USER_PIN_MAIN)}",
+                    "X-Jdcloud-Test-Configs-Request-Getter": $s_mock_request_id,
+                    "X-Jdcloud-Test-Configs-Request-Getter-Remove": $s_remove_after_get,
+                  }
+
+            c_pin:
+                - jiashuo-stag
+
+            c_request_transfer_resource_name:
+                - 'instanceId'
+
+            c_case_summary-c_request_transfer_is_open-c_request_transfer_is_in_to_eq-c_request_transfer_is_ni_to_ne-c_teardown_wait_time-c_policy_content-c_describeInstances_params-c_request_transfer_sub_path-c_expected_path-c_expected_method-c_expected_body:
+                - [
+                    "子账号-授权策略：所有资源-其中一个资源id无效-filters-不转换in和ni",
+                    True, False, False, $s_gw_cache_refresh_time,$s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007, "filters.1.operator": eq,
+                      "tags.1.key": tag001, "tags.1.values.1": tag001, "tags.1.values.2": tag005,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":["id001"]}]}]}'
+                    ]
+
+                - [
+                    "子账号-授权策略：所有资源-filters-仅in->eq",
+                    True, True, False, $s_gw_cache_refresh_time, $s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"eq","name":"f8","values":["v8"]},{"operator":"ni","name":"f9","values":["v9"]}]}]}'
+                    ]
+                - [
+                    "子账号-授权策略：所有资源-filters-仅ni->ne",
+                    True, False, True, $s_gw_cache_refresh_time, $s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"in","name":"f8","values":["v8"]},{"operator":"ne","name":"f9","values":["v9"]}]}]}'
+                    ]
+                - [
+                    "子账号-授权策略：所有资源-filters-in->eq和ni->ne",
+                    True, True, True, $s_gw_cache_refresh_time, $s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"eq","name":"f8","values":["v8"]},{"operator":"ne","name":"f9","values":["v9"]}]}]}'
+                    ]
+
+                - [
+                    "子账号-授权策略：所有资源-tags-错误推断：operator不支持验证：eq,ne,gt,lt,ge,le,like,in,ni，不转换in和ni",
+                    True, True, True, $s_gw_cache_refresh_time, $s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007,"filters.1.operator": eq,
+                      "tags.1.key": tag001, "tags.1.values.1": tag001, "tags.1.operator": eq,
+                      "tags.2.key": k2, "tags.2.values.1": v2, "tags.2.operator": ne,
+                      "tags.3.key": k3, "tags.3.values.1": v3, "tags.3.operator": gt,
+                      "tags.4.key": k4, "tags.4.values.1": v4, "tags.4.operator": lt,
+                      "tags.5.key": k5, "tags.5.values.1": v5, "tags.5.operator": ge,
+                      "tags.6.key": k6, "tags.6.values.1": v6, "tags.6.operator": le,
+                      "tags.7.key": k7, "tags.7.values.1": v7, "tags.7.operator": like,
+                      "tags.8.key": k8, "tags.8.values.1": v8, "tags.8.operator": in,
+                      "tags.9.key": k9, "tags.9.values.1": v9, "tags.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"tags.9.operator":"ni","tags.8.operator":"in","pageSize":20,"filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":[]}]}],"tags.6.operator":"le","tags.7.operator":"like","tags.5.operator":"ge","tags.4.operator":"lt","tags.1.operator":"eq","pageNumber":1,"tags.2.operator":"ne","tags.3.operator":"gt"}'
+                    ]
+                - [
+                    "子账号-授权策略：所有资源-tagFilters-错误推断：operator不支持验证：eq,ne,gt,lt,ge,le,like,in,ni，如果传operator作为一般参数处理",
+                    True, True, True, $s_gw_cache_refresh_time, $s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007,"filters.1.operator": eq,
+                      "tagFilters.1.key": tag001, "tagFilters.1.values.1": tag001, "tagFilters.1.operator": eq,
+                      "tagFilters.2.key": k2, "tagFilters.2.values.1": v2, "tagFilters.2.operator": ne,
+                      "tagFilters.3.key": k3, "tagFilters.3.values.1": v3, "tagFilters.3.operator": gt,
+                      "tagFilters.4.key": k4, "tagFilters.4.values.1": v4, "tagFilters.4.operator": lt,
+                      "tagFilters.5.key": k5, "tagFilters.5.values.1": v5, "tagFilters.5.operator": ge,
+                      "tagFilters.6.key": k6, "tagFilters.6.values.1": v6, "tagFilters.6.operator": le,
+                      "tagFilters.7.key": k7, "tagFilters.7.values.1": v7, "tagFilters.7.operator": like,
+                      "tagFilters.8.key": k8, "tagFilters.8.values.1": v8, "tagFilters.8.operator": in,
+                      "tagFilters.9.key": k9, "tagFilters.9.values.1": v9, "tagFilters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"tagFilters.6.operator":"le","tagFilters.1.operator":"eq","tagFilters.8.operator":"in","tagFilters.9.operator":"ni","tagFilters.7.operator":"like","filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":[]}]}],"tagFilters.2.operator":"ne","tagFilters.5.operator":"ge","pageSize":20,"pageNumber":1,"tagFilters.4.operator":"lt","tagFilters.3.operator":"gt"}'
+                    ]
+
+                - [
+                    "子账号-授权策略：所有资源-sorts-不支持传operator：eq,ne,gt,lt,ge,le,like,in,ni，如果穿operator作为一般参数处理,direction值无效时，也应作为一般参数处理",
+                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "sorts.1.name": n1, "sorts.1.direction": asc, "sorts.1.operator": eq,
+                      "sorts.2.name": n2, "sorts.2.direction": asc, "sorts.2.operator": ne,
+                      "sorts.3.name": n3, "sorts.3.direction": asc, "sorts.3.operator": gt,
+                      "sorts.4.name": n4, "sorts.4.direction": asc, "sorts.4.operator": lt,
+                      "sorts.5.name": n5, "sorts.5.direction": asc, "sorts.5.operator": ge,
+                      "sorts.6.name": n6, "sorts.6.direction": asc, "sorts.6.operator": le,
+                      "sorts.7.name": n7, "sorts.7.direction": asc, "sorts.7.operator": like,
+                      "sorts.8.name": n8, "sorts.8.direction": asc, "sorts.8.operator": in,
+                      "sorts.9.name": n9, "sorts.9.direction": asc, "sorts.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"sorts.6.operator":"le","sorts.4.operator":"lt","sorts.9.operator":"ni","sorts.2.operator":"ne","filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}],"sorts.7.operator":"like","sorts":[{"direction":"asc","name":"n1"},{"direction":"asc","name":"n2"},{"direction":"asc","name":"n3"},{"direction":"asc","name":"n4"},{"direction":"asc","name":"n5"},{"direction":"asc","name":"n6"},{"direction":"asc","name":"n7"},{"direction":"asc","name":"n8"},{"direction":"asc","name":"n9"}],"sorts.8.operator":"in","sorts.5.operator":"ge","pageSize":20,"pageNumber":1,"sorts.1.operator":"eq","sorts.3.operator":"gt"}'
+                    ]
+
+                - [
+                    '子账号-授权策略：所有资源-路径-请求转换路径为数字、英文字符、.、_、-、~等非coding字符',
+                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+                    "/1/2/3/3.14/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/_/12-~bc",
+                    ".*/cn-north-1/1/2/3/3.14/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/_/12-~bc/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+                    ]
+
+
+                - [
+                    "子账号-授权策略：2个资源-其中一个资源id无效-filters-不转换in和ni",
+                    True, False, False, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007, "filters.1.operator": eq,
+                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":["id001"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"in","name":"f8","values":["v8"]},{"operator":"ni","name":"f9","values":["v9"]}]}]}'
+                    ]
+
+                - [
+                    "子账号-授权策略：2个资源-filters-仅in->eq",
+                    True, True, False, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"eq","name":"f8","values":["v8"]},{"operator":"ni","name":"f9","values":["v9"]}]}]}'
+                    ]
+                - [
+                    "子账号-授权策略：2个资源-filters-仅ni->ne",
+                    True, False, True, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"in","name":"f8","values":["v8"]},{"operator":"ne","name":"f9","values":["v9"]}]}]}'
+                    ]
+                - [
+                    "子账号-授权策略：2个资源-filters-in->eqh和ni->ne",
+                    True, True, True, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"eq","name":"f8","values":["v8"]},{"operator":"ne","name":"f9","values":["v9"]}]}]}'
+                    ]
+
+                - [
+                    "子账号-授权策略：2个资源-tags-operator为有效值：eq,ne,gt,lt,ge,le,like,in,ni，不转换in和ni",
+                    True, True, True, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "tags.1.key": k1, "tags.1.values.1": v1, "tags.1.operator": eq,
+                      "tags.2.key": k2, "tags.2.values.1": v2, "tags.2.operator": ne,
+                      "tags.3.key": k3, "tags.3.values.1": v3, "tags.3.operator": gt,
+                      "tags.4.key": k4, "tags.4.values.1": v4, "tags.4.operator": lt,
+                      "tags.5.key": k5, "tags.5.values.1": v5, "tags.5.operator": ge,
+                      "tags.6.key": k6, "tags.6.values.1": v6, "tags.6.operator": le,
+                      "tags.7.key": k7, "tags.7.values.1": v7, "tags.7.operator": like,
+                      "tags.8.key": k8, "tags.8.values.1": v8, "tags.8.operator": in,
+                      "tags.9.key": k9, "tags.9.values.1": v9, "tags.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"tagFilters":[{"operator":"eq","key":"k1","values":["v1"]},{"operator":"ne","key":"k2","values":["v2"]},{"operator":"gt","key":"k3","values":["v3"]},{"operator":"lt","key":"k4","values":["v4"]},{"operator":"ge","key":"k5","values":["v5"]},{"operator":"le","key":"k6","values":["v6"]},{"operator":"like","key":"k7","values":["v7"]},{"operator":"in","key":"k8","values":["v8"]},{"operator":"ni","key":"k9","values":["v9"]}],"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}]}'
+                    ]
+                - [
+                    "子账号-授权策略：2个资源-tagFilters-不支持传operator：eq,ne,gt,lt,ge,le,like,in,ni，如果传operator作为一般参数处理",
+                    True, True, True, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "tagFilters.1.key": k1, "tagFilters.1.values.1": v1, "tagFilters.1.operator": eq,
+                      "tagFilters.2.key": k2, "tagFilters.2.values.1": v2, "tagFilters.2.operator": ne,
+                      "tagFilters.3.key": k3, "tagFilters.3.values.1": v3, "tagFilters.3.operator": gt,
+                      "tagFilters.4.key": k4, "tagFilters.4.values.1": v4, "tagFilters.4.operator": lt,
+                      "tagFilters.5.key": k5, "tagFilters.5.values.1": v5, "tagFilters.5.operator": ge,
+                      "tagFilters.6.key": k6, "tagFilters.6.values.1": v6, "tagFilters.6.operator": le,
+                      "tagFilters.7.key": k7, "tagFilters.7.values.1": v7, "tagFilters.7.operator": like,
+                      "tagFilters.8.key": k8, "tagFilters.8.values.1": v8, "tagFilters.8.operator": in,
+                      "tagFilters.9.key": k9, "tagFilters.9.values.1": v9, "tagFilters.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"tagFilters.6.operator":"le","tagFilters.1.operator":"eq","tagFilters.8.operator":"in","tagFilters.9.operator":"ni","tagFilters.7.operator":"like","filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}],"tagFilters.4.operator":"lt","tagFilters.2.operator":"ne","tagFilters.5.operator":"ge","pageSize":20,"pageNumber":1,"tagFilters.3.operator":"gt","tagFilters":[{"operator":"eq","key":"k1","values":["v1"]},{"operator":"eq","key":"k2","values":["v2"]},{"operator":"eq","key":"k3","values":["v3"]},{"operator":"eq","key":"k4","values":["v4"]},{"operator":"eq","key":"k5","values":["v5"]},{"operator":"eq","key":"k6","values":["v6"]},{"operator":"eq","key":"k7","values":["v7"]},{"operator":"eq","key":"k8","values":["v8"]},{"operator":"eq","key":"k9","values":["v9"]}]}'
+                    ]
+
+                - [
+                    "子账号-授权策略：2个资源-sorts-不支持传operator：eq,ne,gt,lt,ge,le,like,in,ni，如果传operator作为一般参数处理,direction值无效时，也应作为一般参数处理",
+                    True, False, False, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+                      "sorts.1.name": n1, "sorts.1.direction": asc, "sorts.1.operator": eq,
+                      "sorts.2.name": n2, "sorts.2.direction": asc, "sorts.2.operator": ne,
+                      "sorts.3.name": n3, "sorts.3.direction": asc, "sorts.3.operator": gt,
+                      "sorts.4.name": n4, "sorts.4.direction": asc, "sorts.4.operator": lt,
+                      "sorts.5.name": n5, "sorts.5.direction": asc, "sorts.5.operator": ge,
+                      "sorts.6.name": n6, "sorts.6.direction": asc, "sorts.6.operator": le,
+                      "sorts.7.name": n7, "sorts.7.direction": asc, "sorts.7.operator": like,
+                      "sorts.8.name": n8, "sorts.8.direction": asc, "sorts.8.operator": in,
+                      "sorts.9.name": n9, "sorts.9.direction": asc, "sorts.9.operator": ni,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"sorts.6.operator":"le","sorts.4.operator":"lt","sorts.9.operator":"ni","sorts.2.operator":"ne","filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}],"sorts.7.operator":"like","sorts":[{"direction":"asc","name":"n1"},{"direction":"asc","name":"n2"},{"direction":"asc","name":"n3"},{"direction":"asc","name":"n4"},{"direction":"asc","name":"n5"},{"direction":"asc","name":"n6"},{"direction":"asc","name":"n7"},{"direction":"asc","name":"n8"},{"direction":"asc","name":"n9"}],"sorts.8.operator":"in","sorts.5.operator":"ge","pageSize":20,"pageNumber":1,"sorts.1.operator":"eq","sorts.3.operator":"gt"}'
+                    ]
+
+                - [
+                    '子账号-授权策略：2个资源-路径-请求转换路径为数字、英文字符、.、_、-、~等非coding字符',
+                    True, False, False, $s_gw_cache_refresh_time, $s_policy_two,
+                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+                    "/1/2/3/3.14/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/_/12-~bc",
+                    ".*/cn-north-1/1/2/3/3.14/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/_/12-~bc/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+                    ]

@@ -1,0 +1,165 @@
+[{
+	"code": 200,
+	"message": "成功",
+	"status": "APIGATEWAY_SUCCESS"
+},
+{
+	"code": 400,
+	"message": "{{.param0}}参数不支持",
+	"status": "APIGATEWAY_ARGUMENT_NOT_SUPPORT"
+},
+{
+	"code": 400,
+	"message": "{{.param0}}不能为空",
+	"status": "APIGATEWAY_ARGUMENT_NOT_FOUND"
+},
+{
+	"code": 403,
+	"message": "没有权限",
+	"status": "APIGATEWAY_HTTP_FORBIDDEN"
+},
+{
+	"code": 404,
+	"message": "{{.param0}}资源不存在",
+	"status": "APIGATEWAY_NOT_FOUND"
+},
+{
+	"code": 500,
+	"message": "操作失败",
+	"status": "APIGATEWAY_OPERATION_FAILED"
+},
+{
+	"code": 409,
+	"message": "分组名称重复",
+	"status": "APIGATEWAY_APIGROUPNAME_ISREPEAT"
+},
+{
+	"code": 409,
+	"message": "分组中后端服务前缀名重复",
+	"status": "APIGATEWAY_BACKENDSERVICE_PREFIX_ISREPEAT"
+},
+{
+	"code": 409,
+	"message": "API名称重复",
+	"status": "APIGATEWAY_APINAME_ISREPEAT"
+},
+{
+	"code": 409,
+	"message": "签名访问密钥重复",
+	"status": "APIGATEWAY_ACCESSKEY_ISREPEAT"
+},
+{
+	"code": 409,
+	"message": "授权访问密钥重复",
+	"status": "APIGATEWAY_ACCESSKEYAUTH_ISREPEAT"
+},
+{
+	"code": 409,
+	"message": "策略名称重复",
+	"status": "APIGATEWAY_POLICYNAME_ISREPEAT"
+},
+{
+	"code": 500,
+	"message": "要验证的接口的对应的body定义异常",
+	"status": "APIGATEWAY_API_BODY_ERROR"
+},
+{
+	"code": 400,
+	"message": "流控策略绑定分组多于一个",
+	"status": "APIGATEWAY_BIND_GROUP_TOO_MUCH"
+},
+{
+	"code": 400,
+	"message": "未解除绑定，不能删除",
+	"status": "APIGATEWAY_DELETE_ERROR"
+},
+{
+	"code": 404,
+	"message": "该分组没有有效的API",
+	"status": "APIGATEWAY_NONE_VALID_API"
+},
+{
+	"code": 404,
+	"message": "不存在要验证的接口",
+	"status": "APIGATEWAY_NOT_EXIST_METHOD_ERROR"
+},
+{
+	"code": 404,
+	"message": "yaml文件不能为空",
+	"status": "APIGATEWAY_SWAGGER_NULL_ERROR"
+},
+{
+	"code": 500,
+	"message": "yaml文件解析异常",
+	"status": "APIGATEWAY_SWAGGER_PARSE_ERROR"
+},
+{
+	"code": 409,
+	"message": "API路径重复",
+	"status": "APIGATEWAY_API_PATH_ISREPEAT"
+},
+{
+	"code": 409,
+	"message": "创建业务线分组名称重复",
+	"status": "APIGATEWAY_APISNAME_ISREPEAT"
+},
+{
+	"code": 400,
+	"message": "请在下面的查询参数Parameter Path中定义此路径参数:{{.param0}}",
+	"status": "APIGATEWAY_PATH_PARAMETERS_MUST_BE_DEFINED"
+},
+{
+	"code": 409,
+	"message": "新增修订版本号重复",
+	"status": "APIGATEWAY_REVISION_ISREPEAT"
+},
+{
+	"code": 403,
+	"message": "没有备案",
+	"status": "APIGATEWAY_DOMAIN_NO_RECORDED"
+},
+{
+	"code": 403,
+	"message": "域名已存在",
+	"status": "APIGATEWAY_DOMAIN_ALREADY_EXISTS"
+},
+{
+	"code": 403,
+	"message": "域名处于绑定状态，无法修改",
+	"status": "APIGATEWAY_DOMAIN_IS_BINDED"
+},
+{
+	"code": 403,
+	"message": "域名数量超过最大值",
+	"status": "APIGATEWAY_DOMAIN_NUM_IS_MAX"
+},
+{
+	"code": 404,
+	"message": "无效的keyID",
+	"status": "APIGATEWAY_NONE_VALID_APPID"
+},
+{
+	"code": 400,
+	"message": "无效的用户pin",
+	"status": "APIGATEWAY_NONE_VALID_PIN"
+},
+{
+	"code": 400,
+	"message": "API分组已经部署，不能被删除",
+	"status": "APIGATEWAY_MODIFY_ERROR"
+},
+{
+	"code": 400,
+	"message": "仍有上线版本，不能删除",
+	"status": "APIGATEWAY_DELETE_API_ERROR"
+},
+{
+	"code": 500,
+	"message": "服务未开通或已停止",
+	"status": "APIGATEWAY_INVALID_SERVICE_STATUS"
+},
+{
+	"code": 500,
+	"message": "该用户未进行实名认证",
+	"status": "APIGATEWAY_INVALID_AUTHENTICATION_STATUS"
+}]

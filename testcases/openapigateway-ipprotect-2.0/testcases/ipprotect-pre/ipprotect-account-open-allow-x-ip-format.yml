@@ -1,0 +1,51 @@
+testcases:
+    IP地址格式：原企业账号-IP白名单地址：本机IP及网段等不同组合-网关允许访问后端:
+        testcase:  api/ipprotect-opened-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+
+                # 企业用户
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "B4D36386BD9931771F01F5857775CADC",
+                    "SK" : "CD5B008C5C82BCE5D345744A9FA41D46",
+                    "headers" : {
+                        "x-jdcloud-pin" : "user_not_exist",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+            ipaddress:
+                # 指定IP
+                - ${get_user_ip()}
+                # 指定IP段
+                - ${get_user_ip()}/8
+                - ${get_user_ip()}/12
+                - ${get_user_ip()}/15
+                - ${get_user_ip()}/24
+                - ${get_user_ip()}/25
+                - ${get_user_ip()}/32
+#                - ${get_user_ip()}/255.255.255.0
+#                - ${get_user_ip()}/255.255.0.0
+#                - ${get_user_ip()}/255.0.0.0
+                # 匹配算法去重
+                - ${get_user_ip()}/8,${get_user_ip()}/8,${get_user_ip()}/8,${get_user_ip()}/8
+                - ${get_user_ip()}/8,${get_user_ip()}/24,${get_user_ip()}/15
+                - ${get_user_ip()},${get_user_ip()}/24,${get_user_ip()}/15
+                - ${get_user_ip()}/24,${get_user_ip()},${get_user_ip()}/15
+                # 匹配算法不同位置
+                - ${get_user_ip()}/8, 192.168.1.1,168.95.1.1,12.0.0.1/8
+                - 192.168.1.1,${get_user_ip()}/8,168.95.1.1,12.0.0.1/8
+                - 192.168.1.1,168.95.1.1,12.0.0.1/8,${get_user_ip()}
+
+                - ${get_user_ip()}/24, 192.168.1.1,168.95.1.1,12.0.0.1/8
+                - 192.168.1.1,${get_user_ip()},168.95.1.1,12.0.0.1/8
+                - 192.168.1.1,168.95.1.1,12.0.0.1/8,${get_user_ip()}/8
+
+#                - ${get_user_ip()}/255.255.255.0, 192.168.1.1,168.95.1.1,12.0.0.1/8
+#                - 192.168.1.1,${get_user_ip()}/255.255.255.0,168.95.1.1,12.0.0.1/8
+#                - 192.168.1.1,168.95.1.1,12.0.0.1/8,${get_user_ip()}/255.255.255.0

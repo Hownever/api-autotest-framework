@@ -1,0 +1,270 @@
+config:
+    name: Token 安全测试 - 禁止调用场景
+    variables:
+
+        str_now: ${get_timestamp(10)}
+        randtime: ${gen_rand_int(10,30)}
+        waittime: ${plus($randtime, 5)}
+        now: ${plus($str_now, $randtime)}
+        deadlinetime: ${plus($now, 180)}
+        # 3600*24*361=31190400
+        deadlinetime_more_than_1_year: ${plus($now, 31190401)}
+
+        # token 数据：
+        # jdmesh-productpage-test token 过期token
+        exptokenproductpage: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.ctuIkUIcJDBAKh6Vxzk-CGO8bVdQ5TSS8r2ea9cyAst7Hfq_msZpqwgYp23qXTX_-FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC-4nY-ZnCQPDKE8
+
+        # ratings' token 过期token 有效期：2019-06-30 08:00:00
+        # header：{"alg":"RS256","typ":"JWT"}
+        # payload：{"keyVersion":"rsav2","product":"microservices","serviceName":"jdmesh-ratings-test","group":"east02-pre","ip":"10.226.213.37","exp":1561852800,"iat":1560824415,"iss":"wuhui1"}
+        # signature： QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg
+        exptokenreviews: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg
+
+        # bugs: 使用如下token会导致sdk core，越权
+        sdkcoretoken: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..*"
+        # 无效base64格式的jwt token
+        specialcharactertoken00: "00.*$*(.*)~!@#$%^&*()_+}{\":><?|-=[];',./"
+        # jwt content is null
+        specialcharactertoken01: "..."
+        # payload 不是有效json： 1
+        specialcharactertoken02: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.1.2"
+        # payload 是错误的json：{"alg":"RS256","typ":"JWT"}
+        specialcharactertoken03: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg"
+        # payload是空格
+        specialcharactertoken04: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9. .QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg"
+        # jwt header not json: {"alg":"RS256","typ":"JWT"
+        specialcharactertoken05: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCI=.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg"
+        # jwt header not json: 1
+        specialcharactertoken06: "MQ==.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg"
+        # signature为空
+        specialcharactertoken07: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0."
+        # signature为无效值
+        specialcharactertoken08: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.ctuIkUIcJDBAKh6Vxzk-CGO8bVdQ5TSS8r2ea9cyAst7Hfq_msZpqwgYp23qXTX_-FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC-4nY-ZnCQPDKE9"
+        # JWT格式不是3个英文逗号间隔的字段
+        specialcharactertoken09: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9"
+        # JWT格式不是3个英文逗号间隔的字段-大于3个
+        specialcharactertoken10: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9......."
+
+        # JWT head超长
+        longtokenheader: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.ctuIkUIcJDBAKh6Vxzk-CGO8bVdQ5TSS8r2ea9cyAst7Hfq_msZpqwgYp23qXTX_-FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC-4nY-ZnCQPDKE8
+        # JWT payload超长
+        longtokenpayload: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.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.ctuIkUIcJDBAKh6Vxzk-CGO8bVdQ5TSS8r2ea9cyAst7Hfq_msZpqwgYp23qXTX_-FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC-4nY-ZnCQPDKE8
+        # JWT signature超长
+        longtokensignature: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.ctuIkUIcJDBAKh6Vxzk-CGO8bVdQ5TSS8r2ea9cyAst7Hfq_msZpqwgYp23qXTX_-FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC-4nY-ZnCQPDKE8FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjCFY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC
+        # JWT本身超长
+        longtoken: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_
+
+testcases:
+    对producpage开启token验证，从Ingress调用productpage的api，调用productpage服务时，未自带有效authtoken，禁止调用(Ingress不会注入AUTHTOKEN):
+        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-productpage-api.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+
+            c_token_productpage: [1]
+            casesummary-c_expected_status_code-c_headers-c_update_token_settings_waittime:
+                - [
+                  "请求未携带authtoken，禁止调用 - $c_productpage_host",
+                  403,
+                  {},
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "过期token调用-禁止调用 - $exptokenproductpage",
+                  403,
+                  {"authtoken": "$exptokenproductpage"},
+                  0,
+                  ]
+                - [
+                  "非法格式，之前可以绕过的token-禁止调用 - $sdkcoretoken",
+                  403,
+                  {"authtoken": "$sdkcoretoken"},
+                  0,
+                  ]
+                - [
+                  "非法格式，无效base64格式的JWT token，特殊字符等-禁止调用 - $specialcharactertoken00",
+                  403,
+                  {"authtoken": "$specialcharactertoken00"},
+                  0,
+                  ]
+                - [
+                  "非法格式，JWT各个字段内容为空-禁止调用 - $specialcharactertoken01",
+                  403,
+                  {"authtoken": "$specialcharactertoken01"},
+                  0,
+                  ]
+                - [
+                  "非法格式，payload不是有效json，内容为1-禁止调用 - $specialcharactertoken02",
+                  403,
+                  {"authtoken": "$specialcharactertoken02"},
+                  0,
+                  ]
+                - [
+                  "非法格式，payload是错误的json内容-禁止调用 - $specialcharactertoken03",
+                  403,
+                  {"authtoken": "$specialcharactertoken03"},
+                  0,
+                  ]
+                - [
+                  "非法格式，payload是空格-禁止调用 - $specialcharactertoken04",
+                  403,
+                  {"authtoken": "$specialcharactertoken04"},
+                  0,
+                  ]
+                - [
+                  "非法格式，JWT header不是json格式-禁止调用 - $specialcharactertoken05",
+                  403,
+                  {"authtoken": "$specialcharactertoken05"},
+                  0,
+                  ]
+                - [
+                  "非法格式，JWT header不是json格式，为数字1-禁止调用 - $specialcharactertoken06",
+                  403,
+                  {"authtoken": "$specialcharactertoken06"},
+                  0,
+                  ]
+                - [
+                  "非法格式，JWT signature为空-禁止调用 - $specialcharactertoken07",
+                  403,
+                  {"authtoken": "$specialcharactertoken07"},
+                  0,
+                  ]
+                - [
+                  "非法格式，signature为无效值-禁止调用 - $specialcharactertoken08",
+                  403,
+                  {"authtoken": "$specialcharactertoken08"},
+                  0,
+                  ]
+                - [
+                  "非法格式，JWT格式不是3个英文逗号间隔的字段-0个-禁止调用 - $specialcharactertoken09",
+                  403,
+                  {"authtoken": "$specialcharactertoken09"},
+                  0,
+                  ]
+                - [
+                  "非法格式，JWT格式不是3个英文逗号间隔的字段-大于3个-禁止调用 - $specialcharactertoken10",
+                  403,
+                  {"authtoken": "$specialcharactertoken10"},
+                  0,
+                  ]
+                - [
+                  "非法格式，超长token-head超长-禁止调用 - 超长token - JWT head超长",
+                  403,
+                  {"authtoken": "$longtokenheader"},
+                  0,
+                  ]
+                - [
+                  "非法格式，超长token-head超长-禁止调用 - 超长token - JWT payload超长",
+                  403,
+                  {"authtoken": "$longtokenpayload"},
+                  0,
+                  ]
+                - [
+                  "非法格式，超长token-head超长-禁止调用 - 超长token - JWT signature超长",
+                  403,
+                  {"authtoken": "$longtokensignature"},
+                  0,
+                  ]
+                - [
+                  "非法格式，超长token-head超长-禁止调用 - 超长token - JWT本身超长",
+                  403,
+                  {"authtoken": "$longtoken"},
+                  0,
+                  ]
+    非法token（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，禁止调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+                - [
+                  "仅开启docheck时，创建有效期外的token(创建一个当前时间戳+$randtime s的后过期的token,等待$waittime s后过期去调用)，禁止调用 - $c_productpage_host",
+                  1,0,0,0,0,$waittime,
+                  {'serviceName': '${gen_random_string(20)}', 'deadline': "${get_delta_timestamp(10, $randtime)}" },
+                  403,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "仅开启docheck时，创建有效期1年以上的token，禁止调用 - $c_productpage_host",
+                  1,0,0,0,0,0,
+                  {"serviceName": "${gen_random_string(20)}", "deadline": $deadlinetime_more_than_1_year},
+                  403,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+
+#     # TODO: TBC
+#    非法token - docheck+appwhitelist维度（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+#                - [
+#                  "开启docheck+appwhitelist时，创建serviename为：jdmesh-ingress，其他字段为空的token时，从ingress-->${ENV(ENV_TEST_CONSUMER)}, 允许调用 - $c_productpage_host",
+#                  1,1,0,0,0,0,
+#                  {"serviceName": "jdmesh-ingress",},
+#                  200,
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]
+#     # TODO: TBC
+#    非法token - docheck+ipwhitelist维度（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+#                - [
+#                  "开启docheck+ipwhitelist时，创建serviename为：jdmesh-ingress，其他字段为空的token时，从ingress-->${ENV(ENV_TEST_CONSUMER)}, 允许调用 - $c_productpage_host",
+#                  1,1,0,0,0,0,
+#                  {"serviceName": "jdmesh-ingress",},
+#                  200,
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]
+#
+#     # TODO: TBC
+#    非法token - docheck+源ip校验维度（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+#                - [
+#                  "开启docheck+源ip校验时，创建serviename为：jdmesh-ingress，其他字段为空的token时，从ingress-->${ENV(ENV_TEST_CONSUMER)}, 允许调用 - $c_productpage_host",
+#                  1,1,0,0,0,0,
+#                  {"serviceName": "jdmesh-ingress",},
+#                  200,
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]

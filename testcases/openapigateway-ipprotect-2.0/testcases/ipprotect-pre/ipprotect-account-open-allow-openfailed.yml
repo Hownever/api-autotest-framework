@@ -1,0 +1,12 @@
+testcases:
+    非企业账号-不同key-IP白名单开启失败-不影响网关使用-网关允许访问后端:
+        testcase:  api/ipprotect-opened-allow-fail-to-open.yml
+        parameters:
+            userinfos:
+                # 普通用户-主账号
+                - {"userpin" : "jiashuo-stag", "keytype" : "NormalUserSelfKey", "AK" : "44F3BFF60422F94EF32BC51ADF33FBAD", "SK" : "718C738C7638E79735DAC9A4E91DD3B4"}
+                # 普通用户-子账号
+                - {"userpin" : "jcloud_kPbGzVy @ jdcloud-api-test", "keytype" : "NormalSubUserSelfKey", "AK" : "947B5A19A89AC8BE72E1E1B645566E44", "SK" : "31D4740B97F1FE2EA0BD34F6930F4D9F"}
+
+            ipaddress:
+                - ${get_user_ip()}/8

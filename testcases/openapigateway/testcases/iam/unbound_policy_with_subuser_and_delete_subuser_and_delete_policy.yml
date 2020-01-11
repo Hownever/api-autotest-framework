@@ -1,0 +1,60 @@
+- config:
+    name: delete subuser and policy
+    variables:
+        host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+        AK: ${ENV(ENV_USER_AK_MAIN)}
+        SK: ${ENV(ENV_USER_SK_MAIN)}
+        productline: iam
+        apiversion: v1
+        openapi_yaml: nofile
+        regionid: cn-north-1
+        # 主账号pin
+        c_userpin: ${ENV(ENV_USER_PIN_MAIN)}
+        c_headers:
+            Content-Type: application/json;charset=UTF-8
+            #x-jdcloud-pin: $userpin
+
+        # 子账号pin
+        c_subuser_name: your_subuser_name
+
+        # 删除的策略名称：
+        c_policyname: policy_describeInstanceVncUrl_one_API
+
+#- test:
+#    name: unbound the policy and subuser: $subuser_name - $policyname
+#    api: api/iam/detachSubUserPolicy.yml
+#    variables:
+#
+#        host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+#        userpin: $userpin
+#        policyname: policyname
+#
+- test:
+    name: describe sub user pin for next delete
+    api: api/iam/describeSubUserPin.yml
+    variables:
+        userpin: $c_userpin
+        headers: $c_headers
+        subuser: $c_subuser_name
+
+
+- test:
+    name: delete the subuser - $c_subuser_name
+    api: api/iam/deleteSubUser.yml
+    variables:
+
+        host: $host
+        userpin: $c_userpin
+        headers: $c_headers
+        subuser_name: $c_subuser_name
+
+
+- test:
+    name: delete plicy - $c_policyname
+    api: api/iam/deletePolicy.yml
+    variables:
+        host: $host
+        userpin: $c_userpin
+        headers: $c_headers
+        policyname: $c_policyname
+

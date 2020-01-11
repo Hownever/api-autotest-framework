@@ -1,0 +1,38 @@
+name: 根据应用id的获取应用信息
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+
+    page_size: 10
+    page: 1
+    app_id: 1657
+    group_id: 8215
+    state: ""
+    sort: desc
+    order_by: group_id
+    # iplike可以过滤指定
+    iplike: "10."
+
+    headers:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+request:
+    # url: $host/deploy/api/v1/instance?page_size=10&page=1&app_id=$appid&group_id=&state=&sort=desc&order_by=group_id&ip:like=
+    url: $host/deploy/api/v1/instance
+    method: GET
+    headers: $headers
+    cookies: $cookies
+
+    params:
+        app_id: $app_id
+        group_id: $group_id
+
+        state: $state
+        sort: $sort
+        order_by: $order_by
+        ip:like: $iplike
+
+        page_size: $page_size
+        page: $page

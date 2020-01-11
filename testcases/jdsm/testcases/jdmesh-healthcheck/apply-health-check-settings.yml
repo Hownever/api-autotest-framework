@@ -1,0 +1,100 @@
+- config:
+    # 测试用例名称
+    name: 健康检查测试用例-当未开启时，失败实例（5xx）不应剔除
+    description: |
+        使用productpage的remotecall功能，将请求打到mock server，并使用mock server返回指定5xx返回值的response
+    variables:
+        c_jdsm_ui_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        c_mock_server_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+        c_expected_status_code: 200
+        c_product: ${ENV(ENV_TEST_PRODUCT)}
+        c_env: ${ENV(ENV_TEST_ENV)}
+
+        c_enable_health_check: True
+        c_healthCheckInterval: 10
+        c_healthCheckconsecutiveErrors: 5
+        c_healthCheckmaxEjectionPercent: 30
+        c_healthCheckbaseEjectionTime: 180
+        c_service_entries: [{"protocol": "HTTP", "host": $mock_sever_ip_or_domain, "port": 80}]
+        c_update_basicconfig_waittime: 30
+
+        is_need_skip_config: False
+        is_contain_mockserver_in_serviceentry: False
+        is_healthcheck_option_matched: False
+        is_same_boolean_value: False
+        mock_sever_ip_or_domain: ${get_host_from_url($c_mock_server_host)}
+        query_enableAuthToken: None
+        query_enableWhiteListCheck: None
+        query_serviceEntries: None
+        query_enableHealthCheck: None
+
+- test:
+    name: 获取云翼cookies（从mock server）
+    api: api/mock/mock-data-get.yml
+
+    variables:
+        mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # mock存储的id，使用时的id
+        mock_id: ${get_host_from_url($c_ark_host)}
+        # 是否删除get的value
+        remove_after_get: disable
+        cookie: {}
+    extract:
+        - sso: "sso.jd.com=(\\w+\\.\\w+); "
+    teardown_hooks:
+        - cookie: {'ENV_COOKIES': '_ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=145146863|direct|-|none|-|1564985477902; jdcloud_sitelang=cn; apigatewayareaCode=cn-north-1; apigatewayareaName=%25E5%258D%258E%25E5%258C%2597-%25E5%258C%2597%25E4%25BA%25AC; jdcloud_sitelang_server=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1565867188,1565867204; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1565867204; ipv6_iaas=0; jdcloud-api-testconsole_label=1; jdcloud-api-testversion=v2; __jda=250358228.1554091325970812602438.1554091326.1557283719.1559796648.14; __jdc=250358228; thor=266D4182C9765ABA472EE445C9393A60509F8D7E0447FB1E10B4431FC853342A36021CD1838975E5C96DF7FBA6DA9BCA33CAD7D649DAE20DBB9DC7843D638994DB457581E8E0A69ED700E7840A853D1630E60746433053A42FC704AD989084E239118420B63B460DF45B83DAFE11B28D19783ACC092CFF07273CC880262D2A35095CFCB01C2216FAF51A5506AA530B14; pin=jcloud_00; unick=jcloud_00; jcloud_00console_label=1; jcloud_00version=v2; currPage=images; erp1.jd.com=7369BCEC44355A9112C5F56E0FB7A8BC722166B565DB51CA47690EF175BA8F8A1E7A73BDE4F4CD6B82D07449FE6EBC875DE06573D83089441B3DA9FA76143C80E2E8DB226416A5E298F459E2DB140089; sso.jd.com=$sso '}
+        # 更新cookie值到环境变量中，方便后续脚本使用
+        - update_env_var: ${set_os_environ($cookie)}
+    validate:
+        - eq: ["status_code", 200]
+
+
+- test:
+    # 测试步骤名称
+    name:  查询网格配置 - $c_product
+    # skipIf: ${validate($serviceentry, 0, len_eq)}
+    api: api/jdsm-basicconfig/jdsm-web-describebasicconfig.yml
+
+    variables:
+        host: $c_jdsm_ui_host
+        product: $c_product
+        env: $c_env
+    extract:
+        - query_enableHealthCheck: content.result.basicConfig.enableNegativeHealthCheck
+        # - query_enableAuthToken: content.result.basicConfig.enableAuthToken
+        # - query_enableWhiteListCheck: content.result.basicConfig.enableWhiteListCheck
+        - query_serviceEntries: content.result.basicConfig.serviceEntries
+
+
+    teardown_hooks:
+        # - is_contain_mockserver_in_serviceentry: ${validate(xx$query_serviceEntries, $mock_sever_ip_or_domain, contains)} # must be true
+        - is_healthcheck_option_matched: ${validate($query_enableHealthCheck, $c_enable_health_check, eq)} # must be true
+        # - is_same_boolean_value: ${validate($is_contain_mockserver_in_serviceentry, $is_healthcheck_option_matched, eq)}
+        - is_need_skip_config: ${all_true($is_healthcheck_option_matched)}
+
+- test:
+    name:  检查enableHealthCheck是否为：$c_enable_health_check，检查service entry是否为：$c_service_entries，不是则配置并等待$c_update_basicconfig_waittime s等待配置下发，否则跳过此步
+    skipIf: $is_need_skip_config
+    api: api/jdsm-basicconfig/jdsm-web-update-basicconfig.yml
+
+    variables:
+        host: $c_jdsm_ui_host
+        product: $c_product
+        env: $c_env
+
+        enableAuthToken: $query_enableAuthToken
+        enableWhiteListCheck: $query_enableWhiteListCheck
+        enableNegativeHealthCheck: $c_enable_health_check
+        healthCheckInterval: $c_healthCheckInterval
+        healthCheckconsecutiveErrors: $c_healthCheckconsecutiveErrors
+        healthCheckmaxEjectionPercent: $c_healthCheckmaxEjectionPercent
+        healthCheckbaseEjectionTime: $c_healthCheckbaseEjectionTime
+        serviceEntries: $c_service_entries
+
+
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+    teardown_hooks:
+        - ${sleep_N_secs($c_update_basicconfig_waittime)}

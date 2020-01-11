@@ -1,0 +1,11 @@
+testcases:
+    产品线-对外开放API接口格式检查:
+        testcase:  testcases\ompopenapi\apis\describeApiByName-api-format.yaml
+        parameters:
+            userpin: 
+                - ${ENV(ENV_USER_PIN)}
+            usererps: 
+                - wangbibo1
+            productline: ${get_service_lines_from_txt($external_list_file)}
+#            productline:
+#                - datastart

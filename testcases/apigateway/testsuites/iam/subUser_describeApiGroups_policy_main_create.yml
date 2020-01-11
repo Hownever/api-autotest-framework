@@ -1,0 +1,89 @@
+- config:
+    name: 创建子账号-创建策略：允许describeApiGroups-绑定策略-请求接口-成功-能查到主账号的分组
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        main_pin: ${ENV(ENV_PIN)}
+        GroupName: ${get_name(GroupName)}
+    verify: False
+
+- test:
+    name: 创建子账号-获取子账号的pin
+    testcase: testcases/monitor/createSubUser_getPin.yml
+    variables:
+        subUserName: SubUser_have_pol
+    output:
+        - subUser_name
+        - accessKey
+        - secretAccessKey
+        - subUser_pin
+
+- test:
+    name: 创建策略：Policy_describeApiGroups
+    api: api/monitor/createPolicy.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        name: Policy_describeApiGroups
+        description: Policy_describeApiGroups
+        content: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigateway:describeApiGroups"],"Resource":["*"],"Condition":{}}]}'
+    extract:
+        - policyName: content.result.policy.name
+    output:
+        - policyName
+
+- test:
+    name: 子用户绑定策略：Policy_describeApiGroups
+    api: api/monitor/attachSubUserPolicy.yml
+    variables:
+        subUser: $subUser_name
+        pin: ${ENV(ENV_PIN)}
+        policyName: $policyName
+
+
+- test:
+    name: 主账号创建分组，请求createApiGroup接口，请求成功
+    api: api/monitor/createApiGroup.yml
+    variables:
+        pin: $main_pin
+        groupName: $GroupName
+        description: aaa
+        prefix: aaa
+        keyCheck: check_exist
+        authType: jd_cloud
+    extract:
+        - apiGroupId: content.result.apiGroupId
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 子用户请求describeApiGroups接口，请求成功
+    api: api/monitor/describeApiGroups.yml
+    variables:
+        pin: $subUser_pin @ $main_pin
+        filters1: groupName
+        filters1values: $GroupName
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.apiGroups.0.groupName, $GroupName]
+        - eq: [content.result.apiGroups.0.description, aaa]
+        - eq: [content.result.apiGroups.0.prefix, aaa]
+
+- test:
+    name: 删除子用户
+    api: api/monitor/deleteSubUser.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        subUser: $subUser_name
+
+- test:
+    name: 删除策略
+    api: api/monitor/deletePolicy.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        policyName: $policyName

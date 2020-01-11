@@ -1,0 +1,51 @@
+name: 根据云翼服务树中应用ID查询应用安全配置-$appid-$host
+description: |
+    cf: https://cf.jd.com/pages/viewpage.action?pageId=213608699
+    curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' --header 'Cookie: sso.js.com=yourCookie'  -d '{
+       "appId": 3587,
+       "appName": "lord",
+       "appWhiteList": "1",
+       "checkIp": "0",
+       "doCheck": "1",
+       "ipWhiteList": "0",
+       "sendLog": "1",
+       "tenantName": "jcloud"
+    }' 'http://lord.hd-tst.ark.jd.com:8021/web-api/v1/lord/securityConfig/add'
+
+    # POST http://ark.jdcloud.com/api/lord/v1/lord/securityConfig/add HTTP/1.1
+
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+    appid:  0
+    appname: productpage
+    whitelist: 0
+    checkip: 0
+    docheck: 0
+    ipwhitelist: 0
+    sendlog: 0
+    tenantname: jcloud
+
+    headers: {}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+         
+request:
+    url: $host/lord/api/v1/lord/securityConfig/add
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        appId: $appid
+        appName: $appname
+        appWhiteList: $whitelist
+        checkIp: $checkip
+        doCheck: $docheck
+        ipWhiteList: $ipwhitelist
+        sendLog: $sendlog
+        tenantName: $tenantname
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+    # JSON

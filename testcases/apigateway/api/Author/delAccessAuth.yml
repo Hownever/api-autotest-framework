@@ -1,0 +1,29 @@
+name: 删除访问授权
+description: 删除访问授权
+operationId: deleteAccessAuth
+
+variables:
+#    url
+    host_daa: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_daa: ${ENV(ENV_API_VERSION)}
+    regionId_daa: ${ENV(ENV_APIM_REGIONID)}
+    accessAuthId_daa: accessAuthId
+#    header
+    header_daa:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_daa: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_daa: nofile
+    openApiAk_daa: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_daa: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_daa: v1
+
+request:
+    url: $host_daa/$apiVer_daa/regions/$regionId_daa/accessAuths/$accessAuthId_daa
+    method: DELETE
+    headers: $header_daa
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_daa, $openApiSk_daa, $serviceLine_daa, $apiVersion_daa, $openapiYaml_daa, $regionId_daa)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

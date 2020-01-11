@@ -1,0 +1,35 @@
+name: 创建计费授权
+description: 创建计费授权
+operationId: createChargeAuth
+
+variables:
+#    url
+    host_cca: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cca: ${ENV(ENV_API_VERSION)}
+    regionId_cca: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_cca: ~
+#    header
+    header_cca:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    userPin_cca: ~
+    resourceId_cca: ~
+#    hooks
+    serviceLine_cca: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_cca: nofile
+    openApiAk_cca: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cca: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cca: v1
+
+request:
+    url: $host_cca/$apiVer_cca/regions/$regionId_cca/apiGroups/$apiGroupId_cca/chargeAuths
+    method: POST
+    headers: $header_cca
+    json:
+        userPin: $userPin_cca
+        resourceId: $resourceId_cca
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cca, $openApiSk_cca, $serviceLine_cca, $apiVersion_cca, $openapiYaml_cca, $regionId_cca)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

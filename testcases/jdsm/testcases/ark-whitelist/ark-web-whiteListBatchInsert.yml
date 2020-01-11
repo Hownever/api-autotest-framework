@@ -1,0 +1,64 @@
+- config:
+    # 测试用例名称
+    name: 白名单关闭时，可以正常访问
+    regionId: cn-north-1
+
+    variables:
+        expected_status_code: 200
+        c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+        provider_app: productpage2
+        provider_groups: ["east2-pre"]
+        provider_inss: []
+        consumer_app: reviews
+        consumer_groups: ["east-pre-test"]
+        consumer_inss: []
+        c_env: ${ENV(ENV_TEST_ENV)}
+
+    output:
+        - jsonResponse
+
+#    # setup_hooks: 在整个用例开始执行前触发 hook 函数，主要用于准备工作。
+#    setup_hooks:
+#        - a: ${hook_print("user： user")}
+#
+#    # teardown_hooks: 在整个用例结束执行后触发 hook 函数，主要用于测试后的清理工作。
+#    teardown_hooks:
+#        - b: ${hook_print("teardown_hooks for config")}
+
+- test:
+    name: 获取云翼cookies（从mock server）
+    api: api/mock/mock-data-get.yml
+
+    variables:
+        mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # mock存储的id，使用时的id
+        mock_id: ${get_host_from_url($c_ark_host)}
+        # 是否删除get的value
+        remove_after_get: disable
+        cookie: {}
+    extract:
+        - sso: "sso.jd.com=(\\w+\\.\\w+); "
+    teardown_hooks:
+        - cookie: {'ENV_COOKIES': '_ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=145146863|direct|-|none|-|1564985477902; jdcloud_sitelang=cn; apigatewayareaCode=cn-north-1; apigatewayareaName=%25E5%258D%258E%25E5%258C%2597-%25E5%258C%2597%25E4%25BA%25AC; jdcloud_sitelang_server=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1565867188,1565867204; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1565867204; ipv6_iaas=0; jdcloud-api-testconsole_label=1; jdcloud-api-testversion=v2; __jda=250358228.1554091325970812602438.1554091326.1557283719.1559796648.14; __jdc=250358228; thor=266D4182C9765ABA472EE445C9393A60509F8D7E0447FB1E10B4431FC853342A36021CD1838975E5C96DF7FBA6DA9BCA33CAD7D649DAE20DBB9DC7843D638994DB457581E8E0A69ED700E7840A853D1630E60746433053A42FC704AD989084E239118420B63B460DF45B83DAFE11B28D19783ACC092CFF07273CC880262D2A35095CFCB01C2216FAF51A5506AA530B14; pin=jcloud_00; unick=jcloud_00; jcloud_00console_label=1; jcloud_00version=v2; currPage=images; erp1.jd.com=7369BCEC44355A9112C5F56E0FB7A8BC722166B565DB51CA47690EF175BA8F8A1E7A73BDE4F4CD6B82D07449FE6EBC875DE06573D83089441B3DA9FA76143C80E2E8DB226416A5E298F459E2DB140089; sso.jd.com=$sso '}
+        # 更新cookie值到环境变量中，方便后续脚本使用
+        - update_env_var: ${set_os_environ($cookie)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    # 测试步骤名称
+    name:  添加白名单-Provider($provider_app, $provider_groups, $provider_inss)-Consumer($consumer_app, $consumer_groups, $consumer_inss)
+    api: api/ark-whitelist/ark-web-whiteListBatchInsert.yml
+
+#    setup_hooks:
+##        - index: 1
+##        - ${hook_print("user： setup_hooks $index")}
+#    teardown_hooks:
+##        - index3: 1
+##        - ${hook_print("user： setup_hooks $index2")}
+    extract:
+        - jsonResponse: content
+        - whitelist: content
+    #validate:
+        # 此处不检查，用查询接口检查结果正确性
+    #    - len_gt: ["content", 0]

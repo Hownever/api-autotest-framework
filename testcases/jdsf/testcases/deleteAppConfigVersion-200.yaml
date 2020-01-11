@@ -1,0 +1,12 @@
+testcases:
+    正常删除配置版本，返回200:
+        testcase: testcases\jdsf\apis\deleteAppConfigVersion-200.yaml
+        parameters:
+            userpin:
+                - ${ENV(ENV_USER_PIN)}
+            usererps:
+                - ${ENV(ENV_USER_ERP)}
+            appconfigid:
+                - 0
+            appconfigversionid:
+                - 0

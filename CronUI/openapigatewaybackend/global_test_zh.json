@@ -1,0 +1,55 @@
+[{
+        "code": 200,
+        "message": "APIGATEWAY_SUCCESS_成功_200",
+        "status": "APIGATEWAY_SUCCESS"
+},
+{
+        "code": 403,
+        "message": "APIGATEWAY_HTTP_FORBIDDEN_没有权限_403",
+        "status": "APIGATEWAY_HTTP_FORBIDDEN"
+},
+{
+        "code": 400,
+        "message": "APIGATEWAY_ARGUMENT_NOT_FOUND_{{.param0}}不能为空_400",
+        "status": "APIGATEWAY_ARGUMENT_NOT_FOUND"
+},
+{
+        "code": 500,
+        "message": "APIGATEWAY_OPERATION_FAILED_操作失败_500",
+        "status": "APIGATEWAY_OPERATION_FAILED"
+},
+{
+        "code": 500,
+        "message": "JIASHUO_APIGATEWAY_OPERATION_FAILED_操作失败_500",
+        "status": "JIASHUO_APIGATEWAY_OPERATION_FAILED"
+},
+{
+        "code": 404,
+        "message": "APIGATEWAY_APIGROUPNAME_ISREPEAT_分组名称重复_404",
+        "status": "APIGATEWAY_APIGROUPNAME_ISREPEAT"
+},
+{
+        "code": 400,
+        "message": "APIGATEWAY_ARGUMENT_NOT_SUPPORT_{{.param0}}不能为空{{.param1}}_400",
+        "status": "APIGATEWAY_ARGUMENT_NOT_SUPPORT"
+},
+{
+        "code": 404,
+        "message": "APIGATEWAY_NOT_FOUND_{{.param}}资源不存在_404",
+        "status": "APIGATEWAY_NOT_FOUND"
+},
+{
+        "code": 400,
+        "message": "APIGATEWAY_PATH_PARAMETERS_MUST_BE_DEFINED_请在下面的查询参数Parameter Path中定义此路径参数:{{.param2}}_400",
+        "status": "APIGATEWAY_PATH_PARAMETERS_MUST_BE_DEFINED"
+},
+{
+	"code": 400,
+	"message": "参数取值不合法",
+	"status": "OUT_OF_RANGE"
+},
+{
+	"code": 400,
+	"message": "参数{{.argument}}类型应该是{{.format}}",
+	"status": "ARGUMENT_WRONG_FORMAT"
+}]

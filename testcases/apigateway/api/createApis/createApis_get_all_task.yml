@@ -1,0 +1,72 @@
+name: 创建API
+description: 创建API
+operationId: createApis
+
+variables:
+#    url
+    host_gat: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_gat: ${ENV(ENV_API_VERSION)}
+    regionId_gat: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_gat: apiGroupId
+    revision_gat: revision
+#    header
+    header_gat:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_gat: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_gat: nofile
+    openApiAk_gat: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_gat: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_gat: v1
+
+request:
+    url: $host_gat/$apiVer_gat/regions/$regionId_gat/apiGroups/$apiGroupId_gat/revision/$revision_gat/apis
+    method: POST
+    headers: $header_gat
+    json:
+        api:
+            apiGroupId: $apiGroupId_gat
+            action: GET
+            apiName: get_all_task
+            description: get_all_task
+            path: "/todo/api/v1/tasks/getAllOrUniqueTask"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              -
+                defaultValue: Title_123
+                description: title
+                isRequired: false
+                name: title
+                paramType: String
+                paramLocation: query
+              -
+                defaultValue: false
+                description: done
+                isRequired: false
+                name: done
+                paramType: boolean
+                paramLocation: query
+              -
+                defaultValue: description
+                description: description
+                isRequired: false
+                name: description
+                paramType: String
+                paramLocation: query
+              -
+                defaultValue: Authorization
+                description: Authorization
+                isRequired: true
+                name: Author_test
+                paramType: String
+                paramLocation: head
+            reqBody: ~
+            resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"task\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"items\": {\n\t\t\t\t\"type\": \"object\",\n\t\t\t\t\"properties\": {\n\t\t\t\t\t\"title\": {\n\t\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t\t},\n\t\t\t\t\t\"description\": {\n\t\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t\t},\n\t\t\t\t\t\"done\": {\n\t\t\t\t\t\t\"type\": \"boolean\"\n\t\t\t\t\t},\n\t\t\t\t\t\"uri\": {\n\t\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_gat, $openApiSk_gat, $serviceLine_gat, $apiVersion_gat, $openapiYaml_gat, $regionId_gat)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

@@ -1,0 +1,21 @@
+request:
+    url: /$api_ver/subUser
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        createSubUserInfo:
+            name: $name
+            description: $description
+            password: $password
+            phone: $phone
+            email: $email
+            createAk: $createAk
+            needResetPassword: $needResetPassword
+            consoleLogin: $consoleLogin
+            autoGeneratePassword: $autoGeneratePassword
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, iam, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

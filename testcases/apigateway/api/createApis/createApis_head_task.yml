@@ -1,0 +1,56 @@
+name: 创建API
+description: 创建API
+operationId: createApis
+
+variables:
+#    url
+    host_ht: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_ht: ${ENV(ENV_API_VERSION)}
+    regionId_ht: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_ht: apiGroupId
+    revision_ht: revision
+#    header
+    header_ht:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_ht: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_ht: nofile
+    openApiAk_ht: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_ht: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_ht: v1
+
+request:
+    url: $host_ht/$apiVer_ht/regions/$regionId_ht/apiGroups/$apiGroupId_ht/revision/$revision_ht/apis
+    method: POST
+    headers: $header_ht
+    json:
+        api:
+            apiGroupId: $apiGroupId_ht
+            action: HEAD
+            apiName: head_task
+            description: head_task
+            path: "/todo/api/v1/tasks/getHead/{taskid}"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              - defaultValue: taskid
+                description: taskid
+                isRequired: true
+                name: taskid
+                paramType: Int
+                paramLocation: path
+              - defaultValue: Authorization
+                description: Authorization
+                isRequired: true
+                name: Author_test
+                paramType: String
+                paramLocation: head
+            reqBody: ~
+            resBody: ~
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_ht, $openApiSk_ht, $serviceLine_ht, $apiVersion_ht, $openapiYaml_ht, $regionId_ht)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

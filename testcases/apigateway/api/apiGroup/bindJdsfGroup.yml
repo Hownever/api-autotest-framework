@@ -1,0 +1,45 @@
+name: 分组绑定微服务网关
+description: 分组绑定微服务网关
+operationId: bindJdsfGroup
+
+variables:
+    #    json
+    jdsfName_bjg: jdsfNames
+    jdsfRegistryName_bjg: jdsfRegistryNames
+    jdsfId_bjg: jdsfIds
+    groupType_bjg: groupTypes
+    environment_bjg: environment
+    jdsfParam_bjg: ~
+    jdsfRegion_bjg: ~
+#    url
+    host_bjg: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_bjg: ${ENV(ENV_API_VERSION)}
+    regionId_bjg: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_bjg: apiGroupId
+#    header
+    header_bjg:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_bjg: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_bjg: nofile
+    openApiAk_bjg: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_bjg: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_bjg: v1
+
+request:
+    url: $host_bjg/$apiVer_bjg/regions/$regionId_bjg/apiGroups/$apiGroupId_bjg:bindJdsfGroup
+    method: POST
+    headers: $header_bjg
+    json:
+        jdsfName: $jdsfName_bjg
+        jdsfRegistryName: $jdsfRegistryName_bjg
+        jdsfId: $jdsfId_bjg
+        jdsfParam: $jdsfParam_bjg
+        jdsfRegion: $jdsfRegion_bjg
+        groupType: $groupType_bjg
+        environment: $environment_bjg
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_bjg, $openApiSk_bjg, $serviceLine_bjg, $apiVersion_bjg, $openapiYaml_bjg, $regionId_bjg)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

@@ -1,0 +1,25 @@
+- config:
+    name: mock data set and get
+    variables:
+        c_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+
+        c_mock_remove_after_get: enable
+        # mock存储的id，使用时的id
+        c_mock_id: mock-data-test-302
+
+        c_expected_status_code: 200
+
+- test:
+    name: 获取Mock Data - $c_mock_id
+    api: api/mock/mock-data-get.yml
+    variables:
+        mock_host: $c_mock_host
+        # mock存储的id，使用时的id
+        mock_id: $c_mock_id
+        remove_after_get: $c_mock_remove_after_get
+
+    extract:
+        - scode: status_code
+        - mockdata: content
+    validate:
+        - eq: [$scode, $c_expected_status_code]

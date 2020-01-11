@@ -1,0 +1,31 @@
+name: 下线
+description: 下线
+operationId: offline
+
+variables:
+#    url
+    host_o: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_o: ${ENV(ENV_API_VERSION)}
+    regionId_o: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_o: apiGroupId
+    deploymentId_o: deploymentId
+#    header
+    header_o:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+#    hooks
+    serviceLine_o: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_o: nofile
+    openApiAk_o: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_o: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_o: v1
+
+request:
+    url: $host_o/$apiVer_o/regions/$regionId_o/apiGroups/$apiGroupId_o/deployments/$deploymentId_o:offline
+    method: POST
+    headers: $header_o
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_o, $openApiSk_o, $serviceLine_o, $apiVersion_o, $openapiYaml_o, $regionId_o)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

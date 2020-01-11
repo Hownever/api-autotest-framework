@@ -1,0 +1,35 @@
+- config:
+    name: 检查订阅密钥是否已创建，删除旧数据后创建新的访问授权
+    variables:
+    #    path
+        regionId_apim_pcaas: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_pcaas: ${ENV(ENV_SERVICELINE_APIM)}
+        subsName_pcaas: ${ENV(ENV_SUBS_KEY_NAME)}
+    verify: False
+
+- test:
+    name: 检查是否已创建
+    api: api/subscriptionKey/querySubscriptionKeys.yml
+    variables:
+        filters1_qsk:
+        filters1values_qsk:
+        regionId_qsk: $regionId_apim_pcaas
+        serviceLine_qsk: $serviceLine_apim_pcaas
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - subscriptionKeys_qsk: content.result.subscriptionKeys
+        - totalCount_qsk: content.result.totalCount
+    output:
+        - subscriptionKeys_qsk
+
+- test:
+    name: 如果订阅密钥已创建，删除订阅密钥
+    skipUnless: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_pcaas, subscriptionKeyId)}
+    api: api/subscriptionKey/deleteSubscriptionKey.yml
+    variables:
+        regionId_dsk: $regionId_apim_pcaas
+        serviceLine_dsk: $serviceLine_apim_pcaas
+        subscriptionKeyId_dsk: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_pcaas, subscriptionKeyId)}
+    validate:
+        - eq: ["status_code", 200]

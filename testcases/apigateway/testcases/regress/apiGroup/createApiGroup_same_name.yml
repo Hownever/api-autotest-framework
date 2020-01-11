@@ -1,0 +1,67 @@
+- config:
+    name: 同region下创建同名分组，会报错:分组名称重复
+    variables:
+        serviceLine_apim: apigateway
+        regionId_apim_1: cn-north-1
+        groupName: JIASHUO_SAME_GROUPNAME
+        authType: jd_cloud
+        filters1: groupName
+        filters1values: JIASHUO_SAME_GROUPNAME
+    verify: False
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 创建分组成功，分组名：$groupName
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_1
+        groupName_cag: $groupName
+        description_cag: 同region下创建同名分组，会报错
+        authType_cag: $authType
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+
+- test:
+    name: 创建同名分组，报错:分组名称重复
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_1
+        groupName_cag: $groupName
+        description_cag: 同region下创建同名分组，会报错
+        authType_cag: $authType
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+        - error_message: content.error.message
+        - error_status: content.error.status
+    validate:
+        - eq: [$scode, 409]
+        - eq: [$error_status, APIGATEWAY_APIGROUPNAME_ISREPEAT]
+        - contains: [$error_message, 分组名称重复]
+        - len_eq: [$requestId, 32]
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values

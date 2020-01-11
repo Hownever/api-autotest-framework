@@ -1,0 +1,268 @@
+- config:
+    # 测试用例名称
+    name: 白名单开启时，白名单列表未配置时，禁止访问
+    regionId: cn-north-1
+
+    variables:
+        base_ark_web_url: ${ENV(ENV_ARK_WEB_BASE_URL)}
+        base_url_jdmesh_web: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        base_url_productpage_web: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        provider_app: ${ENV(ENV_TEST_PROVIDER)}
+        provider_groups: []
+        provider_inss: []
+        consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+        consumer_groups: []
+        consumer_inss: []
+        env: ${ENV(ENV_TEST_ENV)}
+        expected_status_code: 200
+        c_update_basicconfig_waittime: ${ENV(ENV_UPDATE_BASICCONFIG_WAITTIME_SEC)}
+        c_env: ${ENV(ENV_TEST_ENV)}
+
+- test:
+    name: 获取云翼cookies（从mock server）
+    api: api/mock/mock-data-get.yml
+
+    variables:
+        mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # mock存储的id，使用时的id
+        mock_id: ${get_host_from_url($base_ark_web_url)}
+        # 是否删除get的value
+        remove_after_get: disable
+        cookie: {}
+    extract:
+        - sso: "sso.jd.com=(\\w+\\.\\w+); "
+    teardown_hooks:
+        - cookie: {'ENV_COOKIES': '_ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=145146863|direct|-|none|-|1564985477902; jdcloud_sitelang=cn; apigatewayareaCode=cn-north-1; apigatewayareaName=%25E5%258D%258E%25E5%258C%2597-%25E5%258C%2597%25E4%25BA%25AC; jdcloud_sitelang_server=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1565867188,1565867204; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1565867204; ipv6_iaas=0; jdcloud-api-testconsole_label=1; jdcloud-api-testversion=v2; __jda=250358228.1554091325970812602438.1554091326.1557283719.1559796648.14; __jdc=250358228; thor=266D4182C9765ABA472EE445C9393A60509F8D7E0447FB1E10B4431FC853342A36021CD1838975E5C96DF7FBA6DA9BCA33CAD7D649DAE20DBB9DC7843D638994DB457581E8E0A69ED700E7840A853D1630E60746433053A42FC704AD989084E239118420B63B460DF45B83DAFE11B28D19783ACC092CFF07273CC880262D2A35095CFCB01C2216FAF51A5506AA530B14; pin=jcloud_00; unick=jcloud_00; jcloud_00console_label=1; jcloud_00version=v2; currPage=images; erp1.jd.com=7369BCEC44355A9112C5F56E0FB7A8BC722166B565DB51CA47690EF175BA8F8A1E7A73BDE4F4CD6B82D07449FE6EBC875DE06573D83089441B3DA9FA76143C80E2E8DB226416A5E298F459E2DB140089; sso.jd.com=$sso '}
+        # 更新cookie值到环境变量中，方便后续脚本使用
+        - update_env_var: ${set_os_environ($cookie)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    # 测试步骤名称
+    name:  查询服务白名单列表中内容-保证为空-$provider_app
+    api: api/ark-whitelist/ark-web-whitelistQuery.yml
+
+    variables:
+        host: $base_ark_web_url
+        expected_status_code: 200
+        appname: $provider_app
+
+    extract:
+        - jsonRes: content
+        - whiteListItems: content.data.whiteList
+#        - whiteListIds: ${get_whitelist_ids($whiteListItems)}
+
+    validate:
+        - eq: ["status_code", 200]
+        - ne: [content.status.code, UnLoginError]
+        - len_eq: [content.data.whiteList, 0]
+
+- test:
+    # 测试步骤名称
+    name:  查询网格相关设置项-$provider_app
+    api: api/jdsm-basicconfig/jdsm-web-describebasicconfig.yml
+
+    variables:
+        base_url: $base_url_jdmesh_web
+        expected_status_code: 200
+        product: $provider_app
+        env: $env
+
+    extract:
+        - jsonResponse: content
+        - whitelist: content.result.basicConfig.enableWhiteListCheck
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    # 测试步骤名称
+    name:  如果未开启，那么配置白名单为开启状态，配置后等待$c_update_basicconfig_waittime S让配置下发，否则跳过此步骤-$provider_app
+    skipIf: $whitelist
+    api: api/jdsm-basicconfig/jdsm-web-update-basicconfig.yml
+
+    variables:
+        base_url: $base_url_jdmesh_web
+        product: $provider_app
+        env: $env
+        enableWhiteListCheck: True
+        healthCheckInterval: 30
+
+    extract:
+        - jsonResponse: content
+        - rcode: status_code
+    validate:
+        - eq: ["status_code", 200]
+    teardown_hooks:
+        - ${sleep_N_secs($c_update_basicconfig_waittime)}
+        # 需要更新whitelist为true，否则最后关闭时会跳过
+        - whitelist: ${validate($rcode, 200, str_eq)}
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第1次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第2次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", 403]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第3次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第4次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第5次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第6次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第7次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第8次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第9次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  调用productpage项目的reviews API，验证调用结果(第10次)-$expected_status_code
+    api: api/productpage/productpage-api-reviews.yml
+
+    variables:
+        host: $base_url_productpage_web
+        productid: 0
+        headers: {}
+
+    extract:
+        - productpageRes: content
+    validate:
+        - eq: ["status_code", $expected_status_code]
+
+- test:
+    # 测试步骤名称
+    name:  配置白名单为关闭状态，并等待$c_update_basicconfig_waittime s让配置下发完成不影响后续测试
+    skipUnless: $whitelist
+    api: api/jdsm-basicconfig/jdsm-web-update-basicconfig.yml
+
+    variables:
+        base_url: $base_url_jdmesh_web
+        product: $provider_app
+        env: $env
+        enableWhiteListCheck: False
+
+    extract:
+        - jsonResponse: content
+    validate:
+        - eq: ["status_code", 200]
+    teardown_hooks:
+        - ${sleep_N_secs($c_update_basicconfig_waittime)}

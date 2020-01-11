@@ -1,0 +1,371 @@
+- config:
+    name: 更新API-后端为Func-成功
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        funcName: ${ENV(ENV_FUNC_NAME)}
+        groupName: ${ENV(ENV_GROUP_NAME)}
+        backServiceType: function
+        backServicePath:
+        backServiceId:
+        backServiceName:
+        backUrl:
+        backServiceConfig: False
+        backServiceVersion: LATEST
+    verify: False
+    output:
+        - apiGroupId
+        - revision
+
+- test:
+    name: 创建API
+    testcase: testcases/monitor/createApis_200.yml
+    variables:
+        groupName: $groupName
+        authType: $authType
+    output:
+        - apiGroupId
+        - revision
+        - apiId_create_task_json
+#        - apiId_create_task_xml
+#        - apiId_delete_task
+#        - apiId_get_all_task
+#        - apiId_get_select_task
+#        - apiId_head_task
+#        - apiId_patch_task_json
+#        - apiId_patch_task_xml
+#        - apiId_put_task_json
+#        - apiId_put_task_xml
+#        - apiId_get_error
+#        - apiId_return_header
+#        - apiId_return_string
+#        - apiId_return_float
+#        - apiId_return_int32
+#        - apiId_return_int64
+#        - apiId_return_additionalProperties
+#        - apiId_return_boolean
+#        - apiId_return_double
+#        - apiId_return_arrayint64
+#        - apiId_return_arrayobject
+#        - apiId_return_arraystring
+#        - apiId_return_date
+#        - apiId_test_all_type_get
+#        - apiId_test_all_type_post
+
+- test:
+    name: 创建Func
+    api: api/monitor/createFunction.yml
+    variables:
+        funcName: $funcName
+        description: $funcName
+    output:
+        - backServiceId
+        - backServiceName
+
+- test:
+    name: 更新API_后端为Func_create_task_json
+    api: api/monitor/updateApi/updateApi_create_task_json.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId_create_task_json: $apiId_create_task_json
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiId_create_task_json, 16]
+        - contains: [$apiId_create_task_json, api-]
+
+#- test:
+#    name: 更新API_后端为Func_create_task_xml
+#    api: api/monitor/updateApi/updateApi_create_task_xml.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_create_task_xml: $apiId_create_task_xml
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_create_task_xml, 16]
+#        - contains: [$apiId_create_task_xml, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_delete_task
+#    api: api/monitor/updateApi/updateApi_delete_task.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_delete_task: $apiId_delete_task
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_delete_task, 16]
+#        - contains: [$apiId_delete_task, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_get_all_task
+#    api: api/monitor/updateApi/updateApi_get_all_task.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_get_all_task: $apiId_get_all_task
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_get_all_task, 16]
+#        - contains: [$apiId_get_all_task, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_get_select_task
+#    api: api/monitor/updateApi/updateApi_get_select_task.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_get_select_task: $apiId_get_select_task
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_get_select_task, 16]
+#        - contains: [$apiId_get_select_task, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_head_task
+#    api: api/monitor/updateApi/updateApi_head_task.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_head_task: $apiId_head_task
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_head_task, 16]
+#        - contains: [$apiId_head_task, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_patch_task_json
+#    api: api/monitor/updateApi/updateApi_patch_task_json.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_patch_task_json: $apiId_patch_task_json
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_patch_task_json, 16]
+#        - contains: [$apiId_patch_task_json, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_patch_task_xml
+#    api: api/monitor/updateApi/updateApi_patch_task_xml.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_patch_task_xml: $apiId_patch_task_xml
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_patch_task_xml, 16]
+#        - contains: [$apiId_patch_task_xml, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_put_task_json
+#    api: api/monitor/updateApi/updateApi_put_task_json.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_put_task_json: $apiId_put_task_json
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_put_task_json, 16]
+#        - contains: [$apiId_put_task_json, api-]
+#--------------------------------------------------------------
+#- test:
+#    name: 更新API_后端为Func_put_task_xml
+#    api: api/monitor/updateApi/updateApi_put_task_xml.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_put_task_xml: $apiId_put_task_xml
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_put_task_xml, 16]
+#        - contains: [$apiId_put_task_xml, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_get_error
+#    api: api/monitor/updateApi/updateApi_get_error.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_get_error: $apiId_get_error
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_get_error, 16]
+#        - contains: [$apiId_get_error, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_header
+#    api: api/monitor/updateApi/updateApi_return_header.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_header: $apiId_return_header
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_header, 16]
+#        - contains: [$apiId_return_header, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_string
+#    api: api/monitor/updateApi/updateApi_return_string.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_string: $apiId_return_string
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_string, 16]
+#        - contains: [$apiId_return_string, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_float
+#    api: api/monitor/updateApi/updateApi_return_float.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_float: $apiId_return_float
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_float, 16]
+#        - contains: [$apiId_return_float, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_int32
+#    api: api/monitor/updateApi/updateApi_return_int32.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_int32: $apiId_return_int32
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_int32, 16]
+#        - contains: [$apiId_return_int32, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_int64
+#    api: api/monitor/updateApi/updateApi_return_int64.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_int64: $apiId_return_int64
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_int64, 16]
+#        - contains: [$apiId_return_int64, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_additionalProperties
+#    api: api/monitor/updateApi/updateApi_return_additionalProperties.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_additionalProperties: $apiId_return_additionalProperties
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_additionalProperties, 16]
+#        - contains: [$apiId_return_additionalProperties, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_boolean
+#    api: api/monitor/updateApi/updateApi_return_boolean.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_boolean: $apiId_return_boolean
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_boolean, 16]
+#        - contains: [$apiId_return_boolean, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_double
+#    api: api/monitor/updateApi/updateApi_return_double.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_double: $apiId_return_double
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_double, 16]
+#        - contains: [$apiId_return_double, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_arrayint64
+#    api: api/monitor/updateApi/updateApi_return_arrayint64.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_arrayint64: $apiId_return_arrayint64
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_arrayint64, 16]
+#        - contains: [$apiId_return_arrayint64, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_arrayobject
+#    api: api/monitor/updateApi/updateApi_return_arrayobject.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_arrayobject: $apiId_return_arrayobject
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_arrayobject, 16]
+#        - contains: [$apiId_return_arrayobject, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_arraystring
+#    api: api/monitor/updateApi/updateApi_return_arraystring.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_arraystring: $apiId_return_arraystring
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_arraystring, 16]
+#        - contains: [$apiId_return_arraystring, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_return_date
+#    api: api/monitor/updateApi/updateApi_return_date.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_return_date: $apiId_return_date
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_return_date, 16]
+#        - contains: [$apiId_return_date, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_test_all_type_get
+#    api: api/monitor/updateApi/updateApi_test_all_type_get.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_test_all_type_get: $apiId_test_all_type_get
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_test_all_type_get, 16]
+#        - contains: [$apiId_test_all_type_get, api-]
+#
+#- test:
+#    name: 更新API_后端为Func_test_all_type_post
+#    api: api/monitor/updateApi/updateApi_test_all_type_post.yml
+#    variables:
+#        apiGroupId: $apiGroupId
+#        revision: $revision
+#        apiId_test_all_type_post: $apiId_test_all_type_post
+#    validate:
+#        - eq: ["status_code", 200]
+#        - len_eq: [$apiId_test_all_type_post, 16]
+#        - contains: [$apiId_test_all_type_post, api-]
+#

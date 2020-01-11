@@ -1,0 +1,47 @@
+testcases:
+    IP地址来源：不同KEY账号-IP白名单-本机IP地址-网关允许访问后端:
+        testcase:  api/ipprotect-opened-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 控制台用户- 传错误x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderWithInvalidIP",
+                    "AK" : "379E1234E8EBB9942284FBA0F84EB6A2",
+                    "SK" : "36D959BFF6BD6D86E83E5BD8A899E25E",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                        "x-jdcloud-user-ip" : "168.95.1.1",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 传错误x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin-Allow",
+                    "AK" : "F5A33732B0AA87C35A41C58412BBA485",
+                    "SK" : "72E095F9CFECD741E6D35FF34DFFB4E5",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_LUrXyzr",
+                        "x-jdcloud-user-ip" : "168.95.1.1",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 传错误x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "OmpUserSelfKey-HeaderWithInValidPin-Allow",
+                    "AK" : "F5A33732B0AA87C35A41C58412BBA485",
+                    "SK" : "72E095F9CFECD741E6D35FF34DFFB4E5",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_LUrXyzr",
+                        "x-jdcloud-user-ip" : "168.95.1.2",
+                        }
+                  }
+            ipaddress:
+                # 指定IP
+                - 168.95.1.1

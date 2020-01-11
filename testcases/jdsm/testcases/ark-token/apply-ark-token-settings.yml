@@ -1,0 +1,129 @@
+- config:
+    # 测试用例名称
+    name: 配置token开启或者关闭，验证token功能
+
+    variables:
+        c_ark_api_host: ${ENV(ENV_ARK_API_BASE_URL)}
+        c_ark_web_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+
+        c_appname: jdmesh-test-images
+
+        # token 网格同步时间
+        c_update_token_settings_waittime: ${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}
+        # 安全配置
+        c_docheck: 1
+        c_whitelist: 0
+        c_checkip: 0
+        c_ipwhitelist: 0
+        c_sendlog: 0
+        c_tenantname: jcloud
+
+        # TODO: 白名单配置支持
+        c_provider_app: null # productpage
+        c_provider_groups: [] # ["east2-pre"]
+        c_provider_inss: []
+        c_consumer_app: null # reviews
+        c_consumer_groups: [] # ["east-pre-test"]
+        c_consumer_inss: []  # ["4.reviews"]
+
+        appid: null
+
+- test:
+    name: 获取云翼cookies（从mock server）
+    api: api/mock/mock-data-get.yml
+
+    variables:
+        mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # mock存储的id，使用时的id
+        # mock_id: ${get_host_from_url($c_ark_host)}
+        mock_id: ark.jdcloud.com
+        # 是否删除get的value
+        remove_after_get: disable
+        cookie: {}
+    extract:
+        - sso: "sso.jd.com=(\\w+\\.\\w+); "
+        - erp: "erp1.jd.com=(\\w+); "
+    teardown_hooks:
+        # - cookie: {'ENV_COOKIES': '_ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=145146863|direct|-|none|-|1564985477902; jdcloud_sitelang=cn; apigatewayareaCode=cn-north-1; apigatewayareaName=%25E5%258D%258E%25E5%258C%2597-%25E5%258C%2597%25E4%25BA%25AC; jdcloud_sitelang_server=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1565867188,1565867204; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1565867204; ipv6_iaas=0; jdcloud-api-testconsole_label=1; jdcloud-api-testversion=v2; __jda=250358228.1554091325970812602438.1554091326.1557283719.1559796648.14; __jdc=250358228; thor=266D4182C9765ABA472EE445C9393A60509F8D7E0447FB1E10B4431FC853342A36021CD1838975E5C96DF7FBA6DA9BCA33CAD7D649DAE20DBB9DC7843D638994DB457581E8E0A69ED700E7840A853D1630E60746433053A42FC704AD989084E239118420B63B460DF45B83DAFE11B28D19783ACC092CFF07273CC880262D2A35095CFCB01C2216FAF51A5506AA530B14; pin=jcloud_00; unick=jcloud_00; jcloud_00console_label=1; jcloud_00version=v2; currPage=images; erp1.jd.com=7369BCEC44355A9112C5F56E0FB7A8BC722166B565DB51CA47690EF175BA8F8A1E7A73BDE4F4CD6B82D07449FE6EBC875DE06573D83089441B3DA9FA76143C80E2E8DB226416A5E298F459E2DB140089; sso.jd.com=$sso '}
+        - cookie: {'ENV_COOKIES': '_ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=86694794|cf.jd.com|-|referral|-|1568170896875; Hm_lvt_38f625421267eb5065e400d79fc42c74=1566369326,1568859508; __jda=36325045.155261874676598619927.1552618747.1568859508.1568967324.16; xCsrfToken=JZ-yXBaBmIM1Fz6mTsHp413W; erp1.jd.com=$erp; sso.jd.com=$sso'}
+
+        # 更新cookie值到环境变量中，方便后续脚本使用
+        - update_env_var: ${set_os_environ($cookie)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 调用云翼api，查询应用ID - $c_appname
+    api: api/ark-app/ark-api-queryAppByCondition.yml
+
+    variables:
+        host: $c_ark_api_host
+        expected_status_code: 200
+        appname: $c_appname
+
+    extract:
+        - appid: content.data.dataList.0.id
+
+    validate:
+        - eq: [status_code, 200]
+
+- test:
+    name: 调用云翼api，根据应用ID查询对应的token相关的设置 - $c_appname - $appid
+    api: api/ark-token/ark-web-securityConfigQuery.yml
+
+    variables:
+        host: $c_ark_web_host
+        appid: $appid
+    extract:
+        - settings: content.data
+
+    validate:
+        - eq: [status_code, 200]
+
+- test:
+    name: Token安全配置 - $c_appname - $appid - 只有没有配置过的应用会通过此步配置，否则跳过此步
+    skipUnless: ${validate($settings, 0, len_eq)}
+    api: api/ark-token/ark-web-securityConfigAdd.yml
+
+    variables:
+        host: $c_ark_web_host
+        appid: $appid
+        appname: $c_appname
+        whitelist: $c_whitelist
+        checkip: $c_checkip
+        docheck: $c_docheck
+        ipwhitelist: $c_ipwhitelist
+        sendlog: $c_sendlog
+        tenantname: $c_tenantname
+    teardown_hooks:
+        - ${sleep_N_secs($c_update_token_settings_waittime)}
+
+    extract:
+        - settings: content.data
+    validate:
+        - eq: [status_code, 200]
+
+- test:
+    name: Token安全配置 - $c_appname - $appid - 只有期望配置效果与查询到的配置不同时，才会通过此步配置，否则跳过此步
+    skipIf: ${validate_token_settings($settings, $c_whitelist, $c_checkip, $c_docheck, $c_ipwhitelist, $c_sendlog, $c_tenantname)}
+    api: api/ark-token/ark-web-securityConfigUpdate.yml
+
+    variables:
+        host: $c_ark_web_host
+        appid: $appid
+        appname: $c_appname
+        whitelist: $c_whitelist
+        checkip: $c_checkip
+        docheck: $c_docheck
+        ipwhitelist: $c_ipwhitelist
+        sendlog: $c_sendlog
+        tenantname: $c_tenantname
+    teardown_hooks:
+        - ${sleep_N_secs($c_update_token_settings_waittime)}
+
+    extract:
+        - settings: content.data
+
+    validate:
+        - eq: [status_code, 200]

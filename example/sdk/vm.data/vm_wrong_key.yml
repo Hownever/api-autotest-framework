@@ -1,0 +1,18 @@
+
+ak: DD1B0BFA7BAA5DAED057ACF4817AF55B
+sk: 6FC47989E4F4B1F489004F12FFFD89DE
+DescribeInstances: DescribeInstancesx
+request_args: cn-north-1
+value: testvalue from yaml
+
+product: 
+    - vm:
+        - test1: 
+            name: vm_test_nameA
+            DescribeInstances: DescribeInstances
+            request_args: cn-north-1
+        - test2:
+            name: vm_test_nameB
+            DescribeInstances: DescribeInstances
+            request_args: cn-north-1B
+

@@ -1,0 +1,64 @@
+name: 调试API
+description: 调试API
+operationId: debugApi
+
+variables:
+#    url
+    host_da: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_da: ${ENV(ENV_API_VERSION)}
+    regionId_da: cn-north-1
+    revision_da: 0.0.1
+    apiId_da: api-wv32llh4orsi
+    apiGroupId_da: ag-wv32l2z2xkc3
+#    header
+    header_da:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: jdcloud-api-test
+#    json
+    assessKey_da: ~
+    secretKey_da: ~
+    host_da1: wv32l2z2xkc3.cn-north-1.jdcloud-api.net:8000
+    uri_da: /todo/api/v1/tasks/createTask/json
+    method_da: POST
+    authType_da: None
+    region_da: cn-north-1
+    queryString_da:
+    body_da:
+    reqBodyType_da: 1
+    editableReqBodyType_da: ~
+    headerString_da: ~
+    environment_da: online
+    isApiProduct_da: ~
+
+#    hooks
+    serviceLine_da: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_da: nofile
+    openApiAk_da: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_da: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_da: v1
+
+request:
+    url: $host_da/$apiVer_da/regions/$regionId_da/apiGroups/$apiGroupId_da/revision/$revision_da/apis/$apiId_da:debug
+    method: POST
+    headers: $header_da
+    json:
+        api:
+            assessKey: $assessKey_da
+            secretKey: $secretKey_da
+            host: $host_da1
+            uri: $uri_da
+            method: $method_da
+            authType: $authType_da
+            region: $region_da
+            queryString: $queryString_da
+            body: $body_da
+            reqBodyType: $reqBodyType_da
+            editableReqBodyType: $editableReqBodyType_da
+            headerString: $headerString_da
+            environment: $environment_da
+            isApiProduct: $isApiProduct_da
+    timeout: 500
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_da, $openApiSk_da, $serviceLine_da, $apiVersion_da, $openapiYaml_da, $regionId_da)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

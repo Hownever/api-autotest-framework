@@ -1,0 +1,41 @@
+- config:
+    name: 创建免鉴权分组-不签名-请求-成功
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        accessKey: ${ENV(ENV_USER_AK)}
+        secretKey: ${ENV(ENV_USER_SK)}
+        authType: None
+    verify: False
+
+- test:
+    name: 发布免鉴权分组-后端为Http
+    testcase: testcases/monitor/deploy_online_http_200.yml
+    variables:
+        authType: $authType
+    output:
+        - apiGroupId
+        - revision
+        - environment
+
+- test:
+    name: 请求createTaskJson接口
+    api: api/monitor/requestBackend/createTaskJson.yml
+    variables:
+        subscriptionKey:
+        gw_host: ${return_string($apiGroupId, env=$environment, host=1, regionId=$regionId)}
+        description: description
+        title: title
+        USERAK: USERAK
+        USERSK: USERSK
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 201]

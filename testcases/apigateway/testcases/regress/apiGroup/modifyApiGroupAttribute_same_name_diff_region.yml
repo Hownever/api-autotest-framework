@@ -1,0 +1,106 @@
+- config:
+    name: 修改API分组信息，和其他区域分组名重复，修改成功
+    variables:
+        serviceLine_apim: apigateway
+        regionId_apim_1: cn-north-1
+        regionId_apim_2: cn-south-1
+        groupName: JIASHUO_SAME_GROUPNAME_DIFF_REGION
+        authType: jd_cloud
+        description: 修改API分组信息，和其他区域分组名重复，修改成功
+        prefix: AAA
+        prefixStrip: 0
+        groupType: api_group
+        keyCheck: check_exist
+        filters1: groupName
+        filters1values: JIASHUO_SAME_GROUPNAME_DIFF_REGION
+
+        groupName_old: JIASHUO_SAME_GROUPNAME_DIFF_REGION
+        authType_new: None
+        description_new: 修改API分组信息，和其他区域分组名重复，修改成功
+        prefix_new: BBB
+        prefixStrip_new: 1
+        keyCheck_new: no_check_exist
+        filters1values_new: JIASHUO_SAME_GROUPNAME_DIFF_REGION
+    verify: False
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_2
+        filters1_pcag: $filters1
+        filters1values_pcag: $groupName_old
+
+- test:
+    name: 创建分组成功，分组名：$groupName
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_1
+        groupName_cag: $groupName
+        description_cag: $description
+        authType_cag: $authType
+        prefix_cag: $prefix
+        prefixStrip_cag: $prefixStrip
+        groupType_cag: $groupType
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 不同region下创建分组，创建成功
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_2
+        groupName_cag: $groupName_old
+        description_cag: 不同region下创建同名分组，创建成功
+        authType_cag: $authType
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+
+- test:
+    name: 修改分组信息
+    api: api/apiGroup/modifyApiGroupAttribute.yml
+    variables:
+        apiGroupId_maga: $apiGroupId_cag
+        regionId_maga: $regionId_apim_2
+        groupName_maga: $groupName
+        description_maga: $description_new
+        authType_maga: $authType_new
+        prefix_maga: $prefix_new
+        prefixStrip_maga: $prefixStrip_new
+        keyCheck_maga: $keyCheck_new
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_2
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values

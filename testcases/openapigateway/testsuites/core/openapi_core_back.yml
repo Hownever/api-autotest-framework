@@ -1,0 +1,127 @@
+config:
+    name: openapi-core-back
+    variables:
+      base_url:
+        - http://apigw-internal.cn-east-2.jdcloud.com
+        - http://apigw-internal.cn-east-1.jdcloud.com
+        - http://apigw-internal.cn-south-1.jdcloud.com
+        - http://apigw-internal.cn-north-1.jdcloud.com
+        - http://apigw-internal.cn-north-1.jcloudcs.com
+#        - http://apigw-kong-internal.ingress.mesh.cn-north-1.jdcloud.com
+        - http://openapi-internal-test.cn-north-1.jdcloud-api.com
+testcases:
+    deleteInstance接口，网关不拦截，后端返回400:
+        testcase: testcases/authAllow/deleteInstance_gw_pass_back_400.yml
+        parameters:
+            base_url: $base_url
+            instanceId: [tancong]
+            result: ["网关不拦截，后端返回400，Parameter Account missing"]
+            userinfo:
+                - info: "运营后台AK+不传pin"
+                  pin:
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+
+    deleteInstance接口，网关不拦截，后端返回404，not exists:
+        testcase: testcases/authAllow/deleteInstance_gw_pass_back_404_not_exists.yml
+        parameters:
+            base_url: $base_url
+            instanceId: [tancong]
+            result: ["网关不拦截，后端返回404，not exists"]
+            userinfo:
+                - info: "运营后台AK+pin中包含@"
+                  pin: ${ENV(ENV_AT_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+不存在的主账号"
+                  pin: ${ENV(ENV_NOT_EXIST_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+
+    deleteInstance接口，网关不拦截，后端返回404，not found:
+        testcase: testcases/authAllow/deleteInstance_gw_pass_back_404_not_found.yml
+        parameters:
+            base_url: $base_url
+            instanceId: [tancong]
+            result: ["网关不拦截，后端返回404，not found"]
+            userinfo:
+                - info: "运营后台AK+无权限的子用户"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_NO_PERMISSION)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+有权限的子用户"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+主账号"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+不存在的子账号"
+                  pin: ${ENV(ENV_NOT_EXIST_CHILD_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+
+    describeInstanceTypes接口，网关不拦截，后端返回404，not exists:
+        testcase: testcases/authAllow/describeInstanceTypes_gw_pass_back_404_not_exists.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关不拦截，后端返回404，not exists"]
+            userinfo:
+                - info: "运营后台AK+pin中包含@"
+                  pin: ${ENV(ENV_AT_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+不存在的主账号"
+                  pin: ${ENV(ENV_NOT_EXIST_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+
+    describeInstanceTypes接口，网关不拦截，后端返回400:
+        testcase: testcases/authAllow/describeInstanceTypes_gw_pass_back_400_account_missing.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关不拦截，后端返回400，Parameter Account missing"]
+            userinfo:
+                - info: "运营后台AK+不传pin"
+                  pin:
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+
+    describeInstanceTypes接口，网关不拦截，后端返回200:
+        testcase: testcases/authAllow/describeInstanceTypes_gw_pass_back_200.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关不拦截，后端返回200"]
+            userinfo:
+                - info: "运营后台AK+无权限的子用户"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_NO_PERMISSION)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+有权限的子用户"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+主账号"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+不存在的子账号"
+                  pin: ${ENV(ENV_NOT_EXIST_CHILD_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+
+    queryWebsiteVul接口，网关不拦截，后端返回200:
+        testcase: testcases/authAllow/queryWebsiteVul_gw_pass_back_200.yml
+        parameters:
+            base_url: $base_url
+            result: ["网关不拦截，后端返回200"]
+            userinfo:
+                - info: "运营后台AK+有权限的子用户+调用不在白名单中的接口"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}
+                - info: "运营后台AK+主账号"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_BACK)}
+                  SK: ${ENV(ENV_SK_BACK)}

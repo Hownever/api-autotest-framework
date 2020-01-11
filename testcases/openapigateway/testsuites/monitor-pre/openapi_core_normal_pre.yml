@@ -1,0 +1,171 @@
+config:
+    name: openapi-core-console
+    variables:
+      base_url_external_vm:
+        - ${ENV(ENV_BASE_URL_OUTER)}
+      base_url_external_csa:
+        - ${ENV(ENV_BASE_URL_OUTER)}
+testcases:
+    deleteInstance接口，网关报错403，do not use illegal header:
+        testcase: testcases/authDeny/deleteInstance_gw_block_403_illegal_header.yml
+        parameters:
+            base_url: $base_url_external_vm
+            instanceId: [tancong]
+            result: ["网关报错403，do not use illegal header"]
+            userinfo:
+                - info: "普通用户子账号AK+传Pin"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+                - info: "普通用户主账号AK+传Pin"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+                  SK: ${ENV(ENV_SK_NORMAL_MAIN)}
+
+    deleteInstance接口，网关不拦截，后端返回404，not found:
+        testcase: testcases/authAllow/deleteInstance_gw_pass_back_404_not_found.yml
+        parameters:
+            base_url: $base_url_external_vm
+            instanceId: [tancong]
+            result: ["网关不拦截，后端返回404，not found"]
+            userinfo:
+                - info: "普通用户子账号AK+不传Pin"
+                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+                - info: "普通用户主账号AK+不传Pin"
+                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+                  SK: ${ENV(ENV_SK_NORMAL_MAIN)}
+
+    deleteInstance接口，网关报错403，secret key is null:
+        testcase: testcases/authDeny/deleteInstance_gw_block_403_sk_is_null.yml
+        parameters:
+            base_url: $base_url_external_vm
+            instanceId: [tancong]
+            result: ["网关报错403，secret key is null"]
+            userinfo:
+                - info: "AK任意"
+                  AK: wrongAK
+                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+                - info: "AKSK任意"
+                  AK: wrongAK
+                  SK: wrongSK
+
+    deleteInstance接口，网关报错401，sign result is not same:
+        testcase: testcases/authDeny/deleteInstance_gw_block_401_sign_not_same.yml
+        parameters:
+            base_url: $base_url_external_vm
+            instanceId: [tancong]
+            result: ["网关报错401，sign result is not same"]
+            userinfo:
+                - info: "SK任意"
+                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+                  SK: wrongSK
+                - info: "SK任意"
+                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+                  SK: wrongSK
+
+    describeInstanceTypes接口，网关不拦截，后端返回200:
+        testcase: testcases/authAllow/describeInstanceTypes_gw_pass_back_200.yml
+        parameters:
+            base_url: $base_url_external_vm
+            result: ["网关不拦截，后端返回200"]
+            userinfo:
+                - info: "普通用户子账号AK+不传Pin"
+                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+                - info: "普通用户主账号AK+不传Pin"
+                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+                  SK: ${ENV(ENV_SK_NORMAL_MAIN)}
+
+    describeInstanceTypes接口，网关报错403，do not use illegal header:
+        testcase: testcases/authDeny/describeInstanceTypes_gw_block_403_illegal_header.yml
+        parameters:
+            base_url: $base_url_external_vm
+            instanceId: [tancong]
+            result: ["网关报错403，do not use illegal header"]
+            userinfo:
+                - info: "普通用户子账号AK+传Pin"
+                  pin: ${ENV(ENV_CHILD_PIN_HAVE_PERMISSION)}
+                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+                - info: "普通用户主账号AK+传Pin"
+                  pin: ${ENV(ENV_MAIN_PIN)}
+                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+                  SK: ${ENV(ENV_SK_NORMAL_MAIN)}
+
+    describeInstanceTypes接口，网关报错403，secret key is null:
+        testcase: testcases/authDeny/describeInstanceTypes_gw_block_403_sk_is_null.yml
+        parameters:
+            base_url: $base_url_external_vm
+            instanceId: [tancong]
+            result: ["网关报错403，secret key is null"]
+            userinfo:
+                - info: "AK任意"
+                  AK: wrongAK
+                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+                - info: "AKSK任意"
+                  AK: wrongAK
+                  SK: wrongSK
+
+    describeInstanceTypes接口，网关报错401，sign result is not same:
+        testcase: testcases/authDeny/describeInstanceTypes_gw_block_401_sign_not_same.yml
+        parameters:
+            base_url: $base_url_external_vm
+            instanceId: [tancong]
+            result: ["网关报错401，sign result is not same"]
+            userinfo:
+                - info: "SK任意"
+                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+                  SK: wrongSK
+                - info: "SK任意"
+                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+                  SK: wrongSK
+
+    convertImage接口，网关报错403，this api is not allowed:
+        testcase: testcases/authDeny/convertImage_gw_block_403_api_not_allowed.yml
+        parameters:
+            base_url: $base_url_external_vm
+            result: ["网关报错403，this api is not allowed"]
+            userinfo:
+                - info: "普通用户主账号AK+不传Pin"
+                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+                  SK: ${ENV(ENV_SK_NORMAL_MAIN)}
+                - info: "普通用户子账号AK+不传Pin"
+                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+
+#    queryWebsiteVul接口，网关报错403，this api is not allowed:
+#        testcase: testcases/authDeny/queryWebsiteVul_gw_block_403_api_not_allowed.yml
+#        parameters:
+#            base_url: $base_url_external_csa
+#            result: ["网关报错403，this api is not allowed"]
+#            userinfo:
+#                - info: "普通用户子账号AK+不传Pin"
+#                  pin:
+#                  AK: ${ENV(ENV_AK_NORMAL_CHILD)}
+#                  SK: ${ENV(ENV_SK_NORMAL_CHILD)}
+#                - info: "普通用户主账号AK+不传Pin"
+#                  pin:
+#                  AK: ${ENV(ENV_AK_NORMAL_MAIN)}
+#                  SK: ${ENV(ENV_SK_NORMAL_MAIN)}
+
+#    deleteInstance接口，网关报错403,You are not authorized:
+#        testcase: testcases/authDeny/deleteInstance_gw_block_403_not_authorized.yml
+#        parameters:
+#            instanceId: [tancong]
+#            result: ["网关报错403，You are not authorized"]
+#            userinfo:
+#                - info: "无权限的子账号AK"
+#                  pin:
+#                  AK: ${ENV(ENV_AK_NORMAL_CHILD_NO_PERMISSION)}
+#                  SK: ${ENV(ENV_SK_NORMAL_CHILD_NO_PERMISSION)}
+#
+#    describeInstanceTypes接口，网关报错403，You are not authorized:
+#        testcase: testcases/authDeny/describeInstanceTypes_gw_block_403_not_authorized.yml
+#        parameters:
+#            result: ["网关报错403，You are not authorized"]
+#            userinfo:
+#                - info: "无权限的子账号AK"
+#                  pin:
+#                  AK: ${ENV(ENV_AK_CONSOLE_NO_PERMISSION)}
+#                  SK: ${ENV(ENV_SK_CONSOLE_NO_PERMISSION)}

@@ -1,0 +1,34 @@
+name: 绑定 api 分组
+description: 绑定 api 分组
+operationId: bindApiGroup
+
+variables:
+#    url
+    host_bag: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_bag: ${ENV(ENV_API_VERSION)}
+    regionId_bag: ${ENV(ENV_JDSF_REGIONID)}
+#    header
+    header_bag:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    apiGroupId_bag: $apiGroupId
+    apiGroupRegion_bag: $apiGroupRegion
+#    hooks
+    serviceLine_bag: ${ENV(ENV_SERVICELINE_JDSF)}
+    openapiYaml_bag: nofile
+    openApiAk_bag: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_bag: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_bag: v1
+
+request:
+    url: $host_bag/$apiVer_bag/regions/$regionId_bag/gateways/$gatewayId_bag:bindApiGroup
+    method: POST
+    headers: $header_bag
+    json:
+        apiGroupId: $apiGroupId_bag
+        apiGroupRegion: $apiGroupRegion_bag
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_bag, $openApiSk_bag, $serviceLine_bag, $apiVersion_bag, $openapiYaml_bag, $regionId_bag)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

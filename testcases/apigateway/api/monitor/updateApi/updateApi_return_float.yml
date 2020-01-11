@@ -1,0 +1,42 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId/revision/$revision/adminApis/$apiId_return_float
+    method: PUT
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        api:
+            apiId: $apiId_return_float
+            apiGroupId: $apiGroupId
+            action: GET
+            apiName: return_float
+            description: return_float
+            path: "/tasks/returntype/float"
+            matchType: absolute
+            reqParams:
+              - defaultValue: Authorization
+                description: Authorization
+                isRequired: true
+                name: Author_test
+                paramType: String
+                paramLocation: head
+            reqBody: ~
+            resBody: "{\"type\":\"number\",\"format\":\"float\"}"
+            reqBodyType: 1
+            resBodyType: 1
+            backServiceType: $backServiceType
+            backServicePath: $backServicePath
+            backServiceId: $backServiceId
+            backServiceName: $backServiceName
+            backUrl: $backUrl
+            backServiceConfig: $backServiceConfig
+            backServiceVersion: $backServiceVersion
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - apiId_return_float: content.result.apiId
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

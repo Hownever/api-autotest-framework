@@ -1,0 +1,28 @@
+name: 查询当前用户下所有管理的用户信息
+description: 查询当前用户下所有管理的用户信息
+operationId: describePinAuthManages
+
+variables:
+#    url
+    host_descags: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_descags: ${ENV(ENV_API_VERSION)}
+    regionId_descags: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_descags:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_descags: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_descags: nofile
+    openApiAk_descags: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_descags: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_descags: v1
+
+request:
+    url: $host_descags/$apiVer_descags/pinAuthManages
+    method: GET
+    headers: $header_descags
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_descags, $openApiSk_descags, $serviceLine_descags, $apiVersion_descags, $openapiYaml_descags, $regionId_descags)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

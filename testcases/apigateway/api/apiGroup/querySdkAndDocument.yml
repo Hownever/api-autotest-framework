@@ -1,0 +1,38 @@
+name: 查询sdk、文档的生成结果
+description: 查询sdk、文档的生成结果
+operationId: querySdkAndDocument
+
+variables:
+#    url
+    host_qsdk: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_qsdk: ${ENV(ENV_API_VERSION)}
+    regionId_qsdk: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_qsdk: ~
+#    header
+    header_qsdk:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    revision_qsdk: ~
+    environment_qsdk: ~
+    language_qsdk: ~
+#    hooks
+    serviceLine_qsdk: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_qsdk: nofile
+    openApiAk_qsdk: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_qsdk: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_qsdk: v1
+
+request:
+    url: $host_qsdk/$apiVer_qsdk/regions/$regionId_qsdk/apiGroups/$apiGroupId_qsdk/generate
+    method: GET
+    headers: $header_qsdk
+    params:
+        revision: $revision_qsdk
+        deploymentId: $environment_qsdk
+        environment: $language_qsdk
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_qsdk, $openApiSk_qsdk, $serviceLine_qsdk, $apiVersion_qsdk, $openapiYaml_qsdk, $regionId_qsdk)}
+    - ${sleep_N_secs(10)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

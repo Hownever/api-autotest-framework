@@ -1,0 +1,117 @@
+- config:
+    name: 删除api后，再删除版本，恢复版本后，删除的api查不到
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        authType: jd_cloud
+        revision: 0.0.2
+        baseRevision: 0.0.1
+        apiName: create_task_json
+    verify: False
+
+- test:
+    name: 创建分组,创建api
+    testcase: testcases/monitor/createApis_200.yml
+    variables:
+        authType: $authType
+    output:
+        - apiGroupId
+
+- test:
+    name: 新建版本$revision
+    api: api/monitor/createRevision.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        baseRevision: $baseRevision
+        revisionNote: $apiGroupId, $revision based on $baseRevision
+    extract:
+        - revision: content.result.revision
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+    output:
+        - revision
+
+- test:
+    name: 可以查到新建的版本$revision
+    api: api/monitor/describeRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - totalCount: content.result.totalCount
+        - revisionId: content.result.revisions.0.revisionId
+    validate:
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 查找$apiName,获取apiId
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId: content.result.apis.0.apiId
+    validate:
+        - eq: [$scode, 200]
+    output:
+        - apiId
+
+- test:
+    name: 删除0.0.2版本的api,$apiName
+    api: api/monitor/deleteApi.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+      name: 删除0.0.2版本
+      api: api/monitor/deleteRevision.yml
+      variables:
+          apiGroupId: $apiGroupId
+          revisionId: $revisionId
+      extract:
+          - scode: status_code
+      validate:
+          - eq: [$scode, 200]
+
+- test:
+    name: 恢复已删除的版本$revision
+    api: api/monitor/recoveryDeletedRevision.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revisionId: $revisionId
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 查找api查看是否已恢复,$apiName,不能查到
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 0]

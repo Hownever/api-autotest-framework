@@ -1,0 +1,548 @@
+- config:
+    name: 各种情况下的API路径匹配
+    variables:
+    #    path
+        regionId_apim_ppm: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_ppm: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        groupName_ppm: JIASHUO_TEST_PPM
+        description_ppm: 测试微路径前缀匹配
+        prefix_ppm:
+        keyCheck_ppm: check_exist
+        authType_ppm: jd_cloud
+        prefixStrip_ppm: 0
+        groupType_ppm: api_group
+        revision_cag: a
+        apiGroupId_cag: a
+        kmsaccessKey_ck: a
+        kmssecretKey_ck: a
+        #-----------------------------------------------------
+        backServicePath_ppm: ${ENV(ENV_BACK_SERVICE_PATH)}
+        gw_ip_ppm: ${ENV(ENV_APIM_GW_IP)}
+        #-----------------------------------------------------
+        authFlag_ppm: jd_apikms
+        accessKey_ppm: ${ENV(ENV_USER_AK)}
+        secretKey_ppm: ${ENV(ENV_USER_SK)}
+        #-----------------------------------------------------
+        kmsName_ppm: ${ENV(ENV_KMS_NAME)}
+        subsName_ppm: ${ENV(ENV_SUBS_KEY_NAME)}
+        #-----------------------------------------------------
+        pin_ppm: ${ENV(ENV_PIN)}
+        #-----------------------------------------------------
+        api1:
+            matchType: absolute
+            path: "/A"
+            reqParams: ~
+        api2:
+            matchType: absolute
+            path: "/A"
+            reqParams:
+                - isRequired: true
+                  name: B
+                  paramType: String
+                  paramLocation: path
+        req_para:
+            res_info_ppm: sss
+            req_path_ppm: "/A"
+            res_content_ppm: 200
+    verify: False
+
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/dynamic_route/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim_ppm
+        regionId_apim_pcag: $regionId_apim_ppm
+        filters1values_pcag: $groupName_ppm
+
+- test:
+    name: 创建分组成功，分组名：$groupName_ppm，分组类型：$groupType_ppm
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+    #    path
+        regionId_cag: $regionId_apim_ppm
+    #    json
+        groupName_cag: $groupName_ppm
+        description_cag: $description_ppm
+        prefix_cag: $prefix_ppm
+        keyCheck_cag: $keyCheck_ppm
+        authType_cag: $authType_ppm
+        prefixStrip_cag: $prefixStrip_ppm
+        groupType_cag: $groupType_ppm
+        serviceLine_cag: $serviceLine_apim_ppm
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 创建API，${get_value_from_userinfo($api1, matchType)}，${get_value_from_userinfo($api1, path)}，后端为HTTP
+    api: api/apis/createApis.yml
+    variables:
+        regionId_ca: $regionId_apim_ppm
+        revision_ca: $revision_cag
+        apiGroupId_ca: $apiGroupId_cag
+        apiName_ca: A
+        action_ca: GET
+        path_ca: ${get_value_from_userinfo($api1, path)}
+        matchType_ca: ${get_value_from_userinfo($api1, matchType)}
+        reqParams_ca: ${get_value_from_userinfo($api1, reqParams)}
+        reqBodyType_ca: 1
+        resBodyType_ca: 1
+        backServiceType_ca: HTTP/HTTPS
+        backServicePath_ca: $backServicePath_ppm
+        backServiceConfig_ca: False
+    validate:
+        - eq: ["status_code", 200]
+- test:
+    name: 创建API，${get_value_from_userinfo($api2, matchType)}，${get_value_from_userinfo($api2, path)}，后端为mock
+    api: api/apis/createApis.yml
+    variables:
+        regionId_ca: $regionId_apim_ppm
+        revision_ca: $revision_cag
+        apiGroupId_ca: $apiGroupId_cag
+        apiName_ca: B
+        action_ca: GET
+        path_ca: ${get_value_from_userinfo($api2, path)}
+        matchType_ca: ${get_value_from_userinfo($api2, matchType)}
+        reqParams_ca: ${get_value_from_userinfo($api2, reqParams)}
+        reqBodyType_ca: 1
+        resBodyType_ca: 1
+        backServiceType_ca: mock
+        backServicePath_ca:
+        backServiceConfig_ca: False
+        resBody_ca: "{\"type\":\"object\",\"additionalProperties\":{\"type\":\"boolean\"}}"
+    validate:
+        - eq: ["status_code", 200]
+
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 创建线上环境默认后端mock
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_ppm
+        regionId_cbc: $regionId_apim_ppm
+        apiGroupId_cbc: $apiGroupId_cag
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: online
+        backendServiceType_cbc: mock
+        sort_cbc: 0
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布分组到线上环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_ppm
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: online
+        backendServiceType_dba: ~
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba: ~
+        jdsfRegistryName_dba: ~
+        jdsfId_dba: ~
+        serviceLine_dba: $serviceLine_apim_ppm
+    validate:
+        - eq: ["status_code", 200]
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型是京东云用户，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_ppm, jd_cloud, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_jdcloud.yml
+    variables:
+        accessKey_pcaaj: $accessKey_ppm
+        serviceLine_pcaaj: $serviceLine_apim_ppm
+        regionId_apim_pcaaj: $regionId_apim_ppm
+        filters2values_pcaaj: $accessKey_ppm
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是京东云用户，创建jdcloud访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_ppm, jd_cloud, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $accessKey_ppm
+        authUserType_caa: jd_cloud
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: $accessKey_ppm+jd_cloud+${return_string($apiGroupId_cag, online)}
+        serviceLine_caa: $serviceLine_apim_ppm
+        regionId_caa: $regionId_apim_ppm
+    validate:
+          - eq: ["status_code", 200]
+###--------------------------------------------------------------------------------------------------------------
+#- test:
+#    name: 请求网关
+#    skipIf: ${validate_skip($authFlag_ppm, jd_cloud, noeq)}
+#    api: api/requestBackend/requestBackend.yml
+#    variables:
+#        gw_ip_rb: $gw_ip_ppm
+#        gw_host_rb: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_ppm)}
+#        path_rb: A
+#        method_rb: GET
+#        headers_rb: ~
+#        json_rb: ~
+#        ak_rb: $accessKey_ppm
+#        sk_rb: $secretKey_ppm
+#    validate:
+#          - eq: ["status_code", 200]
+
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型是API网关签名，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_ppm, jd_apikms, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_kms.yml
+    variables:
+        regionId_apim_pcaak: $regionId_apim_ppm
+        serviceLine_apim_pcaak: $serviceLine_apim_ppm
+        kmsName_pcaak: ${ENV(ENV_KMS_NAME)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是API网关签名，创建kms
+    skipIf: ${validate_skip($authFlag_ppm, jd_apikms, noeq)}
+    api: api/kms/createKey.yml
+    variables:
+        keyName_ck: $kmsName_ppm
+        keyDesc_ck: $kmsName_ppm
+        serviceLine_ck: $serviceLine_apim_ppm
+        regionId_ck: $regionId_apim_ppm
+    extract:
+        - kmsaccessKey_ck: content.result.accessKey
+        - kmssecretKey_ck: content.result.secretKey
+        - kmskeyId_ck: content.result.keyId
+    validate:
+          - eq: ["status_code", 200]
+    output:
+        - kmsaccessKey_ck
+        - kmssecretKey_ck
+        - kmskeyId_ck
+
+- test:
+    name: 如果授权类型是API网关签名，创建kms访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_ppm, jd_apikms, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        regionId_caa: $regionId_apim_ppm
+        accessKey_caa: $kmskeyId_ck
+        authUserType_caa: jd_apikms
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: $kmsaccessKey_ck+jd_apikms+${return_string($apiGroupId_cag, online)}
+        serviceLine_caa: $serviceLine_apim_ppm
+    validate:
+          - eq: ["status_code", 200]
+##--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 使用路径${get_value_from_userinfo($req_para, req_path_ppm)}，请求网关，${get_value_from_userinfo($req_para, res_info_ppm)}
+    skipIf: ${validate_skip($authFlag_ppm, jd_apikms, noeq)}
+    api: api/requestBackend/requestBackend.yml
+    variables:
+        gw_ip_rb: $gw_ip_ppm
+        gw_host_rb: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_ppm)}
+        path_rb: ${get_value_from_userinfo($req_para, req_path_ppm)}
+        method_rb: GET
+        headers_rb: ~
+        json_rb: ~
+        ak_rb: $kmsaccessKey_ck
+        sk_rb: $kmssecretKey_ck
+    validate:
+        - string_contains:
+          - content
+          - ${get_value_from_userinfo($req_para, res_content_ppm)}
+
+
+##--------------------------------------------------------------------------------------------------------------
+#- test:
+#    name: 如果授权类型是订阅密钥，绑定访问授权，删除旧数据
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_subs.yml
+#    variables:
+#        regionId_apim_pcaas: $regionId_apim_ppm
+#        serviceLine_apim_pcaas: $serviceLine_apim_ppm
+#        subsName_pcaas: $subsName_ppm
+#    validate:
+#        - eq: ["status_code", 200]
+#
+#- test:
+#    name: 如果授权类型是订阅密钥，创建订阅密钥
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/subscriptionKey/createSubscriptionKey.yml
+#    variables:
+#        serviceLine_csk: $serviceLine_apim_ppm
+#        regionId_csk: $regionId_apim_ppm
+#        name_csk: $subsName_ppm
+#        description_csk: $subsName_ppm
+#    validate:
+#          - eq: ["status_code", 200]
+#
+#- test:
+#    name: 如果授权类型是订阅密钥，检查是否已创建
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/subscriptionKey/querySubscriptionKeys.yml
+#    variables:
+#        serviceLine_qsk: $serviceLine_apim_ppm
+#        regionId_qsk: $regionId_apim_ppm
+#        filters1_qsk:
+#        filters1values_qsk:
+#    extract:
+#        - subscriptionKeys_qsk: content.result.subscriptionKeys
+#        - totalCount_qsk: content.result.totalCount
+#    validate:
+#        - eq: ["status_code", 200]
+#    output:
+#        - subscriptionKeys_qsk
+#
+#- test:
+#    name: 创建订阅密钥访问授权，绑定分组线上环境
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/Author/createAccessAuth.yml
+#    variables:
+#        serviceLine_caa: $serviceLine_apim_ppm
+#        regionId_caa: $regionId_apim_ppm
+#        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKeyId)}
+#        authUserType_caa: jd_subscription_key
+#        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+#        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, online)}
+#    validate:
+#          - eq: ["status_code", 200]
+#
+#- test:
+#    name: 创建订阅密钥访问授权，绑定分组预发环境
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/Author/createAccessAuth.yml
+#    variables:
+#        serviceLine_caa: $serviceLine_apim_ppm
+#        regionId_caa: $regionId_apim_ppm
+#        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKeyId)}
+#        authUserType_caa: jd_subscription_key
+#        deploymentIds_caa: ${return_string($apiGroupId_cag, preview)}
+#        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, preview)}
+#    validate:
+#          - eq: ["status_code", 200]
+#
+#- test:
+#    name: 创建订阅密钥访问授权，绑定分组测试环境
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/Author/createAccessAuth.yml
+#    variables:
+#        serviceLine_caa: $serviceLine_apim_ppm
+#        regionId_caa: $regionId_apim_ppm
+#        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKeyId)}
+#        authUserType_caa: jd_subscription_key
+#        deploymentIds_caa: ${return_string($apiGroupId_cag, test)}
+#        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, test)}
+#    validate:
+#          - eq: ["status_code", 200]
+#
+#
+#- test:
+#    name: 请求测试环境默认后端，请求成功
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    testcase: testcases/dynamic_route/requestAllApis.yml
+#    variables:
+#        apiGroupId_raa: $apiGroupId_cag
+#        env_raa: test
+#        regionId_apim_raa: $regionId_apim_ppm
+#        accessKey_raa: USERAK
+#        secretKey_raa: USERSK
+#        description_raa: description_ppm
+#        title_raa: tc_title
+#        subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#        done_raa: False
+#
+#- test:
+#    name: 请求测试环境动态路由1，MOCK，请求成功
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/requestBackend/getAllTaskNew.yml
+#    variables:
+#        subscriptionKey_gatn: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#        gw_host_gatn: ${return_string($apiGroupId_cag, env=test, host=1, regionId=$regionId_apim_ppm)}
+#        USERAK_gatn: USERAK
+#        USERSK_gatn: USERSK
+#        DYNAMIC_BACKEND_gatn: MOCK
+#    extract:
+#        - result: content.result
+#    validate:
+#        - ne: [$result, True]
+#        - ne: [$result, False]
+#
+#- test:
+#      name: 请求测试环境动态路由2，HTTP，请求成功
+#      skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#      testcase: testcases/dynamic_route/requestAllApis.yml
+#      variables:
+#          apiGroupId_raa: $apiGroupId_cag
+#          env_raa: test
+#          regionId_apim_raa: $regionId_apim_ppm
+#          accessKey_raa: USERAK
+#          secretKey_raa: USERSK
+#          description_raa: description_ppm
+#          title_raa: tc_title
+#          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#          done_raa: False
+#          DYNAMIC_BACKEND_raa: HTTP
+#
+#- test:
+#      name: 请求测试环境动态路由3，VPC，请求成功
+#      skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#      testcase: testcases/dynamic_route/requestAllApis.yml
+#      variables:
+#          apiGroupId_raa: $apiGroupId_cag
+#          env_raa: test
+#          regionId_apim_raa: $regionId_apim_ppm
+#          accessKey_raa: USERAK
+#          secretKey_raa: USERSK
+#          description_raa: description_ppm
+#          title_raa: tc_title
+#          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#          done_raa: False
+#          DYNAMIC_BACKEND_raa: VPC
+#
+#- test:
+#    name: 请求预发环境默认后端，请求成功
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    testcase: testcases/dynamic_route/requestAllApis.yml
+#    variables:
+#        apiGroupId_raa: $apiGroupId_cag
+#        env_raa: preview
+#        regionId_apim_raa: $regionId_apim_ppm
+#        accessKey_raa: USERAK
+#        secretKey_raa: USERSK
+#        description_raa: description_ppm
+#        title_raa: tc_title
+#        subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#        done_raa: False
+#
+#- test:
+#    name: 请求预发环境动态路由1，MOCK，请求成功
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/requestBackend/getAllTaskNew.yml
+#    variables:
+#        subscriptionKey_gatn: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#        gw_host_gatn: ${return_string($apiGroupId_cag, env=preview, host=1, regionId=$regionId_apim_ppm)}
+#        USERAK_gatn: USERAK
+#        USERSK_gatn: USERSK
+#        DYNAMIC_BACKEND_gatn: MOCK
+#    extract:
+#        - result: content.result
+#    validate:
+#        - ne: [$result, True]
+#        - ne: [$result, False]
+#
+#- test:
+#      name: 请求预发环境动态路由2，HTTP，请求成功
+#      skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#      testcase: testcases/dynamic_route/requestAllApis.yml
+#      variables:
+#          apiGroupId_raa: $apiGroupId_cag
+#          env_raa: preview
+#          regionId_apim_raa: $regionId_apim_ppm
+#          accessKey_raa: USERAK
+#          secretKey_raa: USERSK
+#          description_raa: description_ppm
+#          title_raa: tc_title
+#          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#          done_raa: False
+#          DYNAMIC_BACKEND_raa: HTTP
+#
+#- test:
+#      name: 请求预发环境动态路由3，VPC，请求成功
+#      skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#      testcase: testcases/dynamic_route/requestAllApis.yml
+#      variables:
+#          apiGroupId_raa: $apiGroupId_cag
+#          env_raa: preview
+#          regionId_apim_raa: $regionId_apim_ppm
+#          accessKey_raa: USERAK
+#          secretKey_raa: USERSK
+#          description_raa: description_ppm
+#          title_raa: tc_title
+#          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#          done_raa: False
+#          DYNAMIC_BACKEND_raa: VPC
+#
+#- test:
+#    name: 请求线上环境默认后端，请求成功
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    testcase: testcases/dynamic_route/requestAllApis.yml
+#    variables:
+#        apiGroupId_raa: $apiGroupId_cag
+#        env_raa: online
+#        regionId_apim_raa: $regionId_apim_ppm
+#        accessKey_raa: USERAK
+#        secretKey_raa: USERSK
+#        description_raa: description_ppm
+#        title_raa: tc_title
+#        subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#        done_raa: False
+#
+#- test:
+#    name: 请求线上环境动态路由1，MOCK，请求成功
+#    skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#    api: api/requestBackend/getAllTaskNew.yml
+#    variables:
+#        subscriptionKey_gatn: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#        gw_host_gatn: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_ppm)}
+#        USERAK_gatn: USERAK
+#        USERSK_gatn: USERSK
+#        DYNAMIC_BACKEND_gatn: MOCK
+#    extract:
+#        - result: content.result
+#    validate:
+#        - ne: [$result, True]
+#        - ne: [$result, False]
+#
+#- test:
+#      name: 请求线上环境动态路由2，HTTP，请求成功
+#      skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#      testcase: testcases/dynamic_route/requestAllApis.yml
+#      variables:
+#          apiGroupId_raa: $apiGroupId_cag
+#          env_raa: online
+#          regionId_apim_raa: $regionId_apim_ppm
+#          accessKey_raa: USERAK
+#          secretKey_raa: USERSK
+#          description_raa: description_ppm
+#          title_raa: tc_title
+#          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#          done_raa: False
+#          DYNAMIC_BACKEND_raa: HTTP
+#
+#- test:
+#      name: 请求线上环境动态路由3，VPC，请求成功
+#      skipIf: ${validate_skip($authFlag_ppm, jd_subscription_key, noeq)}
+#      testcase: testcases/dynamic_route/requestAllApis.yml
+#      variables:
+#          apiGroupId_raa: $apiGroupId_cag
+#          env_raa: online
+#          regionId_apim_raa: $regionId_apim_ppm
+#          accessKey_raa: USERAK
+#          secretKey_raa: USERSK
+#          description_raa: description_ppm
+#          title_raa: tc_title
+#          subscriptionKey_raa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_ppm, subscriptionKey)}
+#          done_raa: False
+#          DYNAMIC_BACKEND_raa: VPC
+##----------------------------------------------------------------------------------------------------------------
+#- test:
+#    name: 删除已创建的API分组
+#    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+#    variables:
+#        serviceLine_apim_pcag: $serviceLine_apim_ppm
+#        regionId_apim_pcag: $regionId_apim_ppm
+#        filters1values_pcag: $groupName_ppm

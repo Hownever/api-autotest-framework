@@ -1,0 +1,22 @@
+name: 根据云翼服务树中应用名称查询分组和实例
+
+# GET http://ark.jdcloud.com/api/deploy/v1/app?name=Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_productpage
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    appname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_productpage
+
+    headers:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies:
+        _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/deploy/api/v1/app
+    method: GET
+    headers: $headers
+    cookies: $cookies
+
+    params:
+        name: $appname

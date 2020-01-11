@@ -1,0 +1,32 @@
+name: delete policy
+description: |
+    create subuser
+
+variables:
+    host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+    policyname: your_policy_name
+    userpin: your_user_pin
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        #x-jdcloud-pin: $userpin
+
+    AK: your_ak
+    SK: your_sk
+    productline: iam
+    apiversion: v1
+    openapi_yaml: nofile
+    regionid: cn-north-1
+
+    expected_status_code: 200
+
+request:
+    url: $host/$apiversion/policy/$policyname
+    method: DELETE
+    headers: $headers
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $productline, $apiversion, $openapi_yaml, $regionid)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+
+validate:
+    - eq: ["status_code", $expected_status_code]

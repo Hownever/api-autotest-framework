@@ -1,0 +1,18 @@
+name: 调用ratings接口- $headers
+variables:
+    host: ratings.default.mesh.jdcloud.com:9080
+    productid: 0
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    
+request:
+    url: $host/ratings/0
+    headers: $headers
+    method: GET
+    # JSON
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}

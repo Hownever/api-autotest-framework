@@ -1,0 +1,35 @@
+name: 停止主机接口
+description: |
+    停止单个云主机，只能停止running状态的云主机，云主机没有正在进行中的任务才可停止
+operationId: stopInstance
+
+variables:
+    host: ${ENV(ENV_GW_BASE_URL)}
+    product: vm
+    apiVersion: v1
+    regionId: cn-north-1
+    openapi_yaml: nofile
+    AK: xxx
+    SK: xxx
+
+    #  request:
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+
+    instanceId: you_instance_id
+
+    expected_status_code: 200
+
+request:
+    url: $host/$apiVersion/regions/$regionId/instances/$instanceId:stopInstance
+    method: POST
+    headers: $header
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

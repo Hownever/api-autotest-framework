@@ -1,0 +1,59 @@
+- config:
+    name: 创建分组-创建订阅密钥-访问授权-成功
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        authUserType: jd_subscription_key
+        subsName: ${ENV(ENV_SUBS_KEY_NAME)}
+    verify: False
+    output:
+        - apiGroupId
+        - revision
+        - environment
+        - subscriptionKeys
+        - authUserType
+        - subsName
+
+- test:
+    name: 发布分组-后端为Http
+    testcase: testcases/monitor/deploy_online_func_200.yml
+    output:
+        - apiGroupId
+        - revision
+        - environment
+
+- test:
+    name: 删除旧数据
+    testcase: testcases/monitor/prepare_for_createAccessAuth_subs.yml
+
+- test:
+    name: 创建订阅密钥
+    api: api/monitor/createSubscriptionKey.yml
+    variables:
+        name: $subsName
+        description: $subsName
+
+- test:
+    name: 检查是否已创建
+    api: api/monitor/querySubscriptionKeys.yml
+    variables:
+        filters1:
+        filters1values:
+    output:
+        - subscriptionKeys
+
+- test:
+    name: 创建订阅密钥访问授权，绑定分组
+    api: api/monitor/createAccessAuth.yml
+    variables:
+        accessKey: ${get_id_from_list($subscriptionKeys, name, $subsName, subscriptionKeyId)}
+        authUserType: $authUserType
+        deploymentIds: ${return_string($apiGroupId, $environment)}
+        description: ${get_id_from_list($subscriptionKeys, name, $subsName, subscriptionKeyId)}+$authUserType+${return_string($apiGroupId, $environment)}

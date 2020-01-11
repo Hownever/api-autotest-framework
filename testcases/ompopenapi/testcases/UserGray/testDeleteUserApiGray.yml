@@ -1,0 +1,160 @@
+- config:
+    name: testDeleteUserApiGray
+    variables:
+        tc_inner_data_gw_host: ${ENV(ENV_INNER_OPENAPI_DATA_HOST)}
+        tc_outer_data_gw_host: ${ENV(ENV_OUTER_OPENAPI_DATA_HOST)}
+        tc_api_ver: ${ENV(ENV_API_VERSION)}
+        tc_header:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_PIN)}
+        tc_hufu_auth_ak: ${ENV(ENV_HUFU_AUTH_AK)}
+        tc_hufu_auth_sk: ${ENV(ENV_HUFU_AUTH_SK)}
+        tc_no_auth_ak: ${ENV(ENV_NO_AUTH_AK)}
+        tc_no_auth_sk: ${ENV(ENV_NO_AUTH_SK)}
+        tc_gray_pin: ${ENV(ENV_GRAY_PIN)}
+        tc_gray_pin_user_ak: ${ENV(ENV_GRAY_PIN_USER_AK)}
+        tc_gray_pin_user_sk: ${ENV(ENV_GRAY_PIN_USER_SK)}
+        tc_no_gray_pin: ${ENV(ENV_NO_GRAY_PIN)}
+        tc_no_gray_pin_user_ak: ${ENV(ENV_NO_GRAY_PIN_USER_AK)}
+        tc_no_gray_pin_user_sk: ${ENV(ENV_NO_GRAY_PIN_USER_SK)}
+        tc_openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        tc_regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        tc_sleeptime: ${ENV(ENV_GW_CACHE)}
+        tc_userinfo:
+            create_again_result: 报错：重复的配置
+#------------------------------------------------------------------------------------------------------------------------
+            exist_serviceName: apigateway
+            exist_apiName: describeApiGroups
+            exist_apiVersion: v1
+            exist_userPin: ${ENV(ENV_GRAY_PIN_BASE64)}
+            exist_result: 查询到的结果pins为exist_userPin
+#------------------------------------------------------------------------------------------------------------------------
+            deleted_result: 查询到的结果pins为空
+    verify: False
+- test:
+    name: 测试前准备，删除业务线${get_value_from_userinfo($tc_userinfo, exist_serviceName)}、版本${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}、api名称${get_value_from_userinfo($tc_userinfo, exist_apiName)}
+    api: api/UserGray/deleteUserApiGray.yml
+    variables:
+        #    url
+        host: $tc_inner_data_gw_host
+        regionId: $tc_regionId
+        api_ver: $tc_api_ver
+        serviceName: ${get_value_from_userinfo($tc_userinfo, exist_serviceName)}
+        apiVersion: ${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}
+        apiName: ${get_value_from_userinfo($tc_userinfo, exist_apiName)}
+        #    header
+        header: $tc_header
+        #    hooks
+        AK: $tc_hufu_auth_ak
+        SK: $tc_hufu_auth_sk
+#------------------------------------------------------------------------------------------------------------------------
+- test:
+    name: 创建业务线${get_value_from_userinfo($tc_userinfo, exist_serviceName)}、版本${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}、api名称${get_value_from_userinfo($tc_userinfo, exist_apiName)}、pin为${get_value_from_userinfo($tc_userinfo, exist_userPin)}，创建成功
+    api: api/UserGray/creatUserApiGray.yml
+    variables:
+        #    url
+        host: $tc_inner_data_gw_host
+        regionId: $tc_regionId
+        api_ver: $tc_api_ver
+        serviceName: ${get_value_from_userinfo($tc_userinfo, exist_serviceName)}
+        apiVersion: ${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}
+        apiName: ${get_value_from_userinfo($tc_userinfo, exist_apiName)}
+        userPin: ${get_value_from_userinfo($tc_userinfo, exist_userPin)}
+        #    header
+        header: $tc_header
+        #    hooks
+        AK: $tc_hufu_auth_ak
+        SK: $tc_hufu_auth_sk
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+#------------------------------------------------------------------------------------------------------------------------
+- test:
+    name: 删除创建的业务线${get_value_from_userinfo($tc_userinfo, exist_serviceName)}、版本${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}、api名称${get_value_from_userinfo($tc_userinfo, exist_apiName)}，删除成功
+    api: api/UserGray/deleteUserApiGray.yml
+    variables:
+        #    url
+        host: $tc_inner_data_gw_host
+        regionId: $tc_regionId
+        api_ver: $tc_api_ver
+        serviceName: ${get_value_from_userinfo($tc_userinfo, exist_serviceName)}
+        apiVersion: ${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}
+        apiName: ${get_value_from_userinfo($tc_userinfo, exist_apiName)}
+        #    header
+        header: $tc_header
+        #    hooks
+        AK: $tc_hufu_auth_ak
+        SK: $tc_hufu_auth_sk
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+- test:
+    name: 查询已删除的业务线${get_value_from_userinfo($tc_userinfo, exist_serviceName)}、版本${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}、api名称${get_value_from_userinfo($tc_userinfo, exist_apiName)}，报错：不存在
+    api: api/UserGray/describeUserApiGray.yml
+    variables:
+        #    url
+        host: $tc_inner_data_gw_host
+        regionId: $tc_regionId
+        api_ver: $tc_api_ver
+        serviceName: ${get_value_from_userinfo($tc_userinfo, exist_serviceName)}
+        apiVersion: ${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}
+        apiName: ${get_value_from_userinfo($tc_userinfo, exist_apiName)}
+        #    header
+        header: $tc_header
+        #    hooks
+        AK: $tc_hufu_auth_ak
+        SK: $tc_hufu_auth_sk
+    extract:
+        - scode: status_code
+        - status: content.error.status
+    validate:
+        - eq: [$scode, 404]
+        - eq: [$status, OMPOPENAPI_NOT_FOUND]
+
+- test:
+    name: 再次删除存在的业务线${get_value_from_userinfo($tc_userinfo, exist_serviceName)}、版本${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}、api名称${get_value_from_userinfo($tc_userinfo, exist_apiName)}，删除成功
+    api: api/UserGray/deleteUserApiGray.yml
+    variables:
+        #    url
+        host: $tc_inner_data_gw_host
+        regionId: $tc_regionId
+        api_ver: $tc_api_ver
+        serviceName: ${get_value_from_userinfo($tc_userinfo, exist_serviceName)}
+        apiVersion: ${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}
+        apiName: ${get_value_from_userinfo($tc_userinfo, exist_apiName)}
+        #    header
+        header: $tc_header
+        #    hooks
+        AK: $tc_hufu_auth_ak
+        SK: $tc_hufu_auth_sk
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+    name: 使用非hufu的AKSK，删除存在的业务线${get_value_from_userinfo($tc_userinfo, exist_serviceName)}、版本${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}、api名称${get_value_from_userinfo($tc_userinfo, exist_apiName)}，报错：没有权限
+    api: api/UserGray/deleteUserApiGray.yml
+    variables:
+        #    url
+        host: $tc_inner_data_gw_host
+        regionId: $tc_regionId
+        api_ver: $tc_api_ver
+        serviceName: ${get_value_from_userinfo($tc_userinfo, exist_serviceName)}
+        apiVersion: ${get_value_from_userinfo($tc_userinfo, exist_apiVersion)}
+        apiName: ${get_value_from_userinfo($tc_userinfo, exist_apiName)}
+        #    header
+        header: $tc_header
+        #    hooks
+        AK: $tc_no_auth_ak
+        SK: $tc_no_auth_sk
+    extract:
+        - scode: status_code
+        - message: content.error.message
+        - status: content.error.status
+    validate:
+        - eq: [$scode, 403]
+        - eq: [$message, 没有权限]
+        - eq: [$status, OMPOPENAPI_HTTP_FORBIDDEN]

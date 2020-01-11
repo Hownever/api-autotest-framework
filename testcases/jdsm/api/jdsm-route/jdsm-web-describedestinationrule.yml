@@ -1,0 +1,29 @@
+name: 根据云翼服务树中应用名称查询服务网格的路由逻辑子集配置项-$product-$env-$host
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: productpage
+    env: pre
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+request:
+    url: $host/openApi/jdmesh/describeDestinationRule
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        params:
+            appName: $product
+            env: $env
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}

@@ -1,0 +1,29 @@
+name: 微服务网关预绑定分组
+description: 微服务网关预绑定分组
+operationId: preBindJdsfGroup
+
+variables:
+#    url
+    host_pbjg: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_pbjg: ${ENV(ENV_API_VERSION)}
+    regionId_pbjg: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_pbjg: apiGroupId
+#    header
+    header_pbjg:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_pbjg: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_pbjg: nofile
+    openApiAk_pbjg: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_pbjg: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_pbjg: v1
+
+request:
+    url: $host_pbjg/$apiVer_pbjg/regions/$regionId_pbjg/apiGroups/$apiGroupId_pbjg:preBindJdsfGroup
+    method: POST
+    headers: $header_pbjg
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_pbjg, $openApiSk_pbjg, $serviceLine_pbjg, $apiVersion_pbjg, $openapiYaml_pbjg, $regionId_pbjg)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

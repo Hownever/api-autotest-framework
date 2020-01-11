@@ -1,0 +1,31 @@
+name: 删除AccessKey
+description: 删除AccessKey
+operationId: deleteUserAccessKey
+
+variables:
+#    url
+    host_duak: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_duak: ${ENV(ENV_API_VERSION)}
+    regionId_duak: ${ENV(ENV_APIM_REGIONID)}
+    accessKey_duak: accessKey_duak
+#    header
+    header_duak:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    cache_duak: ${ENV(ENV_CACHE_TIME)}
+    serviceLine_duak: ${ENV(ENV_SERVICELINE_IAM)}
+    openapiYaml_duak: nofile
+    openApiAk_duak: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_duak: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_duak: v1
+
+request:
+    url: $host_duak/$apiVer_duak/regions/$regionId_duak/userAccessKey/$accessKey_duak
+    method: DELETE
+    headers: $header_duak
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_duak, $openApiSk_duak, $serviceLine_duak, $apiVersion_duak, $openapiYaml_duak, $regionId_duak)}
+teardown_hooks:
+    - ${sleep_N_secs($cache_duak)}
+    - ${hook_print("teardown_hooks for config")

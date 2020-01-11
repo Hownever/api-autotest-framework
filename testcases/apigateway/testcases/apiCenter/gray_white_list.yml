@@ -1,0 +1,463 @@
+- config:
+    name: api中心灰度白名单，别名
+    variables:
+    #    path
+        regionId_apim_gwl: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_gwl: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        groupName_gwl: JIASHUO_TEST_API_CENTER
+        description_gwl: api中心灰度白名单，别名
+        prefix_gwl:
+        keyCheck_gwl: check_exist
+        authType_gwl: jd_cloud
+        prefixStrip_gwl: 0
+        groupType_gwl: api_group
+        revision_cag: a
+        apiGroupId_cag: a
+        kmsaccessKey_ck: a
+        kmssecretKey_ck: a
+        #-----------------------------------------------------
+        backServicePath_gwl: ${ENV(ENV_BACK_SERVICE_PATH)}
+        gw_ip_gwl: ${ENV(ENV_APIM_GW_IP)}
+        #-----------------------------------------------------
+        authFlag_gwl: jd_apikms
+        accessKey_gwl: ${ENV(ENV_USER_AK)}
+        secretKey_gwl: ${ENV(ENV_USER_SK)}
+        #-----------------------------------------------------
+        pin_gwl: ${ENV(ENV_PIN)}
+    verify: False
+
+
+- test:
+    name: 1.删除旧数据：删除旧的API分组
+    testcase: testcases/dynamic_route/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim_gwl
+        regionId_apim_pcag: $regionId_apim_gwl
+        filters1values_pcag: $groupName_gwl
+
+- test:
+    name: 2.创建分组成功，分组名：$groupName_gwl，分组类型：$groupType_gwl
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+    #    path
+        regionId_cag: $regionId_apim_gwl
+    #    json
+        groupName_cag: $groupName_gwl
+        description_cag: $description_gwl
+        prefix_cag: $prefix_gwl
+        keyCheck_cag: $keyCheck_gwl
+        authType_cag: $authType_gwl
+        prefixStrip_cag: $prefixStrip_gwl
+        groupType_cag: $groupType_gwl
+        serviceLine_cag: $serviceLine_apim_gwl
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 3.创建API
+    api: api/apis/createApis.yml
+    variables:
+        regionId_ca: $regionId_apim_gwl
+        revision_ca: $revision_cag
+        apiGroupId_ca: $apiGroupId_cag
+        apiName_ca: A
+        action_ca: GET
+        path_ca: /
+        matchType_ca: absolute
+        reqParams_ca: ~
+        reqBodyType_ca: 1
+        resBodyType_ca: 1
+        backServiceConfig_ca: True
+    validate:
+        - eq: ["status_code", 200]
+#------------------------------------------------------------------------------------------------------------
+- test:
+    name: 4.创建线上环境默认后端mock
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim_gwl
+        regionId_cbc: $regionId_apim_gwl
+        apiGroupId_cbc: $apiGroupId_cag
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: online
+        backendServiceType_cbc: mock
+        sort_cbc: 0
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 5.发布分组到线上环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_gwl
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: online
+        backendServiceType_dba: ~
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba: ~
+        jdsfRegistryName_dba: ~
+        jdsfId_dba: ~
+        serviceLine_dba: $serviceLine_apim_gwl
+    validate:
+        - eq: ["status_code", 200]
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 6.发布分组到API中心，未开启白名单
+    api: api/apiCharge/createApiChargeSpec.yml
+    variables:
+    #    json
+        regionId_cacs: $regionId_apim_gwl
+        apiId_cacs: ~
+        showStatus_cacs: 1
+        appCode_cacs: PaaS
+        apiGroupAlias_cacs: 贾硕
+        grayWhiteListStatus_cacs: 0
+        serviceCode_cacs: lingmatting
+        key_cacs: matting
+        chargeType_cacs: 1
+    #    计费类型 0 标准计费 1 阶梯计费
+        accessSuccessType_cacs: 1
+    #    计费方式 0 200请求计费 1 后端处理计费
+        apiGroupId_cacs: $apiGroupId_cag
+
+        value_cacs: 1
+        unit_cacs: 元/10000次
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 7.未开启白名单，批量查询成功
+    api: api/apiProduct/describeApiProducts.yml
+    variables:
+    #    json
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - string_contains: [content, $apiGroupId_cag]
+
+- test:
+    name: 8.未开启白名单，查询单个分组成功
+    api: api/apiProduct/describeApiProduct.yml
+    variables:
+    #    json
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.apiProduct.apiGroupId, $apiGroupId_cag]
+        - eq: [content.result.apiProduct.groupName, $groupName_gwl]
+        - eq: [content.result.apiProduct.isBuyed, 0]
+        - eq: [content.result.apiProduct.price, 1元/10000次]
+
+- test:
+    name: 9.修改计费规格，只允许白名单用户看到API分组信息
+    api: api/apiCharge/updateApiChargeSpec.yml
+    variables:
+    #    json
+        regionId_uacs: $regionId_apim_gwl
+        apiId_uacs: ~
+        showStatus_uacs: 1
+        appCode_uacs: PaaS
+        apiGroupAlias_uacs: 贾硕
+        grayWhiteListStatus_uacs: 1
+        serviceCode_uacs: lingmatting
+        key_uacs: matting
+        chargeType_uacs: 1
+    #    计费类型 0 标准计费 1 阶梯计费
+        accessSuccessType_uacs: 1
+    #    计费方式 0 200请求计费 1 后端处理计费
+        apiGroupId_uacs: $apiGroupId_cag
+
+        value_uacs: 1
+        unit_uacs: 元/10000次
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 10.未在白名单的用户批量查询开启白名单的API产品，不能查到
+    api: api/apiProduct/describeApiProducts.yml
+    variables:
+    #    json
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    extract:
+        - apiProducts_dap: content.result.apiProducts
+    validate:
+        - eq: ["status_code", 200]
+        - eq:
+              - ${string_contains_1($apiProducts_dap, $apiGroupId_cag)}
+              - 0
+
+#- test:
+#    name: 11.未在白名单的用户查询单个开启白名单的API产品，不能查到
+#    api: api/apiProduct/describeApiProduct.yml
+#    variables:
+#    #    json
+#        regionId_dap: $regionId_apim_gwl
+#        apiGroupId_dap: $apiGroupId_cag
+#    validate:
+#        - eq: ["status_code", 5000]
+#        - eq: [content.result.apiProduct.apiGroupId, $apiGroupId_cag]
+#        - eq: [content.result.apiProduct.groupName, $groupName_gwl]
+#        - eq: [content.result.apiProduct.isBuyed, 0]
+#        - eq: [content.result.apiProduct.price, 1元/10000次]
+
+- test:
+    name: 12.给自身添加白名单
+    api: api/apiCenter/createGrayWhilteList.yml
+    variables:
+    #    json
+        regionId_cgwl: $regionId_apim_gwl
+        apiGroupId_cgwl: $apiGroupId_cag
+        userPins_cgwl:
+            - ${ENV(ENV_PIN)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 13.在白名单的用户批量查询开启白名单的API产品，能查到
+    api: api/apiProduct/describeApiProducts.yml
+    variables:
+    #    json
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - string_contains: [content, $apiGroupId_cag]
+
+- test:
+    name: 14.在白名单的用户查询单个开启白名单的API产品，能查到
+    api: api/apiProduct/describeApiProduct.yml
+    variables:
+    #    json
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.apiProduct.apiGroupId, $apiGroupId_cag]
+        - eq: [content.result.apiProduct.groupName, $groupName_gwl]
+        - eq: [content.result.apiProduct.isBuyed, 0]
+        - eq: [content.result.apiProduct.price, 1元/10000次]
+
+- test:
+    name: 15.未在白名单的用户批量查询开启白名单的API产品，不能查到
+    api: api/apiProduct/describeApiProducts.yml
+    variables:
+    #    json
+        header_dap:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - ne: [content.result.apiProducts.0.apiGroupId, $apiGroupId_cag]
+
+#- test:
+#    name: 16.未在白名单的用户查询单个开启白名单的API产品，不能查到
+#    api: api/apiProduct/describeApiProduct.yml
+#    variables:
+#    #    json
+#        header_dap:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: jdcloud-api-test
+#        regionId_dap: $regionId_apim_gwl
+#        apiGroupId_dap: $apiGroupId_cag
+#    validate:
+#        - eq: ["status_code", 5000]
+#        - eq: [content.result.apiProduct.apiGroupId, $apiGroupId_cag]
+#        - eq: [content.result.apiProduct.groupName, $groupName_gwl]
+#        - eq: [content.result.apiProduct.isBuyed, 0]
+#        - eq: [content.result.apiProduct.price, 1元/10000次]
+
+- test:
+    name: 17.给未在白名单中的pin添加白名单
+    api: api/apiCenter/createGrayWhilteList.yml
+    variables:
+    #    json
+        regionId_cgwl: $regionId_apim_gwl
+        apiGroupId_cgwl: $apiGroupId_cag
+        userPins_cgwl:
+            - jdcloud-api-test
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 18.在白名单的用户批量查询开启白名单的API产品，能查到
+    api: api/apiProduct/describeApiProducts.yml
+    variables:
+    #    json
+        header_dap:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - string_contains: [content, $apiGroupId_cag]
+
+- test:
+    name: 19.在白名单的用户查询单个开启白名单的API产品，能查到
+    api: api/apiProduct/describeApiProduct.yml
+    variables:
+    #    json
+        header_dap:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.apiProduct.apiGroupId, $apiGroupId_cag]
+        - eq: [content.result.apiProduct.groupName, $groupName_gwl]
+        - eq: [content.result.apiProduct.isBuyed, 0]
+        - eq: [content.result.apiProduct.price, 1元/10000次]
+
+- test:
+    name: 20.删除白名单中的pin
+    api: api/apiCenter/deleteGrayWhilteList.yml
+    variables:
+    #    json
+        header_dgwl:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+        regionId_dgwl: $regionId_apim_gwl
+        apiGroupId_dgwl: $apiGroupId_cag
+        userPins_dgwl:
+            - jdcloud-api-test
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 21.使用已删除的白名单中的pin批量查询，不能查到
+    api: api/apiProduct/describeApiProducts.yml
+    variables:
+    #    json
+        header_dap:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - ne: [content.result.apiProducts.0.apiGroupId, $apiGroupId_cag]
+
+#- test:
+#    name: 22.查询已删除的白名单中的pin单个分组，不能查到
+#    api: api/apiProduct/describeApiProduct.yml
+#    variables:
+#    #    json
+#        header_dap:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: jdcloud-api-test
+#        regionId_dap: $regionId_apim_gwl
+#        apiGroupId_dap: $apiGroupId_cag
+#    validate:
+#        - eq: ["status_code", 5000]
+#        - eq: [content.result.apiProduct.apiGroupId, $apiGroupId_cag]
+#        - eq: [content.result.apiProduct.groupName, $groupName_gwl]
+#        - eq: [content.result.apiProduct.isBuyed, 0]
+#        - eq: [content.result.apiProduct.price, 1元/10000次]
+
+- test:
+    name: 23.修改计费规格，去除白名单
+    api: api/apiCharge/updateApiChargeSpec.yml
+    variables:
+    #    json
+        regionId_uacs: $regionId_apim_gwl
+        apiId_uacs: ~
+        showStatus_uacs: 1
+        appCode_uacs: PaaS
+        apiGroupAlias_uacs: 贾硕
+        grayWhiteListStatus_uacs: 0
+        serviceCode_uacs: lingmatting
+        key_uacs: matting
+        chargeType_uacs: 1
+    #    计费类型 0 标准计费 1 阶梯计费
+        accessSuccessType_uacs: 1
+    #    计费方式 0 200请求计费 1 后端处理计费
+        apiGroupId_uacs: $apiGroupId_cag
+
+        value_uacs: 1
+        unit_uacs: 元/10000次
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 24.查询已删除的白名单中的pin单个分组，不能查到，关闭白名单后，能够查询
+    api: api/apiProduct/describeApiProducts.yml
+    variables:
+    #    json
+        header_dap:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - string_contains: [content, $apiGroupId_cag]
+
+- test:
+    name: 25.查询已删除的白名单中的pin单个分组，不能查到，关闭白名单后，能够查询
+    api: api/apiProduct/describeApiProduct.yml
+    variables:
+    #    json
+        header_dap:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+        regionId_dap: $regionId_apim_gwl
+        apiGroupId_dap: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.apiProduct.apiGroupId, $apiGroupId_cag]
+        - eq: [content.result.apiProduct.groupName, $groupName_gwl]
+        - eq: [content.result.apiProduct.isBuyed, 0]
+        - eq: [content.result.apiProduct.price, 1元/10000次]
+
+
+
+#--------------------------------------------------------------------------------------------------------------
+
+###--------------------------------------------------------------------------------------------------------------
+#- test:
+#    name: 使用路径${get_value_from_userinfo($req_para, req_path_gwl)}，请求网关，${get_value_from_userinfo($req_para, res_info_gwl)}
+#    skipIf: ${validate_skip($authFlag_gwl, jd_apikms, noeq)}
+#    api: api/requestBackend/requestBackend.yml
+#    variables:
+#        gw_ip_rb: $gw_ip_gwl
+#        gw_host_rb: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_gwl)}
+#        path_rb: ${get_value_from_userinfo($req_para, req_path_gwl)}
+#        method_rb: GET
+#        headers_rb: ~
+#        json_rb: ~
+#        ak_rb: $kmsaccessKey_ck
+#        sk_rb: $kmssecretKey_ck
+#    validate:
+#        - string_contains:
+#          - content
+#          - ${get_value_from_userinfo($req_para, res_content_gwl)}
+
+##----------------------------------------------------------------------------------------------------------------
+#- test:
+#    name: 删除已创建的API分组
+#    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+#    variables:
+#        serviceLine_apim_pcag: $serviceLine_apim_gwl
+#        regionId_apim_pcag: $regionId_apim_gwl
+#        filters1values_pcag: $groupName_gwl

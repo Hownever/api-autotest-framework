@@ -1,0 +1,31 @@
+name: 查询网格构建使用的软件版本信息（从oss外链）
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    cookies:
+         #_ga: ${ENV(ENV_COOKIES)}
+         _ga: _ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; xCsrfToken=0h_OQVIA-HvuQwrtaQcQOQDs; jdcloud_sitelang=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1568859508,1570790265; erp1.jd.com=716C516B38088C6F4315E2382A800DF7BBFED4D1F8FEB0F27E4778B4EB592D7CC334C5A5BF403D0C77DEC1CE8B445114BC0F4096DBA84FD0B9FEA98618385BD7BEBB2583DDE719891E3F22AD4ABF5B7A; sso.jd.com=BJ.12dcacb175154990bef52ee182dbfeed; __jdv=176089151|direct|-|none|-|1571284440431; thor=6BE3204066D10CF1A47E4277CC4112FEEC39AA57EB82DD93C372F22AA64E4C7644E86F1F71C5DA55472FA61E93FD8F98FE22492FA261A4E41ACF4782400B13225E6611133B344472707C40B13D46A24AE1648E2AA27D0302367CB7A11930314FA954D55DEB6EF0F8DC15657BE3DF7EB53B450520E262ABB90710A6A18CD15C866A58E3E1A3CB27228B2BDB38BA0F73E4; pin=apigateway; unick=apigateway; jdcloud_sitelang_server=cn; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1571284451; __jda=255798806.1554091325970812602438.1554091326.1561471077.1562040311.45; __jdc=255798806; currPage=stockcdn; beegosessionID=09ee6223176df17a324effd1fbfe2af8
+
+request:
+    url: $host/jdmesh/api/release/version
+    method: GET
+    headers:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies: $cookies
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+# a sample response
+response:
+    data:
+        dataList:
+            product:
+                - {"version":"v1.0.0", "description":"1.增加token支持；\n2.修复xxbug"}
+                - {"version":"v1.0.1", "description":"支持故障注入"}
+            gray:
+                - {"version":"v1.0.0", "description":"1.增加token支持；\n2.修复xxbug"}
+                - {"version":"v1.0.1", "description":"支持故障注入"}
+    status:
+        code: 200

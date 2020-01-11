@@ -1,0 +1,39 @@
+testcases:
+    IP地址来源：不同KEY账号-IP白名单-本机IP地址-网关允许访问后端:
+        testcase:  api/ipprotect-opened-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+
+                # 控制台用户- 传错误x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderWithInvalidIP",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_uaRNqHd",
+                        "x-jdcloud-user-ip" : "168.95.1.1",
+                        }
+                  }
+
+                # 非控制台用户（运营后台）- 传错误x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "OmpUserSelfKey-HeaderWithValidPin-HeaderWithValidIP",
+                    "AK" : "3778A7BA996B63369B457675DDE9A41B",
+                    "SK" : "39E1E11836286DC208AD770340DA2BEE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_uaRNqHd",
+                        "x-jdcloud-user-ip" : "168.95.1.1",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+            ipaddress:
+                # 指定IP
+                - 168.95.1.1

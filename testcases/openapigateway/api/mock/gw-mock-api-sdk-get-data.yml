@@ -1,0 +1,26 @@
+name: mock server get value from gateway
+description: |
+    get mock server data
+
+variables:
+    mock_host: ${ENV(ENV_GW_BASE_URL)}
+    # mock存储的id，使用时的id
+    mock_id: you_mock_data_id
+    body: {}
+
+    expected_status_code: 200
+
+    AK: your_ak
+    SK: your_sk
+    productline: apigatewaytestproductline
+    apiversion: v1
+    openapi_yaml: nofile
+    regionid: cn-north-1
+
+request:
+    url: $mock_host/v1/api/mockserver/mocks/$mock_id
+    method: POST
+    json: $body
+
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $productline, $apiversion, $openapi_yaml, $regionid)}

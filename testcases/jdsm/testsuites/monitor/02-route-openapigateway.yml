@@ -1,0 +1,48 @@
+config:
+    name: 核心功能监控
+    variables:
+        s_looptimes: 100
+        testenv: ${ENV(ENV_TEST_ENV)}
+        jsonResList: []
+        hostlist: ${clear_buffer()}
+
+testcases:
+#    通过网格内网关访问网格内openapi服务:
+#        testcase: testcases/productpage/productpage-reviews-gateway-route.yml
+#        variables:
+#            c_host: ${ENV(ENV_INTER_GW_MESH_BASE_URL)}
+#            c_product: productpage-mesh
+#            c_apiVersion: v1
+#            c_regionId: cn-north-1
+#            c_openapi_yaml: nofile
+#            c_AK: ${ENV(ENV_USER_AK_MAIN)}
+#            c_SK: ${ENV(ENV_USER_SK_MAIN)}
+#            c_user_pin: ${ENV(ENV_USER_PIN_MAIN)}
+#            c_header:
+#                Content-Type: application/json;charset=UTF-8
+#                x-jdcloud-pin: $c_user_pin
+#                authtoken: "234567"
+#            c_productid: 0
+#            # 函数延迟执行秒数
+#            c_sleeptime: 0
+#            c_expected_status_code: 200
+
+    通过网格外网关访问网格内openapi服务:
+        testcase: testcases/productpage/productpage-reviews-gateway-route.yml
+        variables:
+            c_host: ${ENV(ENV_OUTER_GW_BASE_URL)}
+            c_product: productpage-mesh
+            c_apiVersion: v1
+            c_regionId: cn-north-1
+            c_openapi_yaml: nofile
+            c_AK: ${ENV(ENV_USER_AK_MAIN)}
+            c_SK: ${ENV(ENV_USER_SK_MAIN)}
+            c_user_pin: ${ENV(ENV_USER_PIN_MAIN)}
+            c_header:
+                Content-Type: application/json;charset=UTF-8
+                x-jdcloud-pin: $c_user_pin
+                authtoken: "234567"
+            c_productid: 0
+            # 函数延迟执行秒数
+            c_sleeptime: 0
+            c_expected_status_code: 200

@@ -1,0 +1,34 @@
+name: 主机详情接口
+description: |
+    查询一台云主机的详细信息
+operationId: describeInstance
+
+variables:
+    host: ${ENV(ENV_GW_BASE_URL)}
+    product: vm
+    apiVersion: v1
+    regionId: cn-north-1
+    openapi_yaml: nofile
+    expected_status_code: 200
+    AK: xxx
+    SK: xxx
+
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+
+    instanceId: you_instance_id
+
+    expected_status_code: 200
+
+request:
+    url: $host/$apiVersion/regions/$regionId/instances/$instanceId
+    method: GET
+    headers: $header
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

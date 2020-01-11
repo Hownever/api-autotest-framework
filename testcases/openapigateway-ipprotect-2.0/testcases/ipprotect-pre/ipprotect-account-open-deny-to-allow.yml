@@ -1,0 +1,82 @@
+testcases:
+    开启IP白名单后，用户被限制使用，然后通过更新IP，允许使用的场景:
+        testcase:  api/ipprotect-opened-deny-to-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "B4D36386BD9931771F01F5857775CADC",
+                    "SK" : "CD5B008C5C82BCE5D345744A9FA41D46",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 企业用户-子账号
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "NormalSubUserSelfKey",
+                    "AK" : "485A20FB993547EBF8F9890F71AFC932",
+                    "SK" : "0E63A51119A6CBCB4C1A40F5186EAD51",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 用户角色
+                - {
+                    "userpin" : "jcloud_inVvXRC @ jcloud_LUrXyzr",
+                    "keytype" : "RoleSubUserSelfKey",
+                    "AK" : "9A322A39EF3B9887",
+                    "SK" : "SXAMHbSwnjFnsjfZkdzrBPemmYHyzrFJkZiHvJEs",
+                    "headers" : {
+                        "x-jdcloud-session-token" : "${base64encode(1Kko8wMEXBgPkISmqVyIHRCdAFsrq-hd3s8YhGydSnKGBFCqRAt7AA/_RYTBp3lDXIvE5J8w-XKSg/GoGA0XYF3HbHSBDS5YUPdfCAW7CzQzwS8HdgnUi5sVwy5OgegPF_deYj7KULlH4fNi7CEtqHBe9npx0e60DkiQbuhcpBdzxUbCpxAT7Nj-_S_dFINtdlymZgSqw4pstpgGSgeOUgH_KdotFzDCCtIPNzeX5iLg9NpxyT6CwQRG6X9tlE17QbHYrweXxLako83jpEFl6tiLDw7rFhiQz2rUtglzPKxFr7-sMcEH7GzcUt8IhYf9otOPUtr0SjCg-hy8aIDxD1E_ZhPs3CBCcyd9ukrcrAIBjQEd-3GF_KSRlBkIhDs5Z6sH2bs3aqKl2kwaZT0axzyqzB1xCo3PYVjF3ekQnvWydDCQ-rgaaNLyg/grrvj50UDQhdbKLKG5pqjg)}",
+                    },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 控制台用户- 不传x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderNoIP",
+                    "AK" : "379E1234E8EBB9942284FBA0F84EB6A2",
+                    "SK" : "36D959BFF6BD6D86E83E5BD8A899E25E",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_LUrXyzr",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+
+                # 控制台用户- 传x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_LUrXyzr",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderWithValidIP",
+                    "AK" : "379E1234E8EBB9942284FBA0F84EB6A2",
+                    "SK" : "36D959BFF6BD6D86E83E5BD8A899E25E",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_LUrXyzr",
+                        "x-jdcloud-user-ip" : "${get_user_ip()}",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+            ipaddressdeny:
+                - 168.95.1.1
+            ipaddressallow:
+                # 指定IP
+                - ${get_user_ip()}

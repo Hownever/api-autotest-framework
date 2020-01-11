@@ -1,0 +1,19 @@
+name: 根据应用id的获取应用信息
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    headers:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies:
+        _ga: ${ENV(ENV_COOKIES)}
+        # _ga: _ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=86694794|cf.jd.com|-|referral|-|1568170896875; Hm_lvt_38f625421267eb5065e400d79fc42c74=1566369326,1568859508; __jda=36325045.155261874676598619927.1552618747.1568859508.1568967324.16; xCsrfToken=JZ-yXBaBmIM1Fz6mTsHp413W; erp1.jd.com=4AD4FBF77822225DFA3B0CFCDC2B77D865A41D54B640B0F40780D25DBC45312799233D3B67D2156494751C42F4C52134A56B9EFA4CE9C9371E868ECA8DFBF3BEEEB6880E57E6A4142FD2DE3FBAB96AEA; sso.jd.com=BJ.e227875142af453992a948f18ad31ad5
+
+request:
+    # POST http://ark.jdcloud.com/api/lord/v1/lord/tree/queryTreeWithRoot HTTP/1.1
+    url: $host/lord/api/v1/lord/tree/queryTreeWithRoot
+    method: POST
+    headers: $headers
+    cookies: $cookies
+    json:
+        leaf: "app"

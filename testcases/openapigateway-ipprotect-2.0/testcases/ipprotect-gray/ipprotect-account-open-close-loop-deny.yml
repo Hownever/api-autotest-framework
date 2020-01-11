@@ -1,0 +1,81 @@
+testcases:
+    企业用户开启IP白名单-关闭IP白名单-再次开启-每个阶段都正确验证-网关禁止调用:
+        testcase:  api/ipprotect-opened-close-open-close-deny.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "E2D81E455C12FABA86EE50E1BC39929D",
+                    "SK" : "3B1F8C0541B5E881A1E6D8FDC3220C2A",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 企业用户-子账号
+                - {
+                    "userpin" : "jcloud_hFLKNdn @ jcloud_uaRNqHd",
+                    "keytype" : "NormalSubUserSelfKey",
+                    "AK" : "877431F11EACCBC5598A7CC4814F5D31",
+                    "SK" : "7FC15966AE05DE111074F84D6052924B ",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 用户角色
+                - {
+                    "userpin" : "Test1234 @ jcloud_uaRNqHd",
+                    "keytype" : "RoleSubUserSelfKey",
+                    "AK" : "B7C616C929F03E44",
+                    "SK" : "GyYxPqtCaXDfqSJGfQrwaVbZdkAqrxpVLnqMrVxM",
+                    "headers" : {
+                        "x-jdcloud-session-token" : "${base64encode(5_1cC9gR-DrwIt4ja0GLcJg5i-5YkVl022QlXLVAeBlu42YDGjQjuQ/4GRH1l-EwX-43ZUMAUYlHA/VLNsO6dqEAojBfaPEGEfr7h9foXLFtubEjq5FUGIuH0mhj7Fu1MBQrVMl_18vS0sJBW52b7GgEXp4BJVKsbQJ5HwPQL6e4sh4UVC8Z4uTMfIXg5g8guxKbMSxP0QbcnnYv3TiAjGIqwV3hCNulcHkaN8R90pOjvRZkN_jpVML-7PTXxmEXGIwEpkSkqoJDRDnfFmVRAw1CPOjThAfg3dRsEwZ5x70Rl8t09yYQLPcLzPtAQgjHE-GqseQZU_Jg4n_4ie62ngPOqfonR4O1Zs3DDbR_Orkc3N2heZhye4j7jzlQW9geQKk69O_dnRf6AVG3113CoIXhLuFFx94rPz5vBLebvAZCd2bvSPvraLOyw/c1cYfvuKXw76CoHwB7mqpA)}",
+                    },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 控制台用户- 不传x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderNoIP",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_uaRNqHd",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+
+                # 控制台用户- 传x-jdcloud-user-ip
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin-HeaderWithValidIP",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_uaRNqHd",
+                        "x-jdcloud-user-ip" : "${get_user_ip()}",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+
+            # deny的ip地址：指非用户调用IP的地址
+            ipaddressdeny:
+                - 168.95.1.1

@@ -1,0 +1,42 @@
+name: 更新访问授权
+description: 更新访问授权
+operationId: updateAccessAuth
+
+variables:
+#    url
+    host_uaa: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_uaa: ${ENV(ENV_API_VERSION)}
+    regionId_uaa: ${ENV(ENV_APIM_REGIONID)}
+    accessAuthId_uaa: accessAuthId
+#    header
+    header_uaa:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    accessKey_uaa: AAA
+    authUserType_uaa: jd_cloud
+    deploymentIds_uaa: ~
+    description_uaa: ~
+#    hooks
+    cache_uaa: ${ENV(ENV_CACHE_TIME)}
+    serviceLine_uaa: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_uaa: nofile
+    openApiAk_uaa: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_uaa: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_uaa: v1
+
+request:
+    url: $host_uaa/$apiVer_uaa/regions/$regionId_uaa/accessAuths/$accessAuthId_uaa
+    method: PATCH
+    headers: $header_uaa
+    json:
+        accessAuthView:
+            accessKey: $accessKey_uaa
+            authUserType: $authUserType_uaa
+            deploymentIds: $deploymentIds_uaa
+            description: $description_uaa
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_uaa, $openApiSk_uaa, $serviceLine_uaa, $apiVersion_uaa, $openapiYaml_uaa, $regionId_uaa)}
+teardown_hooks:
+    - ${sleep_N_secs($cache_uaa)}
+    - ${hook_print("teardown_hooks for config")

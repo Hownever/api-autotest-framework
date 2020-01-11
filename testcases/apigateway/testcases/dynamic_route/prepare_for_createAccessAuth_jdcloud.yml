@@ -1,0 +1,61 @@
+- config:
+    name: 检查是否已AK创建，删除旧数据后创建新的访问授权
+    variables:
+    #    path
+        regionId_apim_pcaaj: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_pcaaj: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        filters1_pcaaj: auth_user_type
+        filters1values_pcaaj: jd_cloud
+        filters1operator_pcaaj:
+        filters2_pcaaj: auth_user_id
+        filters2values_pcaaj: ${ENV(ENV_USER_AK)}
+        filters2operator_pcaaj: eq
+        accessKey_pcaaj: ${ENV(ENV_USER_AK)}
+    verify: False
+    output:
+        - accessAuthId
+
+- test:
+    name: 检查是否已AK创建
+    api: api/Author/queryAccessAuths.yml
+    variables:
+        filters1_qaa: $filters1_pcaaj
+        filters1values_qaa: $filters1values_pcaaj
+        filters1operator_qaa: $filters1operator_pcaaj
+        filters2_qaa: $filters2_pcaaj
+        filters2values_qaa: $filters2values_pcaaj
+        filters2operator_qaa: $filters2operator_pcaaj
+        serviceLine_qaa: $serviceLine_apim_pcaaj
+        regionId_qaa: $regionId_apim_pcaaj
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - accessAuths_qaa: content.result.accessAuths
+        - totalCount_qaa: content.result.totalCount
+    output:
+        - accessAuths_qaa
+        - totalCount_qaa
+
+- test:
+    name: 如果ak已创建，解绑分组
+    skipIf: ${validate_skip($totalCount_qaa, 0, eq)}
+    api: api/Author/updateAccessAuth.yml
+    variables:
+        accessKey_uaa: $accessKey_pcaaj
+        accessAuthId_uaa: ${get_value_from_struct($accessAuths_qaa, accessAuthId, 0)}
+        serviceLine_uaa: $serviceLine_apim_pcaaj
+        regionId_uaa: $regionId_apim_pcaaj
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果ak已创建，删除授权
+    skipIf: ${validate_skip($totalCount_qaa, 0, eq)}
+    api: api/Author/delAccessAuth.yml
+    variables:
+        accessAuthId_daa: ${get_value_from_struct($accessAuths_qaa, accessAuthId, 0)}
+        serviceLine_daa: $serviceLine_apim_pcaaj
+        regionId_daa: $regionId_apim_pcaaj
+    validate:
+        - eq: ["status_code", 200]

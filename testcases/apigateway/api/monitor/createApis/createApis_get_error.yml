@@ -1,0 +1,35 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId/revision/$revision/apis
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        api:
+            apiGroupId: $apiGroupId
+            action: GET
+            apiName: get_error
+            description: get_error
+            path: "/tasks/getError/{errno}"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              - defaultValue: 404
+                description: errno
+                isRequired: True
+                name: errno
+                paramType: Int
+                paramLocation: path
+            reqBody: ~
+            resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - apiId_get_error: content.result.apiId
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

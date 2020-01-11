@@ -1,0 +1,4 @@
+# Run simple test every 10 minutes
+0 */2 * * * root rm -f /export/Logs/test.log
+0 */2 * * * root rm -fr /export/Logs/test
+*/1 * * * * root /usr/bin/avocado3 run /usr/bin/true /usr/bin/false --job-results-dir=/export/Logs/test >>/export/Logs/test.log 2>&1

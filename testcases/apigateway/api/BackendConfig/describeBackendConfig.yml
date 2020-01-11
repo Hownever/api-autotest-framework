@@ -1,0 +1,30 @@
+name: 查询backendConfig
+description: 查询backendConfig
+operationId: describeBackendConfig
+
+variables:
+#    url
+    host_descbc: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_descbc: ${ENV(ENV_API_VERSION)}
+    regionId_descbc: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_descbc: apiGroupId
+    backendConfigId_descbc: backendConfigId_descbc
+#    header
+    header_descbc:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_descbc: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_descbc: nofile
+    openApiAk_descbc: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_descbc: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_descbc: v1
+
+request:
+    url: $host_descbc/$apiVer_descbc/regions/$regionId_descbc/apiGroups/$apiGroupId_descbc/backendConfig/$backendConfigId_descbc
+    method: GET
+    headers: $header_descbc
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_descbc, $openApiSk_descbc, $serviceLine_descbc, $apiVersion_descbc, $openapiYaml_descbc, $regionId_descbc)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

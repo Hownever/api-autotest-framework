@@ -1,0 +1,34 @@
+name: 删除key接口
+description: 删除key接口
+operationId: deleteKeys
+
+variables:
+#    url
+    host_dk: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dk: ${ENV(ENV_API_VERSION)}
+    regionId_dk: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_dk:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    keyIds_dk: keyIds
+    accessKeys_dk: accessKeys
+#    hooks
+    serviceLine_dk: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_dk: nofile
+    openApiAk_dk: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dk: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dk: v1
+
+request:
+    url: $host_dk/$apiVer_dk/regions/cn-north-1/kms
+    method: DELETE
+    headers: $header_dk
+    json:
+        keyIds: $keyIds_dk
+        accessKeys: $accessKeys_dk
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dk, $openApiSk_dk, $serviceLine_dk, $apiVersion_dk, $openapiYaml_dk, cn-north-1)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

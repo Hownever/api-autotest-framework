@@ -1,0 +1,21 @@
+name: describe request transfer settings
+description: |
+    describe request transfer settings
+
+variables:
+    host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+    productline: waf
+
+
+
+    token: ${ENV(ENV_GW_CONTROL_TOKEN)}
+    expected_status_code: 200
+
+request:
+    url: $host/api_operation_list/service/$productline
+    headers:
+        x-jdcloud-admin-token: $token
+    method: GET
+
+validate:
+    - eq: ["status_code", $expected_status_code]

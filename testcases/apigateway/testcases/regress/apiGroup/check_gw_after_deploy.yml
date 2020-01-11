@@ -1,0 +1,120 @@
+- config:
+    name: 分组发布后，去网关查询是否已注册
+    variables:
+        serviceLine_apim: apigateway
+        regionId_apim_1: cn-south-1
+        groupName: JIASHUO_CHECK_GW_AFTER_DEPLOY
+        authType: jd_cloud
+        description: 分组发布后，去网关查询是否已注册
+        prefix: AAA
+        prefixStrip: 0
+        groupType: api_group
+        keyCheck: check_exist
+        filters1: groupName
+        filters1values: JIASHUO_CHECK_GW_AFTER_DEPLOY
+    verify: False
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 创建分组成功，分组名：$groupName
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_1
+        groupName_cag: $groupName
+        description_cag: $description
+        authType_cag: $authType
+        prefix_cag: $prefix
+        prefixStrip_cag: $prefixStrip
+        groupType_cag: $groupType
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+
+- test:
+    name: 创建线上环境默认后端mock
+    api: api/BackendConfig/adminCreateBackendConfig.yml
+    variables:
+        serviceLine_cbc: $serviceLine_apim
+        regionId_cbc: $regionId_apim_1
+        apiGroupId_cbc: $apiGroupId_cag
+        baseGroupId_cbc: $apiGroupId_cag
+        environment_cbc: online
+        backendServiceType_cbc: mock
+        sort_cbc: 0
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布分组到线上环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_1
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: online
+        backendServiceType_dba: ~
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba: ~
+        jdsfRegistryName_dba: ~
+        jdsfId_dba: ~
+        serviceLine_dba: $serviceLine_apim
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 下线
+    api: api/requestBackend/requestBackend.yml
+    variables:
+        gw_ip_rb: ${ENV(ENV_APIM_GW_IP)}
+        gw_host_rb: 1.1.1.1
+        path_rb: ~
+        method_rb: ~
+        headers_rb: ~
+        json_rb: ~
+        ak_rb: ~
+        sk_rb: ~
+        setup_sleep_time_rb: 5
+        teardown_sleep_time_rb: 0
+    validate:
+        - eq: ["status_code", 200]
+
+
+
+- test:
+    name: 下线
+    api: api/Deployment/offline.yml
+    variables:
+        regionId_o: $regionId_apim_1
+        deploymentId_o: $apiGroupId_cag-online
+        apiGroupId_o: $apiGroupId_cag
+        serviceLine_o: $serviceLine_apim
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 删除已下线的分组，成功
+    api: api/apiGroup/deleteApiGroup.yml
+    variables:
+        regionId_deleag: $regionId_apim_1
+        apiGroupId_deleag: $apiGroupId_cag
+    validate:
+        - eq: ["status_code", 200]

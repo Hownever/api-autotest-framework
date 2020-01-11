@@ -1,0 +1,41 @@
+- config:
+    name: create token
+    variables:
+        c_host: ${ENV(ENV_KEYSERVICE_BASE_URL)}
+        c_product: gwkms
+        c_apiVersion: v1
+        c_regionId: cn-north-1
+        c_openapi_yaml: nofile
+        c_AK: ${ENV(ENV_TOKEN_AK)}
+        c_SK: ${ENV(ENV_TOKEN_SK)}
+        c_header:
+            Content-Type: application/json;charset=UTF-8
+        c_time:
+        c_payload:
+            deadline: ${get_delta_timestamp(10, 31536000)}
+            serviceName: your_service_name
+        c_expected_status_code: 200
+    output:
+        - c_token
+        - d_token
+
+- test:
+    name: 创建 token
+    api: api/keyservice-token/createtokenindependent-deadline-transfer-to-int.yml
+    variables:
+
+        host: $c_host
+        product: $c_product
+        apiVersion: $c_apiVersion
+        regionId: $c_regionId
+        openapi_yaml: $c_openapi_yaml
+        AK: $c_AK
+        SK: $c_SK
+        header: $c_header
+        payload: $c_payload
+    extract:
+        - c_token: content.result.token
+    teardown_hooks:
+        - d_token: ${decode_token($c_token)}
+    validate:
+        - eq: ["status_code", $c_expected_status_code]

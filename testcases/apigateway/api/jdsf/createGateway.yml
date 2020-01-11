@@ -1,0 +1,66 @@
+name: 创建集群
+description: 创建微服务网关
+operationId: createGateway
+
+variables:
+#    url
+    host_cg: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cg: ${ENV(ENV_API_VERSION)}
+    regionId_cg: ${ENV(ENV_JDSF_REGIONID)}
+#    header
+    header_cg:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    gatewayName_cg: JIASHUO_TEST_JDSFGW
+    gatewayType_cg: MICROSERVICE
+    vpcId_cg: vpc-7hrcljzkli
+    subnetId_cg: subnet-jqsaas34xn
+    gatewaySpec_cg: QPS_100
+    gatewayVersion_cg: 1.0.0
+    rz_cg: prod_bj02
+    rzType_cg: SYSTEM
+    chargeMode_cg: CONFIG
+    chargeUnit_cg:
+    apiGroupId_cg: ag-wr8tg3bjkrk3
+    apiGroupRegion_cg: cn-north-1
+    apiGroupEnvironment_cg: online
+    registryId_cg: reg-1r67qqm63nc3k
+    proxyAddress_cg:
+    timeSpan_cg:
+    serviceNames_cg:
+        - jdsf-server4
+#    hooks
+    serviceLine_cg: ${ENV(ENV_SERVICELINE_JDSF)}
+    openapiYaml_cg: nofile
+    openApiAk_cg: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cg: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cg: v1
+
+request:
+    url: $host_cg/$apiVer_cg/regions/$regionId_cg/gateways
+    method: POST
+    headers: $header_cg
+    json:
+        gatewayName: $gatewayName_cg
+        gatewayType: $gatewayType_cg
+        vpcId: $vpcId_cg
+        subnetId: $subnetId_cg
+        gatewaySpec: $gatewaySpec_cg
+        gatewayVersion: $gatewayVersion_cg
+        rz: $rz_cg
+        rzType: $rzType_cg
+        chargeMode: $chargeMode_cg
+        chargeUnit: $chargeUnit_cg
+        apiGroupId: $apiGroupId_cg
+        apiGroupRegion: $apiGroupRegion_cg
+        apiGroupEnvironment: $apiGroupEnvironment_cg
+        registryId: $registryId_cg
+        proxyAddress: $proxyAddress_cg
+        timeSpan: $timeSpan_cg
+        serviceNames: $serviceNames_cg
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cg, $openApiSk_cg, $serviceLine_cg, $apiVersion_cg, $openapiYaml_cg, $regionId_cg)}
+teardown_hooks:
+    - ${sleep_N_secs(150)}
+    - ${hook_print("teardown_hooks for config")

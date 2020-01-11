@@ -1,0 +1,37 @@
+name: 生成sdk、文档
+description: 生成sdk、文档
+operationId: generateSdkAndDocument
+
+variables:
+#    url
+    host_gsdk: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_gsdk: ${ENV(ENV_API_VERSION)}
+    regionId_gsdk: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_gsdk: ~
+#    header
+    header_gsdk:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    revision_gsdk: ~
+    environment_gsdk: ~
+    language_gsdk: ~
+#    hooks
+    serviceLine_gsdk: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_gsdk: nofile
+    openApiAk_gsdk: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_gsdk: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_gsdk: v1
+
+request:
+    url: $host_gsdk/$apiVer_gsdk/regions/$regionId_gsdk/apiGroups/$apiGroupId_gsdk/generate
+    method: POST
+    headers: $header_gsdk
+    json:
+        revision: $revision_gsdk
+        environment: $environment_gsdk
+        language: $language_gsdk
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_gsdk, $openApiSk_gsdk, $serviceLine_gsdk, $apiVersion_gsdk, $openapiYaml_gsdk, $regionId_gsdk)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

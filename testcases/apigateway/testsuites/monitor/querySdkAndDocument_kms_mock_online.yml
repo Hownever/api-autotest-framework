@@ -1,0 +1,58 @@
+- config:
+    name: 创建分组-创建KMS访问授权-查询下载SDK
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+    verify: False
+    output:
+        - apiGroupId
+        - revision
+
+- test:
+    name: 创建分组-创建kms访问授权-debugApi-成功
+    testcase: testcases/monitor/debugApi_kms_mock_online.yml
+    output:
+        - apiGroupId
+        - revision
+        - environment
+        - accessKey
+        - secretKey
+        - authUserType
+
+- test:
+    name: 生成SDK和文档
+    api: api/monitor/generateSdkAndDocument.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        language: java,python,doc
+        environment: $environment
+
+- test:
+    name: 查询SDK和文档
+    api: api/monitor/querySdkAndDocument.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        deploymentId: ${return_string($apiGroupId, $environment)}
+        environment: $environment
+    extract:
+        - scode: status_code
+        - downloadUrls: content.result.downloadUrls
+        - doc_fileStatus: content.result.downloadUrls.0.fileStatus
+        - python_fileStatus: content.result.downloadUrls.1.fileStatus
+        - java_fileStatus: content.result.downloadUrls.2.fileStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$doc_fileStatus, 2]
+        - eq: [$python_fileStatus, 2]
+        - eq: [$java_fileStatus, 2]
+    output:
+        - downloadUrls

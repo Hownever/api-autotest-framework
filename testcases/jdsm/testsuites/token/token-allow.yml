@@ -1,0 +1,282 @@
+config:
+    name: Token 安全测试 - 允许调用场景
+    variables:
+        wtime: 0
+        #
+        # {"keyVersion":"rsav5",
+        # "product":"microservices",
+        # "serviceName":"productpage",
+        # "group":"east2-pre-az2",
+        # "ip":"10.226.209.32",
+        # "instanceName":"",
+        # "exp":1599708656,
+        # "iat":1568172656,
+        # "iss":"wuhui1"}
+        times: 0
+        str_now: ${get_timestamp(10)}
+        randtime: ${gen_rand_int(10,30)}
+        waittime: ${plus($randtime, 5)}
+        now: ${plus($str_now, $randtime)}
+        deadlinetime: ${plus($now, 180)}
+        # 3600*24*361=31190400
+        deadlinetime_more_than_1_year: ${plus($now, 31190401)}
+
+        # reviews endpoint：
+        backend: ${ENV(ENV_TEST_PROVIDER)}.default.mesh.jdcloud.com:9080/reviews/0
+
+        # ratings' token
+        ServerBtoken: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg
+
+        # token: errortoken
+
+        # bugs: 使用如下token会导致sdk core，越权
+        sdkcoretoken: "coreeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..*"
+
+        # ratings' token 过期token 有效期：2019-06-30 08:00:00
+        # header：{"alg":"RS256","typ":"JWT"}
+        # payload：{"keyVersion":"rsav2","product":"microservices","serviceName":"jdmesh-ratings-test","group":"east02-pre","ip":"10.226.213.37","exp":1561852800,"iat":1560824415,"iss":"wuhui1"}
+        # signature： QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg
+        exptokenreviews: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg
+
+        # token 数据：
+        # jdmesh-productpage-test token 过期token
+        exptokenproductpage: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.ctuIkUIcJDBAKh6Vxzk-CGO8bVdQ5TSS8r2ea9cyAst7Hfq_msZpqwgYp23qXTX_-FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC-4nY-ZnCQPDKE8
+
+testcases:
+#    关闭应用的token验证时，docheck=0，携带各种token都允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#
+#            c_token_productpage: [0]
+#            casesummary-c_expected_status_code-c_headers-c_update_token_settings_waittime:
+#                - [
+#                  "关闭时-请求未携带authtoken，允许调用 - $c_productpage_host",
+#                  200,
+#                  {},
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]
+#                - [
+#                  "关闭时-请求携带过期token调用-允许调用 - $exptokenproductpage",
+#                  200,
+#                  {"authtoken": "$exptokenproductpage"},
+#                  0,
+#                  ]
+#                - [
+#                  "关闭时-请求携带错误token调用-允许调用 - $sdkcoretoken",
+#                  200,
+#                  {"authtoken": "$sdkcoretoken"},
+#                  0,
+#                  ]
+#
+#    关闭token验证，其他选项（docheck=0,checkIp=1,Appwhitelist=1,IpWhitelist=1,sendlog=1）开启也不会进行相关鉴权，允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+#                - [
+#                  "仅开启docheck时，创建除了serviename，其他字段为空的token时，允许调用 - $c_productpage_host",
+#                  0,1,1,1,1,1,
+#                  {"serviceName": "${gen_random_string(20)}", "product": "test", "group": "not exist group", "ip": "invalid ip", "deadline": $now, "erp": "noerp", "instanceName": "Invalid instanceName"},
+#                  200,
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]
+
+    验证envoy网格自动注入的token可用性-网格内应用请求未携带authtoken时，网格正确注入，允许调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-productpage-reviews.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_product_reviews:
+                - ${ENV(ENV_TEST_PROVIDER)}
+            c_token_productpage: [0]
+            c_token_reviews: [1]
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+
+            casesummary-c_expected_status_code-c_headers-c_update_token_settings_waittime:
+                - [
+                  "envoy会为productpage会注入AUTHTOKEN,允许调用",
+                  200,
+                  {},
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "envoy会为productpage会注入AUTHTOKEN，并且会覆盖请求中的authtoken,允许调用",
+                  200,
+                  {"authtoken": "Invalid token"},
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+
+    注入逻辑：当应用请求自带authtoken请求header时，网格仍能够正确注入token，允许调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-remotecall.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_product_reviews:
+                - ${ENV(ENV_TEST_PROVIDER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+
+            c_token_productpage: [0]
+            c_token_reviews: [1]
+            casesummary-c_expected_status_code-c_protocol-c_headers-c_datas:
+                - [
+                  "网格内应用未带token调用其他应用时，网格会自动注入正确token - productpage发起reviews调用时，未带authtoken时，envoy会自动注入正确token",
+                  200, HTTP,
+                  {},
+                  {"url": "$backend", "method": "GET", "headers":{"x-request-jdmesh-test-id":"${gen_random_string(10)}","authtoken":"$ServerBtoken"}}
+                  ]
+                - [
+                  "即使网格内应用自带了错误的authtoken，网格也会替换它，保证能够调用成功-使用导致sdk core error token来remotecall reviews，网格会替换成正确的，允许访问 - $c_productpage_host",
+                  200, HTTP,
+                  {"authtoken": "$sdkcoretoken"},
+                  {"url": "$backend", "method": "GET", "headers":{"x-request-jdmesh-test-id":"${gen_random_string(10)}","authtoken":"$sdkcoretoken"}}
+                  ]
+
+    合法token - docheck维度（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，允许调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+                - [
+                  "仅开启docheck时，创建除了serviename，其他字段为空的token时，允许调用 - $c_productpage_host",
+                  1,0,0,0,0,0,
+                  {"serviceName": "${gen_random_string(20)}",},
+                  200,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "仅开启docheck时，创建任意应用的token，允许调用 - $c_productpage_host",
+                  1,0,0,0,0,0,
+                  {"serviceName": "${gen_random_string(20)}"},
+                  200,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "仅开启docheck时，创建有效期内的token，允许调用 - $c_productpage_host",
+                  1,0,0,0,0,0,
+                  {"serviceName": "${gen_random_string(20)}", "deadline": $deadlinetime},
+                  200,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "仅开启docheck时，创建当前应用的token，允许调用 - $c_productpage_host",
+                  1,0,0,0,0,0,
+                  {"serviceName": "${ENV(ENV_TEST_CONSUMER)}"},
+                  200,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "仅开启docheck时，创建任意IP的token，允许调用 - $c_productpage_host",
+                  1,0,0,0,0,0,
+                  {"serviceName": "${ENV(ENV_TEST_CONSUMER)}", "ip": "127.0.0.1"},
+                  200,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+                - [
+                  "仅开启docheck时，创建无效IP的token，允许调用 - $c_productpage_host",
+                  1,0,0,0,0,0,
+                  {"serviceName": "${ENV(ENV_TEST_CONSUMER)}", "ip": "abc"},
+                  200,
+                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+                  ]
+
+#     # TODO: TBC
+#    合法token - docheck+appwhitelist维度（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+#                - [
+#                  "开启docheck+appwhitelist时，创建serviename为：jdmesh-ingress，其他字段为空的token时，从ingress-->${ENV(ENV_TEST_CONSUMER)}, 允许调用 - $c_productpage_host",
+#                  1,1,0,0,0,0,
+#                  {"serviceName": "jdmesh-ingress",},
+#                  200,
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]
+#     # TODO: TBC
+#    合法token - docheck+ipwhitelist维度（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+#                - [
+#                  "开启docheck+ipwhitelist时，创建serviename为：jdmesh-ingress，其他字段为空的token时，从ingress-->${ENV(ENV_TEST_CONSUMER)}, 允许调用 - $c_productpage_host",
+#                  1,1,0,0,0,0,
+#                  {"serviceName": "jdmesh-ingress",},
+#                  200,
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]
+#
+#     # TODO: TBC
+#    合法token - docheck+源ip校验维度（从keyservice创建token，用创建token验证网格token功能），调用网格内应用时，请求自带合法token时，允许调用:
+#        testcase: testcases/jdmesh-token/apply-token-settings-then-createtoken-to-verify-functions-productpage-api.yml
+#        parameters:
+#            c_host:
+#                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+#
+#            c_mesh_openapi_host:
+#                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+#            c_product_productpage:
+#                - ${ENV(ENV_TEST_CONSUMER)}
+#            c_env:
+#                - ${ENV(ENV_TEST_ENV)}
+#            casesummary-c_docheck-c_whitelist-c_checkip-c_ipwhitelist-c_sendlog-c_token_verify_waittime-c_payload-c_expected_status_code-c_update_token_settings_waittime:
+#                - [
+#                  "开启docheck+源ip校验时，创建serviename为：jdmesh-ingress，其他字段为空的token时，从ingress-->${ENV(ENV_TEST_CONSUMER)}, 允许调用 - $c_productpage_host",
+#                  1,1,0,0,0,0,
+#                  {"serviceName": "jdmesh-ingress",},
+#                  200,
+#                  "${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}",
+#                  ]

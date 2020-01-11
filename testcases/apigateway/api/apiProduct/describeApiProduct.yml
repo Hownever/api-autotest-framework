@@ -1,0 +1,30 @@
+name: 查询某个API产品
+description: 查询某个API产品
+operationId: describeApiProduct
+
+variables:
+#    url
+    host_dap: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dap: ${ENV(ENV_API_VERSION)}
+    regionId_dap: cn-south-1
+#    header
+    header_dap:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    apiGroupId_dap: ~
+#    hooks
+    serviceLine_dap: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_dap: nofile
+    openApiAk_dap: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dap: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dap: v1
+
+request:
+    url: $host_dap/$apiVer_dap/regions/$regionId_dap/apiproduct/$apiGroupId_dap
+    method: GET
+    headers: $header_dap
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dap, $openApiSk_dap, $serviceLine_dap, $apiVersion_dap, $openapiYaml_dap, $regionId_dap)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

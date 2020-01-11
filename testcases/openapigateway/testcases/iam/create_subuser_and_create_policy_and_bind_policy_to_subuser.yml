@@ -1,0 +1,96 @@
+- config:
+    name: create subuser and create policy then bind the policy to the subuser
+    variables:
+        host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+        AK: ${ENV(ENV_USER_AK_MAIN)}
+        SK: ${ENV(ENV_USER_SK_MAIN)}
+        productline: iam
+        apiversion: v1
+        openapi_yaml: nofile
+        regionid: cn-north-1
+        # 主账号pin
+        userpin: ${ENV(ENV_USER_PIN_MAIN)}
+
+        headers:
+            Content-Type: application/json;charset=UTF-8
+            #x-jdcloud-pin: $userpin
+
+        # 创建子账号的相关设置
+        subuser_name: subuser_${gen_random_string(5)}
+        subuser_description: sub_user_description-$subuser_name
+        subuser_password: z9gjmP5tNUaVUcX1
+        subuser_phone: 0086-18631256565
+        subuser_email: 123@qq.com
+        subuser_create_ak: True
+        subuser_reset_passwd: False
+        subuser_console_login: True
+        subuser_auto_gen_passwd: False
+
+        # 策略
+        policyname: policy_describeInstanceVncUrl_one_API
+        policydescription: your_policy_description_policy_describeInstanceVncUrl_one_API
+        policycontent: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstanceVncUrl"],"Resource":["*"],"Condition":{}}]}'
+
+    output:
+        - subuser_name
+        - accessKey
+        - secretAccessKey
+        - subuser_pin
+        - policyname
+        - policycontent
+
+- test:
+    name: create subuser and get its pin-$subuser_name
+    testcase: testcases/iam/create_subuser_output_name_pin_ak_sk.yml
+    variables:
+        host: $host
+        # 主账号pin
+        userpin: $userpin
+        headers: $headers
+
+        # 创建子账号的相关设置
+        subuser_name: $subuser_name
+        subuser_description: $subuser_description
+        subuser_password: $subuser_password
+        subuser_phone: $subuser_phone
+        subuser_email: $subuser_email
+        subuser_create_ak: $subuser_create_ak
+        subuser_reset_passwd: $subuser_reset_passwd
+        subuser_console_login: $subuser_console_login
+        subuser_auto_gen_passwd: $subuser_auto_gen_passwd
+
+    output:
+        - subuser_name
+        - accessKey
+        - secretAccessKey
+        - subuser_pin
+
+- test:
+    name: create policy - $policyname - $policycontent
+    api: api/iam/createPolicy.yml
+    variables:
+
+        host: $host
+        userpin: $userpin
+        headers: $headers
+        policyname: $policyname
+        policydescription: $policydescription
+        policycontent: $policycontent
+
+    extract:
+        - policyName: content.result.policy.name
+    output:
+        - policyName
+
+- test:
+    name: bind policy to user - userpin($userpin) - username($subuser_name) - policy($policyname)
+    api: api/iam/attachSubUserPolicy.yml
+    variables:
+
+        host: $host
+        userpin: $userpin
+        headers: $headers
+
+        subuser: $subuser_name
+        policyname: $policyname
+        waittime: 0

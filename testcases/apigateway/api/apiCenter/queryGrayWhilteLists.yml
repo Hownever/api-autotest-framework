@@ -1,0 +1,30 @@
+name: 查询白名单列表
+description: 查询白名单列表
+operationId: queryGrayWhilteLists
+
+variables:
+#    url
+    host_qgwl: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_qgwl: ${ENV(ENV_API_VERSION)}
+    regionId_qgwl: cn-south-1
+#    header
+    header_qgwl:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: jdcloud-api-test
+#    json
+    apiGroupId_qgwl: ~
+#    hooks
+    serviceLine_qgwl: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_qgwl: nofile
+    openApiAk_qgwl: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_qgwl: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_qgwl: v1
+
+request:
+    url: $host_qgwl/$apiVer_qgwl/regions/$regionId_qgwl/apiGroups/$apiGroupId_qgwl/apiCenterGrayWhilteList
+    method: GET
+    headers: $header_qgwl
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_qgwl, $openApiSk_qgwl, $serviceLine_qgwl, $apiVersion_qgwl, $openapiYaml_qgwl, $regionId_qgwl)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

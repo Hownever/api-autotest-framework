@@ -1,0 +1,30 @@
+- config:
+    name: normal_child_no_pin_wrongSK_deleteInstance.yml
+    variables:
+        - regionId: ${ENV(regionId)}
+        - exist_main_pin: ${ENV(exist_main_pin)}
+        - openapiGwUrl: ${ENV(openapiGwUrl_vm_external)}
+        - domain: ${ENV(domain)}
+        - access_key: ${ENV(access_key_normal_child)}
+        - secret_key: WrongSK
+
+- test:
+    name: 普通用户子账号aksk，不传pin，SK任意填写，调用外部接口deleteInstance，网关报错sign result is not same
+    request:
+        url: /v1/regions/$regionId/instances/tancong
+        method: DELETE
+        headers:
+            Content-Type: application/json
+        params: ~
+    setup_hooks:
+        - ${update_JD_headers($request, $openapiGwUrl, None, vm, $access_key, $secret_key, $regionId)}
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+        - error_message: content.error.message
+        - error_status: content.error.status
+    validate:
+        - eq: [$scode, 401]
+        - eq: [$error_status, ACCESS_ERROR]
+        - contains: [$error_message, "sign result is not same [gw]"]
+        - len_eq: [$requestId, 32]

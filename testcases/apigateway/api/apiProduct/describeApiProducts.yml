@@ -1,0 +1,39 @@
+name: 查询所有线上API产品
+description: 查询所有线上API产品
+operationId: describeApiProducts
+
+variables:
+#    url
+    host_dap: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dap: ${ENV(ENV_API_VERSION)}
+    regionId_dap: cn-south-1
+#    header
+    header_dap:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    apiGroupId_dap: ~
+    pageNumber_dap: 1
+    pageSize_dap: 20
+    filters1_dap: ~
+    filters1values_dap: ~
+#    hooks
+    serviceLine_dap: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_dap: nofile
+    openApiAk_dap: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dap: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dap: v1
+
+request:
+    url: $host_dap/$apiVer_dap/regions/$regionId_dap/apiproduct
+    method: GET
+    headers: $header_dap
+    params:
+        pageNumber: $pageNumber_dap
+        pageSize: $pageSize_dap
+        filters.1.name: $filters1_dap
+        filters.1.values.1: $filters1values_dap
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dap, $openApiSk_dap, $serviceLine_dap, $apiVersion_dap, $openapiYaml_dap, $regionId_dap)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

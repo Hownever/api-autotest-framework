@@ -1,0 +1,58 @@
+name: 创建API
+description: 创建API
+operationId: createApis
+
+variables:
+#    url
+    host_dt: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dt: ${ENV(ENV_API_VERSION)}
+    regionId_dt: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_dt: apiGroupId
+    revision_dt: revision
+#    header
+    header_dt:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_dt: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_dt: nofile
+    openApiAk_dt: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dt: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dt: v1
+
+request:
+    url: $host_dt/$apiVer_dt/regions/$regionId_dt/apiGroups/$apiGroupId_dt/revision/$revision_dt/apis
+    method: POST
+    headers: $header_dt
+    json:
+        api:
+            apiGroupId: $apiGroupId_dt
+            action: DELETE
+            apiName: delete_task
+            description: delete_task
+            path: "/todo/api/v1/tasks/deleteTaskById/{taskid}"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              -
+                defaultValue: 1
+                description: taskid
+                isRequired: true
+                name: taskid
+                paramType: Int
+                paramLocation: path
+              -
+                defaultValue: Authorization
+                description: Authorization
+                isRequired: true
+                name: Author_test
+                paramType: String
+                paramLocation: head
+            reqBody: ~
+            resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"boolean\"\n\t\t}\n\t}\n}"
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dt, $openApiSk_dt, $serviceLine_dt, $apiVersion_dt, $openapiYaml_dt, $regionId_dt)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

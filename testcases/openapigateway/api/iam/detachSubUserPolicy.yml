@@ -1,0 +1,37 @@
+name: unbound policy to subuser
+description: |
+    unbound policy to the subuser
+
+variables:
+    host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+    userpin: your_user_pin
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        #x-jdcloud-pin: $userpin
+    policyname: your_policy_name
+    subuser: your_subuser
+
+
+    AK: your_ak
+    SK: your_sk
+    productline: iam
+    apiversion: v1
+    openapi_yaml: nofile
+    regionid: cn-north-1
+
+    expected_status_code: 200
+
+request:
+    url: $host/$apiversion/subUser/$subuser:detachSubUserPolicy
+    method: DELETE
+    headers: $headers
+    params:
+        policyName: $policyName
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, iam, $apiVersion, $openapi_yaml, $regionId)}
+    - ${sleep_N_secs(40)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+
+validate:
+    - eq: ["status_code", $expected_status_code]

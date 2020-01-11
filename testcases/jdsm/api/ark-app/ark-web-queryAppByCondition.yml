@@ -1,0 +1,25 @@
+name: 根据应用id的获取应用信息
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+    headers:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+    page_size: 100
+    page: 1
+    app_id: 1657
+
+request:
+    # http://ark.jcloud.com/deploy/api/v1/group?app_id=2241&page_size=1000
+    url: $host/deploy/api/v1/group
+    method: GET
+    headers: $headers
+    cookies: $cookies
+    params:
+        app_id: $app_id
+
+        page_size: $page_size
+        page: $page

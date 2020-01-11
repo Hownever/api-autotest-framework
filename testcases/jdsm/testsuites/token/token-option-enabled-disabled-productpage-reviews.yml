@@ -1,0 +1,172 @@
+config:
+    name: Token开启关闭测试
+    variables:
+        times: 0
+        # reviews：
+        backend: ${ENV(ENV_TEST_PROVIDER)}.default.mesh.jdcloud.com:9080/reviews/0
+
+testcases:
+    开启时，正确token允许调用：对reviews开启token验证，productpage关闭token验证，从Ingress调用productpage的api，调用reviews服务，允许调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-productpage-reviews.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_product_reviews:
+                - ${ENV(ENV_TEST_PROVIDER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+            c_enableWhiteListCheck: [False]
+            c_enableNegativeHealthCheck: [False]
+            c_healthCheckInterval: [10]
+            c_healthCheckconsecutiveErrors: [5]
+            c_healthCheckmaxEjectionPercent: [30]
+            c_healthCheckbaseEjectionTime: [180]
+            c_serviceEntries: [[]]
+
+            c_token_productpage: [0]
+            c_token_reviews: [1]
+            casesummary-c_expected_status_code-c_headers:
+                - [
+                  "从Ingress调用网格内应用，可以正常转发并注入AUTHTOKEN，正常访问 - $c_productpage_host",
+                  200,
+                  {},
+                  ]
+    关闭时，使用正确token,允许调用：对producpage和reviews都关闭token验证，通过网格内网关调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-apigateway.yml
+        parameters:
+            c_productpage_host:
+                - ${ENV(ENV_PRE_INTER_GW_MESH_BASE_URL)}
+            c_product_servicecode:
+                - productpage-mesh
+            c_apiVersion:
+                - v1
+            c_regionId:
+                - cn-north-1
+            c_openapi_yaml:
+                - nofile
+            c_AK:
+                - ${ENV(ENV_PRE_USER_AK_BACK)}
+            c_SK:
+                - ${ENV(ENV_PRE_USER_SK_BACK)}
+            c_user_pin:
+                - ${ENV(ENV_PRE_USER_PIN_BACK)}
+            c_header:
+                - {
+                Content-Type: application/json;charset=UTF-8,
+                x-jdcloud-pin: $c_user_pin,
+                # authtoken: "234567",
+                }
+            c_productid: [0]
+
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_product_reviews:
+                - ${ENV(ENV_TEST_PROVIDER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+            c_enableWhiteListCheck: [False]
+            c_enableNegativeHealthCheck: [False]
+            c_healthCheckInterval: [10]
+            c_healthCheckconsecutiveErrors: [5]
+            c_healthCheckmaxEjectionPercent: [30]
+            c_healthCheckbaseEjectionTime: [180]
+            c_serviceEntries: [[]]
+
+            c_token_productpage: [0]
+            c_token_reviews: [0]
+            casesummary-c_expected_status_code-c_headers:
+                - [
+                  "从Ingress调用网格内应用，可以正常转发并注入AUTHTOKEN，正常访问 - $c_productpage_host",
+                  200,
+                  {},
+                  ]
+
+    关闭时，使用错误token,允许调用：对producpage和reviews都关闭token验证，通过网格内网关调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-apigateway.yml
+        parameters:
+            c_productpage_host:
+                - ${ENV(ENV_PRE_INTER_GW_MESH_BASE_URL)}
+            c_product_servicecode:
+                - productpage-mesh
+            c_apiVersion:
+                - v1
+            c_regionId:
+                - cn-north-1
+            c_openapi_yaml:
+                - nofile
+            c_AK:
+                - ${ENV(ENV_PRE_USER_AK_BACK)}
+            c_SK:
+                - ${ENV(ENV_PRE_USER_SK_BACK)}
+            c_user_pin:
+                - ${ENV(ENV_PRE_USER_PIN_BACK)}
+            c_header:
+                - {
+                Content-Type: application/json;charset=UTF-8,
+                x-jdcloud-pin: $c_user_pin,
+                authtoken: "234567",
+                }
+            c_productid: [0]
+
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_product_reviews:
+                - ${ENV(ENV_TEST_PROVIDER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+            c_enableWhiteListCheck: [False]
+            c_enableNegativeHealthCheck: [False]
+            c_healthCheckInterval: [10]
+            c_healthCheckconsecutiveErrors: [5]
+            c_healthCheckmaxEjectionPercent: [30]
+            c_healthCheckbaseEjectionTime: [180]
+            c_serviceEntries: [[]]
+
+            c_token_productpage: [0]
+            c_token_reviews: [0]
+            casesummary-c_expected_status_code-c_headers:
+                - [
+                  "从Ingress调用网格内应用，可以正常转发并注入AUTHTOKEN，正常访问 - $c_productpage_host",
+                  200,
+                  {},
+                  ]
+
+    再次开启时，正确token允许调用：对reviews开启token验证，productpage关闭token验证，从Ingress调用productpage的api，调用reviews服务，允许调用:
+        testcase: testcases/jdmesh-token/apply-token-settings-then-verify-functions-productpage-reviews.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+
+            c_mesh_openapi_host:
+                - ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            c_product_productpage:
+                - ${ENV(ENV_TEST_CONSUMER)}
+            c_product_reviews:
+                - ${ENV(ENV_TEST_PROVIDER)}
+            c_env:
+                - ${ENV(ENV_TEST_ENV)}
+            c_enableWhiteListCheck: [False]
+            c_enableNegativeHealthCheck: [False]
+            c_healthCheckInterval: [10]
+            c_healthCheckconsecutiveErrors: [5]
+            c_healthCheckmaxEjectionPercent: [30]
+            c_healthCheckbaseEjectionTime: [180]
+            c_serviceEntries: [[]]
+
+            c_token_productpage: [0]
+            c_token_reviews: [1]
+            casesummary-c_expected_status_code-c_headers:
+                - [
+                  "从Ingress调用网格内应用，可以正常转发并注入AUTHTOKEN，正常访问 - $c_productpage_host",
+                  200,
+                  {},
+                  ]

@@ -1,0 +1,53 @@
+config:
+    name: 核心功能监控
+    variables:
+        testenv: ${ENV(ENV_TEST_ENV)}
+        testproduct: ${ENV(ENV_TEST_PRODUCT)}
+        test_provider_app: ${ENV(ENV_TEST_PROVIDER)}
+        test_consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+#    base_url: ${ENV(BASE_URL)}
+
+testcases:
+    白名单开启时，应用级别授权后，允许调用:
+        testcase: testcases/ark-whitelist/whitelist-closed-allow.yml
+        variables:
+            # host: http://not_exist_suite
+            base_ark_url: ${ENV(ENV_ARK_WEB_BASE_URL)}
+            base_url_jdmesh_web: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product: $testproduct
+            provider_app: $test_provider_app
+            provider_groups: []
+            provider_inss: []
+            consumer_app: $test_consumer_app
+            consumer_groups: []
+            consumer_inss: []
+            env: $testenv
+            expected_status_code: 200
+
+    白名单关闭时，允许调用:
+        testcase: testcases/ark-whitelist/whitelist-closed-allow.yml
+        variables:
+            product: $testproduct
+            env: $testenv
+        parameters:
+            product:
+                - $testproduct
+            env:
+                - $testenv
+
+    白名单开启时，未授权，禁用调用-$test_provider_app:
+        testcase: testcases/ark-whitelist/whitelist-open-deny.yml
+        variables:
+            # host: http://not_exist_suite
+            base_ark_url: ${ENV(ENV_ARK_WEB_BASE_URL)}
+            base_url_jdmesh_web: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+            product: $test_provider_app
+            provider_app: $test_provider_app
+            provider_groups: []
+            provider_inss: []
+            consumer_app: []
+            consumer_groups: []
+            consumer_inss: []
+            env: $testenv
+            expected_status_code: 403
+            c_update_basicconfig_waittime: ${ENV(ENV_UPDATE_BASICCONFIG_WAITTIME_SEC)}

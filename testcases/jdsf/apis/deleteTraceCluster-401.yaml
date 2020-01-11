@@ -1,0 +1,63 @@
+- config:
+    # 测试用例名称
+    name: 删除调用链
+    # config中request中的参数是对当前yaml文件中的所有test共用的
+    request:
+         base_url: ${ENV(ENV_BASE_URL)}
+         regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+
+    variables:
+        # *定义API对应的业务线名称，必须与yaml对应，必须项
+        - product: ${ENV(ENV_PRODUCT)}
+        # *定义API的版本，必须项
+        - apiVersion: ${ENV(ENV_VERSION)}
+        # 用户pin
+        - userpin: ${ENV(ENV_USER_PIN)}
+        # 内部调用时，部分接口需要传的erp
+        - usererp: ${ENV(ENV_USER_ERP)}
+        # accessKey， 可选， 还可以从env环境变量中获取
+        - AK: ${ENV(ENV_AK)}
+        # SecretKey， 可选， 还可以从env环境变量中获取
+        - SK: ${ENV(ENV_SK)}
+        # 接口定义的swagger项目地址
+        - openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+
+
+    # setup_hooks: 在整个用例开始执行前触发 hook 函数，主要用于准备工作。
+    setup_hooks:
+        - ${hook_print("setup_hooks for config")}
+
+    # teardown_hooks: 在整个用例结束执行后触发 hook 函数，主要用于测试后的清理工作。
+    teardown_hooks:
+        - ${hook_print("teardown_hooks for config")}
+
+- test:
+    # 测试步骤名称
+    name:  删除调用链-$instanceid
+#    registryId: $registryid
+
+
+    # request中的key不区分大小写
+    request:
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        instanceId: $instanceid
+        operationId:  deleteTraceCluster
+        method:
+        headers:
+            x-jdcloud-pin: $userpin
+            x-jdcloud-erp: $usererps
+            x-jdcloud-security-token: ${ENV(ENV_MFA)
+
+    # 在开始API调用前，执行的hook操作：
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    output:
+        - ID: content.requestId
+        - code: status_code
+    validate:
+        - eq: ["status_code", 401]
+        - len_eq: [content.requestId, 32]
+        - eq: [content.error.code, 401]
+        - eq: [content.error.message, "Authentication failed"]

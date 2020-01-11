@@ -1,0 +1,227 @@
+config:
+    name: 核心功能监控-初始化相关配置
+    variables:
+        testenv: ${ENV(ENV_TEST_ENV)}
+        test_provider_app: ${ENV(ENV_TEST_PROVIDER)}
+        test_consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+        testproduct_productpage: $test_consumer_app
+        testproduct_reviews: $test_provider_app
+        s_query_changelog_setup_waittime: 20
+        s_update_ingress_setup_waittime: 10
+#    base_url: ${ENV(BASE_URL)}
+
+testcases:
+    预发环境（pre）-网格相关功能默认配置，顺带测试审计日志-productpage:
+        testcase: testcases/ark-events/ark-web-events-changelog.yml
+        skipUnless: ${validate($c_env, "pre")}
+        variables:
+            c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+            c_jdmesh_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+
+            c_expected_status_code: 200
+            c_product: ${testproduct_productpage}
+            c_log_app: jdmesh-openapi
+            c_env: pre
+
+            c_enableNegativeHealthCheck: False
+            c_healthCheckInterval: 10
+            c_healthCheckconsecutiveErrors: 5
+            c_healthCheckmaxEjectionPercent: 30
+            c_healthCheckbaseEjectionTime: 180
+
+            c_enableSubscription: True
+            c_serviceEntries: []
+            c_query_changelog_setup_waittime: $s_query_changelog_setup_waittime
+            c_update_ingress_setup_waittime: $s_update_ingress_setup_waittime
+
+            # 逻辑子集配置
+            c_subsets:
+                - {"labels":{"meshVersion":"product"},"subsetId":"product"}
+                - {"labels":{"meshVersion":"gray"},"subsetId":"gray"}
+                - {"labels":{"version":"v1"},"subsetId":"v1"}
+                - {"labels":{"version":"v2"},"subsetId":"v2"}
+                - {"labels":{"version":"v3"},"subsetId":"v3"}
+                - {"labels":{"mesh-route-test-az":"az1"},"subsetId":"az1"}
+                - {"labels":{"mesh-route-test-az":"az2"},"subsetId":"az2"}
+                - {"labels":{"mesh-route-test-region":"north1"},"subsetId":"region-north1"}
+
+            # 路由配置-内部分流规则
+            c_weight_policy: null
+            c_header_policy:
+                - {"header":{"az":"az2"},"subsetId":"az2"}
+            c_host_policy: null
+            c_default_route: "*"
+
+            # 入口分流规则
+            c_ingress:
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"gray","useWaf":false,"host":"${testproduct_productpage}-g.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"product","useWaf":false,"host":"${testproduct_productpage}-p.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_productpage}.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy": [{"subsetId": "az1", "weight": 50},{"subsetId": "az2", "weight": 50}],"headerPolicy": null,"uriPolicy": null,"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-w.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                # 使用header分流的情况，默认路由不使用的情况
+                - {"weightPolicy": null,"headerPolicy":[{"header":{"az": "az2"},"subsetId":"az2"}],"uriPolicy":null,"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-header-az2.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy":[{"matchType":"prefix","matchRule":"/","subsetId":"az2"}],"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-uri-prefix-az2.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy":[{"matchType":"exact","matchRule":"/api/v1/products","subsetId":"az2"}],"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-uri-exact-az2.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+
+    生产环境（product）-网格相关功能默认配置，顺带测试审计日志-productpage:
+        testcase: testcases/ark-events/ark-web-events-changelog.yml
+        skipUnless: ${validate($c_env, "product")}
+        variables:
+            c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+            c_jdmesh_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+
+            c_expected_status_code: 200
+            c_product: ${testproduct_productpage}
+            c_log_app: jdmesh-openapi
+            c_env: product
+
+            c_enableNegativeHealthCheck: False
+            c_healthCheckInterval: 10
+            c_healthCheckconsecutiveErrors: 5
+            c_healthCheckmaxEjectionPercent: 30
+            c_healthCheckbaseEjectionTime: 180
+
+            c_enableSubscription: True
+            c_serviceEntries: []
+            c_query_changelog_setup_waittime: $s_query_changelog_setup_waittime
+            c_update_ingress_setup_waittime: $s_update_ingress_setup_waittime
+
+            # 逻辑子集配置
+            c_subsets:
+                - {"labels":{"meshVersion":"product"},"subsetId":"product"}
+                - {"labels":{"meshVersion":"gray"},"subsetId":"gray"}
+                - {"labels":{"version":"v1"},"subsetId":"v1"}
+                - {"labels":{"version":"v2"},"subsetId":"v2"}
+                - {"labels":{"version":"v3"},"subsetId":"v3"}
+                - {"labels":{"mesh-route-test-az":"az1"},"subsetId":"az1"}
+                - {"labels":{"mesh-route-test-az":"az2"},"subsetId":"az2"}
+                - {"labels":{"mesh-route-test-region":"north1"},"subsetId":"region-north1"}
+                - {"labels":{"mesh-route-test-region":"east02"},"subsetId":"region-east02"}
+
+            # 路由配置-内部分流规则
+            c_weight_policy: null
+            c_header_policy: null
+            c_host_policy:
+                - {"matchType":"exact","matchRule":"/api/v2/products","subsetId":"az1"}
+                - {"matchType":"prefix","matchRule":"/3/4","subsetId":"az2"}
+            c_default_route: "*"
+
+            # 入口分流规则
+            c_ingress:
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"gray","useWaf":false,"host":"${testproduct_productpage}-g.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"product","useWaf":false,"host":"${testproduct_productpage}-p.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_productpage}.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_productpage}.ingress.mesh.cn-north-1.jcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_productpage}.ingress.mesh.cn-east-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_productpage}.ingress.mesh.cn-east-2.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_productpage}.ingress.mesh.cn-south-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_productpage}.jdcloud.com"}
+                - {"weightPolicy": [{"subsetId": "az1", "weight": 50},{"subsetId": "az2", "weight": 50}],"headerPolicy": null,"uriPolicy": null,"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-w.ingress.mesh.cn-south-1.jdcloud.com"}
+                # 使用header分流的情况，默认路由不使用的情况
+                - {"weightPolicy": null,"headerPolicy":[{"header":{"az": "az2"},"subsetId":"az2"}],"uriPolicy":null,"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-header-az2.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy":[{"matchType":"prefix","matchRule":"/","subsetId":"az2"}],"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-uri-prefix-az2.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy":[{"matchType":"exact","matchRule":"/api/v1/products","subsetId":"az2"}],"defaultRoute":"","useWaf":false,"host":"${testproduct_productpage}-uri-exact-az2.ingress.mesh.cn-north-1.jdcloud.com"}
+
+    预发环境（pre）-网格相关功能默认配置，顺带测试审计日志-reviews:
+        testcase: testcases/ark-events/ark-web-events-changelog.yml
+        skipUnless: ${validate($c_env, "pre")}
+        variables:
+            c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+            c_jdmesh_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+
+            c_expected_status_code: 200
+            c_product: ${testproduct_reviews}
+            c_log_app: jdmesh-openapi
+            c_env: pre
+
+            c_enableNegativeHealthCheck: False
+            c_healthCheckInterval: 10
+            c_healthCheckconsecutiveErrors: 5
+            c_healthCheckmaxEjectionPercent: 30
+            c_healthCheckbaseEjectionTime: 180
+
+            c_enableSubscription: True
+            c_serviceEntries: []
+            c_query_changelog_setup_waittime: $s_query_changelog_setup_waittime
+            c_update_ingress_setup_waittime: $s_update_ingress_setup_waittime
+
+            # 逻辑子集配置
+            c_subsets:
+                - {"labels":{"meshVersion":"product"},"subsetId":"product"}
+                - {"labels":{"meshVersion":"gray"},"subsetId":"gray"}
+                - {"labels":{"version":"v1"},"subsetId":"v1"}
+                - {"labels":{"version":"v2"},"subsetId":"v2"}
+                - {"labels":{"version":"v3"},"subsetId":"v3"}
+                - {"labels":{"mesh-route-test-az":"az1"},"subsetId":"az1"}
+                - {"labels":{"mesh-route-test-az":"az2"},"subsetId":"az2"}
+                - {"labels":{"mesh-route-test-region":"north1"},"subsetId":"region-north1"}
+
+            # 路由配置-内部分流规则
+            c_weight_policy:
+                - {"subsetId": "az1", "weight": 50}
+                - {"subsetId": "az2", "weight": 50}
+            c_header_policy: null
+            c_host_policy: null
+            c_default_route: ""
+
+            # 入口分流规则
+            c_ingress:
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"gray","useWaf":false,"host":"${testproduct_reviews}-g.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"product","useWaf":false,"host":"${testproduct_reviews}-p.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_reviews}.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                # 使用header分流的情况，默认路由不使用的情况
+                - {"weightPolicy": null,"headerPolicy":[{"header":{"az":"az1"},"subsetId":"az1"}],"uriPolicy":null,"defaultRoute":"","useWaf":false,"host":"${testproduct_reviews}-az1.ingress.mesh.cn-east-2-stag.jdcloud.com"}
+                - {"weightPolicy":null,"headerPolicy":null,"uriPolicy":[{"matchType":"prefix","matchRule":"/","subsetId":"az2"}],"defaultRoute":"","useWaf":false,"host":"${testproduct_reviews}-az2.ingress.mesh.cn-north-1.jdcloud.com"}
+
+    生产环境（product）-网格相关功能默认配置，顺带测试审计日志-reviews:
+        testcase: testcases/ark-events/ark-web-events-changelog.yml
+        skipUnless: ${validate($c_env, "product")}
+        variables:
+            c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+            c_jdmesh_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+
+            c_expected_status_code: 200
+            c_product: ${testproduct_reviews}
+            c_log_app: jdmesh-openapi
+            c_env: product
+
+            c_enableNegativeHealthCheck: False
+            c_healthCheckInterval: 10
+            c_healthCheckconsecutiveErrors: 5
+            c_healthCheckmaxEjectionPercent: 30
+            c_healthCheckbaseEjectionTime: 180
+
+            c_enableSubscription: True
+            c_serviceEntries: []
+            c_query_changelog_setup_waittime: $s_query_changelog_setup_waittime
+            c_update_ingress_setup_waittime: $s_update_ingress_setup_waittime
+
+            # 逻辑子集配置
+            c_subsets:
+                - {"labels":{"meshVersion":"product"},"subsetId":"product"}
+                - {"labels":{"meshVersion":"gray"},"subsetId":"gray"}
+                - {"labels":{"version":"v1"},"subsetId":"v1"}
+                - {"labels":{"version":"v2"},"subsetId":"v2"}
+                - {"labels":{"version":"v3"},"subsetId":"v3"}
+                - {"labels":{"mesh-route-test-az":"az1"},"subsetId":"az1"}
+                - {"labels":{"mesh-route-test-az":"az2"},"subsetId":"az2"}
+                - {"labels":{"mesh-route-test-region":"north1"},"subsetId":"region-north1"}
+
+            # 路由配置-内部分流规则
+            c_weight_policy: null
+            c_header_policy:
+                - {"header":{"version":"v3"},"subsetId":"v3"}
+            c_host_policy: null
+            c_default_route: "*"
+
+            # 入口分流规则
+            c_ingress:
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"gray","useWaf":false,"host":"${testproduct_reviews}-g.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"product","useWaf":false,"host":"${testproduct_reviews}-p.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_reviews}.ingress.mesh.cn-north-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_reviews}.ingress.mesh.cn-north-1.jcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_reviews}.ingress.mesh.cn-east-1.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_reviews}.ingress.mesh.cn-east-2.jdcloud.com"}
+                - {"weightPolicy": null,"headerPolicy": null,"uriPolicy": null,"defaultRoute":"*","useWaf":false,"host":"${testproduct_reviews}.ingress.mesh.cn-south-1.jdcloud.com"}
+                # 使用header分流的情况，默认路由不使用的情况
+                - {"weightPolicy": null,"headerPolicy":[{"header":{"az": "az1"},"subsetId":"az1"}],"uriPolicy":null,"defaultRoute":"","useWaf":false,"host":"${testproduct_reviews}-az1.ingress.mesh.cn-north-1.jdcloud.com"}

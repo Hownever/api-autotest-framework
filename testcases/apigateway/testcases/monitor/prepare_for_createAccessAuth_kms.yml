@@ -1,0 +1,30 @@
+- config:
+    name: 检查KMS是否已创建，删除旧数据后创建新的访问授权
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        kmsName: ${ENV(ENV_KMS_NAME)}
+    verify: False
+
+- test:
+    name: 检查是否已AK创建
+    api: api/monitor/kmsKeysList.yml
+    output:
+        - kmskeylist
+
+- test:
+    name: 如果kms未创建，跳过，若已创建，删除kms
+    skipUnless: ${get_id_from_list($kmskeylist, keyName, $kmsName, keyId)}
+    api: api/monitor/kmsDeleteKeys.yml
+    variables:
+        keyIds: ${get_id_from_list($kmskeylist, keyName, $kmsName, keyId)}
+        accessKeys:
+    validate:
+        - eq: ["status_code", 200]

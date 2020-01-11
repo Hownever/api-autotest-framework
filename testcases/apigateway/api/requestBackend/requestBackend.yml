@@ -1,0 +1,24 @@
+variables:
+    gw_ip_rb: ${ENV(ENV_APIM_GW_IP)}
+    gw_host_rb: 1.1.1.1
+    path_rb: ~
+    method_rb: ~
+    headers_rb: ~
+    json_rb: ~
+    ak_rb: ~
+    sk_rb: ~
+    setup_sleep_time_rb: 5
+    teardown_sleep_time_rb: 0
+
+request:
+    url: http://${change_host($gw_host_rb, $gw_ip_rb)}$path_rb
+    method: $method_rb
+    headers: $headers_rb
+    json: $json_rb
+setup_hooks:
+    - ${sleep_N_secs($setup_sleep_time_rb)}
+    - ${add_host($gw_host_rb, $gw_ip_rb)}
+    - ${update_apigateway_sign($request, $ak_rb, $sk_rb)}
+teardown_hooks:
+    - ${sleep_N_secs($teardown_sleep_time_rb)}
+    - ${hook_print("teardown_hooks for config")

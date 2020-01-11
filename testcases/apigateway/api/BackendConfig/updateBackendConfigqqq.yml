@@ -1,0 +1,44 @@
+name: 修改后端配置
+description: 修改后端配置
+operationId: updateBackendConfig
+
+variables:
+#    url
+    host_ubc: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    api_ver_ubc: v1
+    regionId_ubc: cn-north-1
+#    header
+    header_ubc:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: jcloud_security
+#    json
+    groupName_ubc: groupName_ubc
+    description_ubc: description_ubc
+    prefix_ubc: prefix_ubc
+    keyCheck_ubc: keyCheck_ubc
+    authType_ubc: authType_ubc
+    prefixStrip_ubc: prefixStrip_ubc
+    groupType_ubc: groupType_ubc
+    jdsfName_ubc: jdsfName_ubc
+    jdsfRegistryName_ubc: jdsfRegistryName_ubc
+    jdsfId_ubc: jdsfId_ubc
+#    hooks
+    serviceLine_ubc: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_ubc: nofile
+    openApiAk_ubc: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_ubc: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_ubc: v1
+    
+request:
+    url: $host_ubc/$api_ver_ubc/regions/$regionId_ubc/apiGroups/ag-wh4ei4fasdn9/backendConfig/bc-wh4e1700tsmn
+    method: PATCH
+    headers: $header_ubc
+    json:
+        environment: test
+        backendServiceType: HTTP/HTTPS
+        sort: 0
+        backendUrl: http://ssa.jd.com
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_ubc, $openApiSk_ubc, $serviceLine_ubc, $apiVersion_ubc, $openapiYaml_ubc, $regionId_ubc)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

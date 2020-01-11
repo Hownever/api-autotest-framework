@@ -1,0 +1,51 @@
+- config:
+    name: 创建子账号$subUserName-获取PIN-成功
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+    verify: False
+    output:
+        - subUser_name
+        - accessKey
+        - secretAccessKey
+        - subUser_pin
+
+- test:
+    name: 创建子账号-$subUserName
+    api: api/monitor/createSubUser.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        name: $subUserName
+        description: $subUserName
+        password: z9gjmP5tNUaVUcX1
+        phone: 0086-18631256565
+        email: 123@qq.com
+        createAk: True
+        needResetPassword: False
+        consoleLogin: True
+        autoGeneratePassword: False
+    extract:
+        - subUser_name: content.result.subUser.name
+        - accessKey: content.result.subUser.accessKey
+        - secretAccessKey: content.result.subUser.secretAccessKey
+    output:
+        - subUser_name
+        - accessKey
+        - secretAccessKey
+
+- test:
+    name: 获取子账号的pin
+    api: api/monitor/describeSubUserPin.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        subUser: $subUser_name
+    extract:
+        - subUser_pin: content.result.subUserPin
+    output:
+        - subUser_pin

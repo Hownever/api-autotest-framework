@@ -1,0 +1,28 @@
+name: 根据云翼服务树中应用名称查询白名单列表
+
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    appname: jdmesh-reviews-test
+
+    headers:
+        AUTH-APP-ID: mircoservice
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+request:
+    url: $host/v1/jns/whitelist/getRules
+    method: GET
+    headers: $headers
+    cookies: $cookies
+    params:
+        ins: $appname
+
+#    json:
+#        nodeApp: $appname
+#        pageIndex: 1
+#        pageSize: 10
+validate:
+    - eq: ["status_code", $expected_status_code]
+    # JSON

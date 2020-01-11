@@ -1,0 +1,34 @@
+name: 创建用户授权
+description: 创建用户授权
+operationId: createPinAuthManage
+
+variables:
+#    url
+    host_cpam: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cpam: ${ENV(ENV_API_VERSION)}
+    regionId_cpam: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_cpam:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    subordinatesPin_cpam: ~
+    subordinatesName_cpam: ~
+#    hooks
+    serviceLine_cpam: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_cpam: nofile
+    openApiAk_cpam: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cpam: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cpam: v1
+
+request:
+    url: $host_cpam/$apiVer_cpam/pinAuthManage
+    method: POST
+    headers: $header_cpam
+    json:
+        subordinatesName: $subordinatesName_cpam
+        subordinatesPin: $subordinatesPin_cpam
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cpam, $openApiSk_cpam, $serviceLine_cpam, $apiVersion_cpam, $openapiYaml_cpam, $regionId_cpam)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

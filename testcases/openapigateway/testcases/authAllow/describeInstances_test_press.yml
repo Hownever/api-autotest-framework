@@ -1,0 +1,76 @@
+- config:
+    name: 调用describeInstances接口，网关不拦截，后端返回200
+    variables:
+#        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: v1
+        openapi_yaml: E:\WorkSpace\SourceCode\others\jcloud-open-api-yaml
+        regionId: cn-east-1
+        api_ver: v1
+        result: "网关不拦截，后端返回200"
+        serviceLine: apigateway
+        apis: describeApiGroups
+        ser_ver_api: apigateway-v2-describeApiGroups
+#        openapi_manage_host: ${ENV(ENV_OPENAPI_OUTER_MANAGE_HOST)}
+        openapi_data_host: http://10.226.200.67:8000
+        serviceLinePin: jiashuo-stag-1
+        apisPin: jiashuo-stag-1
+        repeat: 1
+        userinfo:
+            prepareinfo: bbb
+            info: aaa
+            serviceLineFlag: False
+            serviceLinePinFlag: False
+            apisFlag: False
+            apisPinFlag: False
+            pin:
+            AK: DD1B0BFA7BAA5DAED057ACF4817AF55B
+            SK: 6FC47989E4F4B1F489004F12FFFD89DE
+    verify: False
+
+#- test:
+#    name: ${get_value_from_userinfo($userinfo, info)}调用接口$apis，$result
+#    api: api/mock/mock-data-set.yml
+#    variables:
+#        mock_host: http://10.226.204.205
+#        mock_id: jiashuo
+#        # mock返回结果时的http status code
+#        mock_code: 200
+#        # mock返回结果的内容
+#        mock_data: {"result":{"totalCount":669,"apiGroups":[{"apiGroupId":"ag-wfyi5xdvyjby","groupName":"APIGW_MONITOR_GROUP_NAME","description":"description","prefix":"todo/api/v1","domain":"wfyi5xdvyjby.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":null,"groupStatus":1,"createTime":1558962121046,"updateTime":null},{"apiGroupId":"ag-wfyi74ic7zg2","groupName":"groupName1558962099019409","description":"description","prefix":"todo/api/v1","domain":"wfyi74ic7zg2.cn-north-1.jdcloud-api.net","authType":"NONE","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962099220,"updateTime":null},{"apiGroupId":"ag-wfyiydka20vy","groupName":"groupName15589620770851552","description":"description","prefix":"todo/api/v1","domain":"wfyiydka20vy.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962077208,"updateTime":null},{"apiGroupId":"ag-wfyiwl7dzl44","groupName":"groupName15589620499702694","description":"description","prefix":"todo/api/v1","domain":"wfyiwl7dzl44.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962050167,"updateTime":null},{"apiGroupId":"ag-wfyixekqmomy","groupName":"groupName15589620360730371","description":"description","prefix":"todo/api/v1","domain":"wfyixekqmomy.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962036213,"updateTime":null},{"apiGroupId":"ag-wfyifxgvek8j","groupName":"groupName155896200862328","description":"description","prefix":"todo/api/v1","domain":"wfyifxgvek8j.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962008831,"updateTime":null},{"apiGroupId":"ag-wfybkb7n0utj","groupName":"groupName15589614962608504","description":"description","prefix":"todo/api/v1","domain":"wfybkb7n0utj.cn-north-1.jdcloud-api.net","authType":"NONE","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961496407,"updateTime":null},{"apiGroupId":"ag-wfyb2agzmubn","groupName":"groupName15589614746484423","description":"description","prefix":"todo/api/v1","domain":"wfyb2agzmubn.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961474802,"updateTime":null},{"apiGroupId":"ag-wfyb5xh61oj4","groupName":"groupName15589614481232657","description":"description","prefix":"todo/api/v1","domain":"wfyb5xh61oj4.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961448373,"updateTime":null},{"apiGroupId":"ag-wfybrjbomcaj","groupName":"groupName15589614348003814","description":"description","prefix":"todo/api/v1","domain":"wfybrjbomcaj.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961434909,"updateTime":null}]},"requestId":"bjmv2fpcodnb3adquieqrtnaqsv50wnq"}
+
+
+#- test:
+#    name: ${get_value_from_userinfo($userinfo, prepareinfo)}
+#    testcase: testcases/authAllow/prepare_for_gray_test.yml
+#    variables:
+#        openapi_manage_host: $openapi_manage_host
+#        serviceLine: $serviceLine
+#        serviceLineFlag: ${get_value_from_userinfo($userinfo, serviceLineFlag)}
+#        serviceLinePin: $serviceLinePin
+#        serviceLinePinFlag: ${get_value_from_userinfo($userinfo, serviceLinePinFlag)}
+#        ser_ver_api: $ser_ver_api
+#        apis: $apis
+#        apisFlag: ${get_value_from_userinfo($userinfo, apisFlag)}
+#        apisPin: $apisPin
+#        apisPinFlag:  ${get_value_from_userinfo($userinfo, apisPinFlag)}
+
+- test:
+    name: ${get_value_from_userinfo($userinfo, info)}调用接口$apis，$result
+    api: api/describeInstances.yml
+    variables:
+        host: $openapi_data_host
+        product: apigatewaytestproductline
+        header:
+            X-Jdcloud-Test-Configs-Mock-Getter: jiashuo
+            X-Jdcloud-Test-Configs-Mock-Getter-Remove: disable
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $serviceLinePin
+        AK: ${get_value_from_userinfo($userinfo, AK)}
+        SK: ${get_value_from_userinfo($userinfo, SK)}
+        filters1:
+        filters1values:
+        sleeptime: 0.98
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]

@@ -1,0 +1,75 @@
+- config:
+    name: create subuser account and output the subuser's pin name ak and sk
+    variables:
+        host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+        AK: ${ENV(ENV_USER_AK_MAIN)}
+        SK: ${ENV(ENV_USER_SK_MAIN)}
+        productline: iam
+        apiversion: v1
+        openapi_yaml: nofile
+        regionid: cn-north-1
+        # 主账号pin
+        userpin: ${ENV(ENV_USER_PIN_MAIN)}
+        headers:
+            Content-Type: application/json;charset=UTF-8
+            #x-jdcloud-pin: $userpin
+
+        # 创建子账号的相关设置
+        subuser_name: subuser_${gen_random_string(5)}
+        subuser_description: sub_user_description-$subuser_name
+        subuser_password: z9gjmP5tNUaVUcX1
+        subuser_phone: 0086-18631256565
+        subuser_email: 123@qq.com
+        subuser_create_ak: True
+        subuser_reset_passwd: False
+        subuser_console_login: True
+        subuser_auto_gen_passwd: False
+
+
+    output:
+        - subuser_name
+        - accessKey
+        - secretAccessKey
+        - subuser_pin
+
+- test:
+    name: create subuser account
+    api: api/iam/createSubUser.yml
+    variables:
+
+        host: $host
+        userpin: $userpin
+        headers: $headers
+        subuser_name: $subuser_name
+        subuser_description: $subuser_description
+        subuser_password: $subuser_password
+        subuser_phone: $subuser_phone
+        subuser_email: $subuser_email
+        subuser_create_ak: $subuser_create_ak
+        subuser_reset_passwd: $subuser_reset_passwd
+        subuser_console_login: $subuser_console_login
+        subuser_auto_gen_passwd: $subuser_auto_gen_passwd
+
+    extract:
+        - subuser_name: content.result.subUser.name
+        - accessKey: content.result.subUser.accessKey
+        - secretAccessKey: content.result.subUser.secretAccessKey
+    output:
+        - subuser_name
+        - accessKey
+        - secretAccessKey
+
+- test:
+    name: get the subuser's pin
+    api: api/iam/describeSubUserPin.yml
+    variables:
+        host: $host
+        userpin: $userpin
+        headers: $headers
+
+        subuser: $subuser_name
+
+    extract:
+        - subuser_pin: content.result.subUserPin
+    output:
+        - subuser_pin

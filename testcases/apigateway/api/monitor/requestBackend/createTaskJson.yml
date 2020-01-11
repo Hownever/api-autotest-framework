@@ -1,0 +1,20 @@
+variables:
+    gw_ip: ${ENV(ENV_APIM_GW_IP)}
+request:
+    url: http://${change_host($gw_host, $gw_ip)}/todo/api/v1/tasks/createTask/json
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        jdcloud-apim-subscription-key: $subscriptionKey
+    json:
+        description: $description
+        title: $title
+    timeout: 500
+setup_hooks:
+    - ${sleep_N_secs(10)}
+    - ${add_host($gw_host, $gw_ip)}
+    - ${update_apigateway_sign($request, $USERAK, $USERSK)}
+    - curl_response: ${curl($request)}
+    - ${update_apigateway_sign($request, $USERAK, $USERSK)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

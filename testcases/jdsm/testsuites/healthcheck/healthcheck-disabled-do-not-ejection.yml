@@ -1,0 +1,110 @@
+config:
+    name: 健康检查测试-关闭时，不会剔除
+    variables:
+        s_jdsm_ui_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        s_productpage_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        s_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+
+        s_expected_status_code: 200
+        s_product: ${ENV(ENV_TEST_PRODUCT)}
+        s_env: ${ENV(ENV_TEST_ENV)}
+
+        s_enable_health_check: False
+        s_suffix: ${gen_random_string(5)}
+
+
+
+        s_mock_header:  {"Content-Type": application/json}
+        # mock存储的id，使用时的id
+        s_mock_data_id: jdsm_healthcheck_$s_suffix
+        # mock返回结果时的http status code
+        s_mock_code: 503
+        # mock返回结果的内容
+        s_mock_data: {"result":{"totalCount":1,"items":["This is mock data from mock server. id: $s_mock_data_id"]},"requestId":"12345678901234567890123456789012"}
+        # mock值的http协议中的数据类型
+        s_mock_type: application/json
+
+        s_hostlist: []
+
+
+testcases:
+    初始化Mock服务数据:
+        testcase: testcases/mock/mock-mockdata-set.yml
+        variables:
+            c_mock_host: $s_mock_host
+            # 值必须为1，否则mock server不会存储
+            c_mock_setter: enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered: enable
+            c_mock_header: $s_mock_header
+            # mock值的http协议中的数据类型
+            c_mock_type: application/json
+
+            # mock data id 和 mock数据的内容
+            c_mock_id: $s_mock_data_id
+            # mock返回结果时的http status code
+            c_mock_code: $s_mock_code
+            c_mock_data: $s_mock_data
+
+    配置健康检查，并确保service entry添加了mock server:
+        testcase: testcases/jdmesh-healthcheck/apply-health-check-settings.yml
+        variables:
+            c_jdsm_ui_host: $s_jdsm_ui_host
+            c_expected_status_code: 200
+            c_product: $s_product
+            c_env: $s_env
+            c_enable_health_check: $s_enable_health_check
+            c_mock_server_host: $s_mock_host
+
+    使用remotecall到mockserver来模拟故障-返回503-30次:
+        testcase: testcases/productpage/productpage-remotecall.yml
+        parameters:
+            c_productpage_host:
+                - $s_productpage_host
+            c_expected_status_code:
+                - 503
+            c_headers:
+                - {}
+            c_protocol:
+                - HTTP
+            c_looptime: ${gen_list(30)}
+            c_summary:
+                - "第 $c_looptime 次 -"
+            c_datas:
+                - {
+                  "url": "${ENV(ENV_MOCK_SERVER_BASE_URL)}/return_503_response",
+                  "method": GET,
+                  "headers":{
+                      "X-Jdcloud-Test-Configs-Mock-Getter": $s_mock_data_id,
+                      "X-Jdcloud-Test-Configs-Mock-Getter-Remove": disable,
+                  }
+                }
+
+    健康检查剔除验证-未开启时，不应剔除失败实例-使用负载均衡验证-仅验证转到所有节点，对分布率不要求（spec_offset=0.5）:
+        testcase: testcases/productpage/productpage-products-route-load-balance.yml
+        parameters:
+            c_host:
+                - $s_productpage_host
+            c_expected_status_code: [ 200 ]
+            c_headers: [{}]
+            c_cache:
+                - $s_hostlist
+
+            c_looptime: ${gen_list(10)}
+            c_ignore_index:
+                - 9
+            c_spec_host_cnt:
+                - ${ENV(ENV_PRODUCTPAGE_HOST_INSTANCE_CNT)}
+            c_spec_offset:
+                - 0.5
+
+    Job clean：清除Mock数据 - $s_mock_data_id:
+        testcase: testcases/mock/mock-mockdata-del.yml
+        parameters:
+            c_mock_host:
+                - $s_mock_host
+            c_mock_data_id:
+                - $s_mock_data_id
+            c_expected_status_code:
+                - 200
+

@@ -1,0 +1,105 @@
+name: 根据云翼服务树中应用ID查询应用安全配置
+description: |
+    cf: https://cf.jd.com/pages/viewpage.action?pageId=213608699
+    13、查询应用
+    请求类型
+
+    POST
+
+    请求参数
+
+    ids	[]int	N	节点id
+    tenantName	string	Y	租户英文名，ark默认为jcloud
+    corpName	string	N	体系英文名
+    depName	string	N	部门英文名
+    pdlName	string	N	产品线英文名
+    sysName	string	N	系统英文名
+    name	string	N	节点英文名
+    pageIndex	int	N	表示第几页
+    pageSize	int	N	表示每页返回多少条数据，默认10
+    title= /api/v1/lord/queryAppByCondition 折叠源码
+    输入：
+    {
+      "corpName": "string",
+      "depName": "string",
+      "ids": [
+        0
+      ],
+      "insSource": "string",
+      "leader": "string",
+      "level": 0,
+      "name": "string",
+      "pageIndex": 1,
+      "pageSize": 10,// 默认为10，最大1000
+      "pdlName": "string",
+      "sysName": "string"
+    }
+    输出：
+    {
+      "data": {
+        "currentCount": 0,
+        "dataList": [
+          {
+            "tenantName": "string", //租户
+            "corpName": "string", //体系
+            "depName": "string", //部门
+            "pdlName": "string", //产品线
+            "sysName": "string", //系统
+            "id": 0,
+            "name": "string",
+            "nameCn": "string",
+            "alarmGroup": "string",
+            "deployPath": "string",
+            "description": "string",
+            "domain": "string", //域名，多个用英文,分隔
+            "insSource": "string", //skywing为弹性部署，elastic为弹性部署，其他为包部署
+            "leader": "string", //应用负责人，多个用英文,分隔
+            "op": "string", //运维，多个用英文,分隔
+            "qa": "string", //测试，多个用英文,分隔
+            "tags": "string",
+            "type": "string",
+            "createTime": 0,
+            "createUser": "string",
+            "updateTime": 0,
+            "updateUser": "string"
+          }
+        ],
+        "totalCount": 0,
+        "totalPage": 0
+      },
+      "status": {
+        "code": "OK",
+        "msg": "string"
+      },
+      "trace": {
+        "destIp": "string",
+        "id": "string",
+        "srcIp": "string",
+        "timestamp": 0
+      }
+    }
+
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+
+    appname: productpage
+    tenantName: jcloud
+
+    headers_ark:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies:
+        _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/api/v1/lord/queryAppByCondition
+    method: POST
+    headers: $headers_ark
+    cookies: $cookies
+    json:
+        name: $appname
+        tenantName: $tenantName
+validate:
+    - eq: ["status_code", $expected_status_code]
+    # JSON

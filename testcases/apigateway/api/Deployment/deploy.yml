@@ -1,0 +1,47 @@
+name: 发布版本
+description: 发布版本，不能发布内网后端地址
+operationId: deploy
+
+variables:
+#    url
+    host_d: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_d: ${ENV(ENV_API_VERSION)}
+    regionId_d: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_d: apiGroupId
+#    header
+    header_d:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    revision_d: $revision
+    environment_d: $environment
+    backendServiceType_d: $backendServiceType
+    backendUrl_d: $backendUrl
+    description_d: $description
+    jdsfName_d: $jdsfName
+    jdsfRegistryName_d: $jdsfRegistryName
+    jdsfId_d: $jdsfId
+#    hooks
+    serviceLine_d: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_d: nofile
+    openApiAk_d: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_d: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_d: v1
+
+request:
+    url: $host_d/$apiVer_d/regions/$regionId_d/apiGroups/$apiGroupId_d/Deployments
+    method: POST
+    headers: $header_d
+    json:
+        revision: $revision_d
+        environment: $environment_d
+        backendServiceType: $backendServiceType_d
+        backendUrl: $backendUrl_d
+        description: $description_d
+        jdsfName: $jdsfName_d
+        jdsfRegistryName: $jdsfRegistryName_d
+        jdsfId: $jdsfId_d
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_d, $openApiSk_d, $serviceLine_d, $apiVersion_d, $openapiYaml_d, $regionId_d)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

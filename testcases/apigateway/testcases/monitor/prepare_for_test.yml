@@ -1,0 +1,65 @@
+- config:
+    name: 运行脚本前，删除旧数据
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        groupName: ${ENV(ENV_GROUP_NAME)}
+        funcName: ${ENV(ENV_FUNC_NAME)}
+    verify: False
+
+- test:
+    name: 删除旧数据,查询分组，获取分组ID
+    api: api/monitor/describeApiGroups.yml
+    variables:
+        filters1: groupName
+        filters1values: $groupName
+    extract:
+        - apiGroups: content.result.apiGroups
+        - totalCount: content.result.totalCount
+    output:
+        - apiGroups
+        - totalCount
+
+- test:
+    name: 如果分组未创建，跳过，若已创建，下线online
+    skipIf: ${validate_skip($totalCount, 0, eq)}
+    api: api/monitor/offline.yml
+    variables:
+        deploymentId: ${get_value_from_struct($apiGroups, apiGroupId, 0)}-online
+        apiGroupId: ${get_value_from_struct($apiGroups, apiGroupId, 0)}
+
+- test:
+    name: 如果分组未创建，跳过，若已创建，下线preview
+    skipIf: ${validate_skip($totalCount, 0, eq)}
+    api: api/monitor/offline.yml
+    variables:
+        deploymentId: ${get_value_from_struct($apiGroups, apiGroupId, 0)}-preview
+        apiGroupId: ${get_value_from_struct($apiGroups, apiGroupId, 0)}
+
+- test:
+    name: 如果分组未创建，跳过，若已创建，下线test
+    skipIf: ${validate_skip($totalCount, 0, eq)}
+    api: api/monitor/offline.yml
+    variables:
+        deploymentId: ${get_value_from_struct($apiGroups, apiGroupId, 0)}-test
+        apiGroupId: ${get_value_from_struct($apiGroups, apiGroupId, 0)}
+
+- test:
+    name: 如果分组未创建，跳过，若已创建，删除分组
+    skipIf: ${validate_skip($totalCount, 0, eq)}
+    api: api/monitor/deleteApiGroup.yml
+    variables:
+        apiGroupId: ${get_value_from_struct($apiGroups, apiGroupId, 0)}
+
+- test:
+    name: 删除func
+    api: api/monitor/deleteFunction.yml
+    variables:
+        name: $funcName

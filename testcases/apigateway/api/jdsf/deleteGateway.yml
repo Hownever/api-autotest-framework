@@ -1,0 +1,30 @@
+name: 删除集群
+description: 删除集群
+operationId: deleteGateway
+
+variables:
+#    url
+    host_dg: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dg: ${ENV(ENV_API_VERSION)}
+    regionId_dg: ${ENV(ENV_JDSF_REGIONID)}
+    gatewayId_dg: gatewayId
+#    header
+    header_dg:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+#    hooks
+    serviceLine_dg: ${ENV(ENV_SERVICELINE_JDSF)}
+    openapiYaml_dg: nofile
+    openApiAk_dg: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dg: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dg: v1
+
+request:
+    url: $host_dg/$apiVer_dg/regions/$regionId_dg/gateways/$gatewayId_dg
+    method: DELETE
+    headers: $header_dg
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dg, $openApiSk_dg, $serviceLine_dg, $apiVersion_dg, $openapiYaml_dg, $regionId_dg)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

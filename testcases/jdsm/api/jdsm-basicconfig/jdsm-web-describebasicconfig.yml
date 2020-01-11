@@ -1,0 +1,44 @@
+name: 根据云翼服务树中应用名称查询服务网格的基本配置项
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: productpage
+    env: pre
+    cookies:
+        _ga: ${ENV(ENV_COOKIES)}
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+
+request:
+    url: $host/openApi/jdmesh/describeBasicConfig
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        params:
+            appName: $product
+            env: $env
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+# a sample response
+response:
+    requestId: 'bknpwg202hfmmc2op10qoj570w66owhv'
+    error: None
+    result:
+        basicConfig:
+            enableAuthToken: False
+            enableWhiteListCheck: False
+            enableNegativeHealthCheck: True
+            healthCheckParameters: {"interval":10,"consecutiveErrors":5,"maxEjectionPercent":30,"baseEjectionTime":180}
+            serviceEntries:
+                - [{'protocol': 'HTTP', 'host': 'ark.jdcloud.com', 'port': 80, 'revision': '6651556'}]
+        responseObj: {'size': 0, 'timeout': 0, 'nonce': '11ffd271-8bd6-42d3-91f3-995878fb2239'}

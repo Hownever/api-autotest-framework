@@ -1,0 +1,10 @@
+testcases:
+    删除不存在的注册中心，返回404:
+        testcase: testcases\jdsf\apis\deleteRegistry-404.yaml
+        parameters:
+            userpin:
+                - ${ENV(ENV_USER_PIN)}
+            usererps:
+                - ${ENV(ENV_USER_ERP)}
+            registryid:
+                - reg-notexist

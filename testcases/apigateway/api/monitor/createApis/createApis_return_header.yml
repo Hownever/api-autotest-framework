@@ -1,0 +1,47 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId/revision/$revision/apis
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        api:
+            apiGroupId: $apiGroupId
+            action: GET
+            apiName: return_header
+            description: return_header
+            path: "/tasks/returnAllHead"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              - defaultValue: TanCoong
+                description: TanCoong
+                isRequired: true
+                name: TanCoong
+                paramType: String
+                paramLocation: head
+              - defaultValue: Lishijun
+                description: Lishijun
+                isRequired: true
+                name: Lishijun
+                paramType: String
+                paramLocation: head
+              - defaultValue: Lixuenan
+                description: Lixuenan
+                isRequired: true
+                name: Lixuenan
+                paramType: String
+                paramLocation: head
+            reqBody: ~
+            resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"Accept\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Accept-Encoding\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Connection\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Content-Type\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Host\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Jdcloud2-Hmac-Sha256\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Lishijun\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Lixuenan\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"Tancong\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"User-Agent\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Forwarded-For\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Forwarded-Host\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Forwarded-Port\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Forwarded-Proto\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Jcloud-Request-Id\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Jdcloud-Date\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Jdcloud-Gw-Credential\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Jdcloud-Nonce\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Jdcloud-Request-Id\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"X-Real-Ip\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - apiId_return_header: content.result.apiId
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

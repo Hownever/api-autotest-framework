@@ -1,0 +1,15 @@
+request:
+    url: /$api_ver/regions/cn-north-1/kms
+    method: GET
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        pageNumber: 1
+        pageSize: 100
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - kmskeylist: content.result.data

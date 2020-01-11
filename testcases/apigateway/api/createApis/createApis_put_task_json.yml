@@ -1,0 +1,56 @@
+name: 创建API
+description: 创建API
+operationId: createApis
+
+variables:
+#    url
+    host_puttj: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_puttj: ${ENV(ENV_API_VERSION)}
+    regionId_puttj: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_puttj: apiGroupId
+    revision_puttj: revision
+#    header
+    header_puttj:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_puttj: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_puttj: nofile
+    openApiAk_puttj: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_puttj: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_puttj: v1
+
+request:
+    url: $host_puttj/$apiVer_puttj/regions/$regionId_puttj/apiGroups/$apiGroupId_puttj/revision/$revision_puttj/apis
+    method: POST
+    headers: $header_puttj
+    json:
+        api:
+            apiGroupId: $apiGroupId_puttj
+            action: PUT
+            apiName: put_task_json
+            description: put_task_json
+            path: "/todo/api/v1/tasks/modifyTaskById/{taskid}/json"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              - defaultValue: 1
+                description: taskid
+                isRequired: true
+                name: taskid
+                paramType: Int
+                paramLocation: path
+              - defaultValue: Authorization
+                description: Authorization
+                isRequired: true
+                name: Author_test
+                paramType: String
+                paramLocation: head
+            resBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"result\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"task\": {\n\t\t\t\"type\": \"object\",\n\t\t\t\"properties\": {\n\t\t\t\t\"title\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"description\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t},\n\t\t\t\t\"done\": {\n\t\t\t\t\t\"type\": \"boolean\"\n\t\t\t\t},\n\t\t\t\t\"uri\": {\n\t\t\t\t\t\"type\": \"string\"\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n}"
+            reqBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"title\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"description\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"done\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_puttj, $openApiSk_puttj, $serviceLine_puttj, $apiVersion_puttj, $openapiYaml_puttj, $regionId_puttj)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

@@ -1,0 +1,33 @@
+name: call productpage get reviews api
+description:
+
+variables:
+    host: ${ENV(ENV_OUTER_GW_BASE_URL)}
+    product: productpage-mesh
+    apiVersion: v1
+    regionId: cn-east-2
+    openapi_yaml: nofile
+    AK: ${ENV(ENV_USER_AK_MAIN)}
+    SK: ${ENV(ENV_USER_SK_MAIN)}
+    user_pin: ${ENV(ENV_USER_PIN_MAIN)}
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $user_pin
+        authtoken: your_authtoken
+    productid: 0
+    # 函数延迟执行秒数
+    sleeptime: 0
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+
+request:
+    url: $host/api/v1/products/$productid/reviews
+    method: GET
+    headers: $header
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+    - ${sleep_N_secs($sleeptime)}
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

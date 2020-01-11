@@ -1,0 +1,23 @@
+variables:
+    gw_ip_to: ${ENV(ENV_APIM_GW_IP)}
+    gw_host_to: 1.1.1.1
+    subscriptionKey_to: subscriptionKey
+    description_to: description
+    title_to: title
+    USERAK_to: USERAK111
+    USERSK_to: USERSK111
+    DYNAMIC_BACKEND_to: ~
+
+request:
+    url: http://${change_host($gw_host_to, $gw_ip_to)}/todo/api/v1/tasks/createTask/json
+    method: OPTIONS
+    headers:
+        DYNAMIC_BACKEND: $DYNAMIC_BACKEND_to
+        Content-Type: application/json;charset=UTF-8
+        jdcloud-apim-subscription-key: $subscriptionKey_to
+setup_hooks:
+    - ${sleep_N_secs(0)}
+    - ${add_host($gw_host_to, $gw_ip_to)}
+    - ${update_apigateway_sign($request, $USERAK_to, $USERSK_to)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

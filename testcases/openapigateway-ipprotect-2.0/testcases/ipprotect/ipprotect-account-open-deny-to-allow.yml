@@ -1,0 +1,16 @@
+testcases:
+    开启IP白名单后，用户被限制使用，然后通过更新IP，允许使用的场景:
+        testcase:  api/ipprotect-opened-deny-to-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {"userpin" : "huangyichun0018", "keytype" : "CompanySelfKey", "AK" : "6215839D85DE2B6D348F9806F210CFAF", "SK" : "278CC7371F602C8965B70C9E76B98E32"}
+                - {"userpin" : "huangyichun0018", "keytype" : "CompanyOthersKey", "AK" : "0FB34F02461BEA59E773AE7CA9E97C6D", "SK" : "BFB12604080AD48FC97272B3C5715110"}
+                # 企业用户子账号？
+                # - {"userpin" : "huangyichun0018", "keytype" : "CompanySubSelfKey", "AK" : "?", "SK" : "?"}
+            ipaddressdeny:
+                - 168.95.1.1
+            ipaddressallow:
+                # 指定IP
+                - ${get_user_ip()}

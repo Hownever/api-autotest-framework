@@ -1,0 +1,110 @@
+- config:
+    # 测试用例名称
+    name: 配置token开启或者关闭，验证token功能
+
+    variables:
+        c_productpage_host: ${ENV(ENV_PRE_INTER_GW_MESH_BASE_URL)}
+        c_ark_host: ${ENV(ENV_ARK_API_BASE_URL)}
+        c_expected_status_code: 200
+        c_headers: {}
+
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        c_product_productpage: productpage
+        c_product_reviews: reviews
+        c_token_productpage: False
+        c_token_reviews: True
+        c_env: pre
+
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        c_product_productpage: productpage
+        c_product_reviews: reviews
+        c_token_productpage: 0
+        c_token_reviews: 0
+        c_env: pre
+
+
+        c_product_servicecode: productpage-mesh
+        c_apiVersion: v1
+        c_regionId: cn-north-1
+        c_openapi_yaml: nofile
+        c_AK: ${ENV(ENV_PRE_USER_AK_BACK)}
+        c_SK: ${ENV(ENV_PRE_USER_SK_BACK)}
+        c_user_pin: ${ENV(ENV_PRE_USER_PIN_BACK)}
+        c_header:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: $c_user_pin
+            authtoken: "Invalid Token 234567"
+        c_productid: 0
+
+        tokensetting_productpage: None
+        tokensetting_reviews: None
+        casesummary: your_case_summary
+
+- test:
+    name: 配置安全token设置 - $c_product_productpage - $c_env - docheck=$c_token_productpage
+    testcase: testcases/ark-token/apply-ark-token-settings.yml
+
+    variables:
+        c_productpage_host: ${ENV(ENV_PRE_INTER_GW_MESH_BASE_URL)}
+        c_ark_host: $c_ark_host
+        c_headers: {}
+
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        c_appname: $c_product_productpage
+        c_env: $c_env
+
+        c_update_token_settings_waittime: 0
+
+        c_docheck: $c_token_productpage
+        c_whitelist: 0
+        c_checkip: 0
+        c_ipwhitelist: 0
+        c_sendlog: 0
+        c_tenantname: jcloud
+
+    validate:
+        - eq: [status_code, 200]
+
+- test:
+    name: 配置安全token设置 - $c_product_reviews - $c_env - docheck=$c_token_reviews
+    testcase: testcases/ark-token/apply-ark-token-settings.yml
+
+    variables:
+        c_productpage_host: ${ENV(ENV_PRE_INTER_GW_MESH_BASE_URL)}
+        c_ark_host: $c_ark_host
+        c_headers: {}
+
+        c_mesh_openapi_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+        c_appname: $c_product_reviews
+        c_env: $c_env
+
+        c_update_token_settings_waittime: ${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}
+
+        c_docheck: $c_token_reviews
+        c_whitelist: 0
+        c_checkip: 0
+        c_ipwhitelist: 0
+        c_sendlog: 0
+        c_tenantname: jcloud
+
+    validate:
+        - eq: [status_code, 200]
+
+- test:
+    name: $casesummary - call productpage api to get reviews
+    api: api/productpage/apigateway-to-producpage.yml
+
+    variables:
+        host: $c_productpage_host
+        product: $c_product_servicecode
+        apiVersion: $c_apiVersion
+        regionId: $c_regionId
+        openapi_yaml: $c_openapi_yaml
+        AK: $c_AK
+        SK: $c_SK
+        user_pin: $c_user_pin
+        header: $c_header
+        productid: $c_productid
+
+    validate:
+        - eq: [status_code, $c_expected_status_code]

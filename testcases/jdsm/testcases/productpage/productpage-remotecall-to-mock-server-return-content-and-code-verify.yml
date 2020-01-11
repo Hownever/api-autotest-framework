@@ -1,0 +1,75 @@
+- config:
+    # 测试用例名称
+    name: productpage remotecall
+
+    variables:
+        c_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        c_summary: ""
+        c_expected_status_code: 200,302
+        c_headers: {}
+        c_protocol: HTTP
+        c_datas:
+            url: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            method: GET
+            headers:
+                h1: testheader
+
+        c_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # 值必须为1，否则mock server不会存储
+        c_mock_setter: enable
+        # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+        c_mock_force_covered: enable
+
+        c_mock_header: {}
+        # mock存储的id，使用时的id
+        c_mock_id: jdmesh-invocation-test-${gen_random_string(5)}
+        # mock返回结果时的http status code
+        c_mock_code: 200
+        # mock返回结果的内容
+        c_mock_data: {"result":{"totalCount":0,"apiGroups":[]},"requestId":"bjmv2fpcodnb3adquieqrtnaqsv50wnq"}
+        # mock值的http协议中的数据类型
+        c_mock_type: application/json
+        c_mock_delay: 0
+
+- test:
+    name:  configure mock server data - $c_mock_id
+    api: api/mock/mock-data-set.yml
+    variables:
+        host: $c_mock_host
+        # 值必须为1，否则mock server不会存储
+        setter: $c_mock_setter
+        # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+        force_covered: $c_mock_force_covered
+
+        mock_header:  $c_mock_header
+        # mock存储的id，使用时的id
+        mock_id: $c_mock_id
+        # mock返回结果时的http status code
+        mock_code: $c_mock_code
+        # mock返回结果的内容
+        mock_data: $c_mock_data
+        # mock值的http协议中的数据类型
+        mock_type: $c_mock_type
+        # 返回结果延时时间
+        mock_return_delay_seconds: $c_mock_delay
+
+        expected_status_code: 200
+
+    extract:
+        - scode: status_code
+
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+    name: $c_summary remotecall - $host - headers:$headers
+    api: api/productpage/productpage-api-remotecall.yml
+
+    variables:
+        host: $c_host
+        headers: $c_headers
+        protocol: $c_protocol
+        datas: $c_datas
+
+    validate:
+        - string_contained_by: ["status_code", $c_expected_status_code]

@@ -1,0 +1,30 @@
+testcases:
+    pin和erp参数有效性:
+        testcase: testcases\ompopenapi\testcases\describeApiList.yaml
+
+
+
+testcases:
+    pin-erp组合维度:
+        testcase: testcases\ompopenapi\apis\describeApiList.yaml
+        parameters:
+            userpin: 
+                - ${ENV(ENV_USER_PIN)}
+            usererps: 
+                - wangbibo1
+                - lixuenan2
+                - bianweitian
+                - lixiaoxia3
+                - tancong
+                - jiashuo1
+                - liqiang881
+                - lishuogui
+                - chenjing236
+                - qiankun11
+                - wuhui1
+                - zhongxiaolan
+                - lishijun10
+                - zhangjunfeng7
+                - wangyushuai2
+                - oulinbao
+                - yanxiaorui3

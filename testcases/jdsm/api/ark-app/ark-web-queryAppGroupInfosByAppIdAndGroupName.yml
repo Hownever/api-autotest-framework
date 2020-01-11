@@ -1,0 +1,28 @@
+name: 根据应用id和分组名称的获取应用指定分组信息，如id，配置等
+variables:
+    host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+    expected_status_code: 200
+
+    page_size: 100
+    page: 1
+    app_id: 1657
+    group_name: east2-pre
+    headers:
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+        AUTH-APP-ID: mircoservice
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    # http://ark.jcloud.com/deploy/api/v1/group?app_id=2241&page_size=1000
+    url: $host/deploy/api/v1/group
+    method: GET
+    headers: $headers
+    cookies: $cookies
+
+    params:
+        app_id: $app_id
+        group_name: $group_name
+
+        page_size: $page_size
+        page: $page

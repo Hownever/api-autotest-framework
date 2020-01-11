@@ -1,0 +1,12 @@
+
+
+testcases:
+    删除不属于当前用户pin的注册中心，返回401:
+        testcase: testcases\jdsf\apis\deleteRegistry-401.yaml
+        parameters:
+            userpin:
+                - jcloud_00
+            usererps:
+                - ${ENV(ENV_USER_ERP)}
+            registryid:
+                - reg-tcmltq3lo8w0  # exist registry id by belong to look_li user, user pin is error

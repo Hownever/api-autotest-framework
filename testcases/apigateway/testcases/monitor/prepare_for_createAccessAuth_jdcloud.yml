@@ -1,0 +1,49 @@
+- config:
+    name: 检查是否已AK创建，删除旧数据后创建新的访问授权
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        accessKey: ${ENV(ENV_USER_AK)}
+    verify: False
+    output:
+        - accessAuthId
+
+- test:
+    name: 检查是否已AK创建
+    api: api/monitor/queryAccessAuths.yml
+    variables:
+        filters1: auth_user_type
+        filters1values: jd_cloud
+        filters1operator:
+        filters2: auth_user_id
+        filters2values: $accessKey
+        filters2operator: eq
+    output:
+        - accessAuths
+        - totalCount
+
+- test:
+    name: 如果ak未创建，跳过，若已创建，解绑分组
+    skipIf: ${validate_skip($totalCount, 0, eq)}
+    api: api/monitor/updateAccessAuth.yml
+    variables:
+        accessKey: $accessKey
+        accessAuthId: ${get_value_from_struct($accessAuths, accessAuthId, 0)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果ak未创建，跳过，若已创建，删除授权
+    skipIf: ${validate_skip($totalCount, 0, eq)}
+    api: api/monitor/delAccessAuth.yml
+    variables:
+        accessAuthId: ${get_value_from_struct($accessAuths, accessAuthId, 0)}
+    validate:
+        - eq: ["status_code", 200]

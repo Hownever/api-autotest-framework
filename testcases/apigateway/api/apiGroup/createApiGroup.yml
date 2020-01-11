@@ -1,0 +1,50 @@
+name: 创建API分组
+description: 创建API分组
+operationId: createApiGroup
+
+variables:
+#    url
+    host_cag: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cag: ${ENV(ENV_API_VERSION)}
+    regionId_cag: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_cag:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    groupName_cag: ~
+    description_cag: ~
+    prefix_cag: ~
+    keyCheck_cag: ~
+    authType_cag: ~
+    prefixStrip_cag: ~
+    groupType_cag: ~
+    jdsfName_cag: ~
+    jdsfRegistryName_cag: ~
+    jdsfId_cag: ~
+#    hooks
+    serviceLine_cag: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_cag: nofile
+    openApiAk_cag: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cag: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cag: v1
+
+request:
+    url: $host_cag/$apiVer_cag/regions/$regionId_cag/apiGroups
+    method: POST
+    headers: $header_cag
+    json:
+        groupName: $groupName_cag
+        description: $description_cag
+        prefix: $prefix_cag
+        keyCheck: $keyCheck_cag
+        authType: $authType_cag
+        prefixStrip: $prefixStrip_cag
+        groupType: $groupType_cag
+        jdsfName: $jdsfName_cag
+        jdsfRegistryName: $jdsfRegistryName_cag
+        jdsfId: $jdsfId_cag
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cag, $openApiSk_cag, $serviceLine_cag, $apiVersion_cag, $openapiYaml_cag, $regionId_cag)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

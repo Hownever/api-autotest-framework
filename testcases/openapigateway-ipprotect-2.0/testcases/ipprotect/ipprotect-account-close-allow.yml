@@ -1,0 +1,95 @@
+testcases:
+    账号维度：主账号和子账号-IP白名单关闭-ip本机地址-网关允许访问后端:
+        testcase:  api/ipprotect-closed-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "6215839D85DE2B6D348F9806F210CFAF",
+                    "SK" : "278CC7371F602C8965B70C9E76B98E32",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                   }
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "CompanyOthersKey",
+                    "AK" : "0FB34F02461BEA59E773AE7CA9E97C6D",
+                    "SK" : "BFB12604080AD48FC97272B3C5715110",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 新建主账号
+                - {"userpin" : "bd2492f6969c4225a404", "keytype" : "NewUserSelfKey", "AK" : "16A207637C231C6AB28249735A996E6F", "SK" : "13758092DCDE5C49797319459E8CB897 "}
+
+                # 新建普通用户-子账号
+                - {
+                    "userpin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                    "keytype" : "NewSubUserSelfKey",
+                    "AK" : "C704A8A22A56346860B9671415FAD54E",
+                    "SK" : "113009268A7FA97C41CF9EBEE8B7D794",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # old普通用户-主账号
+                - {
+                    "userpin" : "jiashuo-ite-1",
+                    "keytype" : "NormalUserSelfkey",
+                    "AK" : "2AC2808D7CC475CF460218D039297035",
+                    "SK" : "497A9DCD05FCF3CD8391061BBE58D40B",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+                # old普通用户-子账号
+                - {
+                    "userpin" : "jcloud_nQFNRJi @ jiashuo-ite-1",
+                    "keytype" : "NormalSubUserSelfKey",
+                    "AK" : "0FB34F02461BEA59E773AE7CA9E97C6D",
+                    "SK" : "BFB12604080AD48FC97272B3C5715110",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "jcloud_nQFNRJi @ jiashuo-ite-1",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 控制台账号
+                - {
+                    "userpin" : "jiashuo-ite-1",
+                    "keytype" : "ConsoleUserSelfkey",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        # 此处的pin可以和userpin字段中的值不一致
+                        "x-jdcloud-pin" : "jiashuo-ite-1",
+                        "x-jdcloud-erp" : "likui34",
+                        "x-jdcloud-user-ip" : "invalid_ip_address",
+                        }
+                  }
+
+                # 运营后台
+                # - {"userpin" : "jiashuo-ite-1", "keytype" : "ConsoleUserSelfkey", "AK" : "6996C51A54B8D05CB0A5A924F9A78629", "SK" : "14B63D66B94B81D25F8819244CE44E97"}
+                # - {"userpin" : "?", "keytype" : "ConsoleUserkey", "AK" : "6996C51A54B8D05CB0A5A924F9A78629", "SK" : "14B63D66B94B81D25F8819244CE44E97"}
+
+            ipaddress:
+                - "127.0.0.1"
+                - ${get_user_ip()}

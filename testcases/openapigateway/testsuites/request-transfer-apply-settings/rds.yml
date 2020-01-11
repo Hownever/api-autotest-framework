@@ -1,0 +1,48 @@
+config:
+    name: 业务线接入API配置
+    variables:
+        s_host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+        s_productline: rds
+        s_apiversion: v1
+        s_operationid: describeInstancesInternal
+
+        s_token: ${ENV(ENV_GW_CONTROL_TOKEN)}
+        s_request_transfer_is_open: True
+        s_request_transfer_is_in_to_eq: True
+        s_request_transfer_is_ni_to_ne: True
+        s_is_internal: False
+        s_request_transfer_sub_path: /post
+        s_request_transfer_resource_name: instanceId
+
+testcases:
+    业务线接入API配置 - rds:
+        testcase: testcases/openapi-8001/apply-api-settings.yml
+        parameters:
+            c_host:
+                - $s_host
+            c_productline:
+                - $s_productline
+            c_apiversion:
+                - $s_apiversion
+            c_operationid:
+                - $s_operationid
+
+            c_token:
+                - $s_token
+            c_request_transfer_is_open:
+                - $s_request_transfer_is_open
+            c_request_transfer_is_in_to_eq:
+                - $s_request_transfer_is_in_to_eq
+            c_request_transfer_is_ni_to_ne:
+                - $s_request_transfer_is_ni_to_ne
+            c_is_internal:
+                - $s_is_internal
+            c_request_transfer_sub_path:
+                - $s_request_transfer_sub_path
+            c_request_transfer_resource_name:
+                - $s_request_transfer_resource_name
+
+            c_teardown_wait_time:
+                - 10
+            c_expected_status_code:
+                - 200

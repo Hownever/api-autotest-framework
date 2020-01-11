@@ -1,0 +1,33 @@
+name: API灰度绑定用户PIN
+description: API灰度绑定用户PIN
+operationId: bind-basic-api-gray-list-pin
+
+variables:
+    host: ${ENV(ENV_OPENAPI_MANAGE_HOST)}
+#    product: vm
+#    apiVersion: v1
+#    regionId: cn-north-1
+#    openapi_yaml: nofile
+#    expected_status_code: 200
+#    AK: xxx
+#    SK: xxx
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-admin-token: 5d77902ed3f64e3fb205b2cda8797529
+    name: basic-api-gray
+    key: serviceLine-v1-XXXApi
+    value: amNsb3VkXzAw,amNsb3VkaWFhczI=
+
+request:
+    url: $host/hmap
+    method: POST
+    headers: $header
+    json:
+        name: $name
+        key: $key
+        value: $value
+
+#setup_hooks:
+#    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

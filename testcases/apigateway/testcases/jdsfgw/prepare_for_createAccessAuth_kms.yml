@@ -1,0 +1,33 @@
+- config:
+    name: 检查KMS是否已创建，删除旧数据后创建新的访问授权
+    variables:
+    #    path
+        regionId_apim_pcaak: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_pcaak: ${ENV(ENV_SERVICELINE_APIM)}
+        kmsName_pcaak: ${ENV(ENV_KMS_NAME)}
+    verify: False
+
+- test:
+    name: 检查是否已AK创建
+    api: api/kms/queryKeys.yml
+    variables:
+        regionId_qk: $regionId_apim_pcaak
+        serviceLine_qk: $serviceLine_apim_pcaak
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - kmskeylist_qk: content.result.data
+    output:
+        - kmskeylist_qk
+
+- test:
+    name: 如果kms已创建，删除kms
+    skipUnless: ${get_id_from_list($kmskeylist_qk, keyName, $kmsName_pcaak, keyId)}
+    api: api/kms/deleteKeys.yml
+    variables:
+        regionId_dk: $regionId_apim_pcaak
+        serviceLine_dk: $serviceLine_apim_pcaak
+        keyIds_dk: ${get_id_from_list($kmskeylist_qk, keyName, $kmsName_pcaak, keyId)}
+        accessKeys_dk:
+    validate:
+        - eq: ["status_code", 200]

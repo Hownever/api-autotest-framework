@@ -1,0 +1,16 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId
+    method: PUT
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        groupName: $groupName
+        description: $description
+        prefix: $prefix
+        keyCheck: $keyCheck
+        authType: $authType
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

@@ -1,0 +1,53 @@
+config:
+    name: 远程调用
+    variables:
+        times: 0
+        testenv: ${ENV(ENV_TEST_ENV)}
+
+        mock_id: test
+        remove_after_get: enable
+
+        s_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+
+        # productpage token v5 key
+        #token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjUiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoicHJvZHVjdHBhZ2UiLCJncm91cCI6ImVhc3QyLXByZSIsImlwIjoiMTAuMjI2LjIwNC4yMzUiLCJpbnN0YW5jZU5hbWUiOiIiLCJleHAiOjE2MDAzMTA1MTEsImlhdCI6MTU2ODc3NDUxMSwiaXNzIjoibGlxaWFuZzg4MSJ9.Q6YWvygW-U9427BTdxBAHa7kKvuqHvybyjgMQf1qOTxDGdMA5xCXMD6NCNh8u7sAdSF3Ulk3JBbUaGF_A9dAnZUdZTM49BhdcXxcaR5BDTyaHLQ7WQPglHh3UHGAZ_c4NjzISLINCGHZerd2aZ5iBhUBCcAZ8kYdv5WphmvpLio
+        # productpage token v6 key
+        token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjYiLCJwcm9kdWN0IjoiIiwic2VydmljZU5hbWUiOiJwcm9kdWN0cGFnZSIsImdyb3VwIjoiIiwiaXAiOiIiLCJpbnN0YW5jZU5hbWUiOiIiLCJleHAiOjE2MDA0MzUwNjAsImlhdCI6MTU2ODg5OTA2MH0.nSXJAsGPYWAkRyfkqX-Sq_KQG_bPye-Xc33fEBIuvgJ3GeSpi_lf7GR862T8-fqD3IW9k4K0HbK6VArEs-9TnujqDZFzboklYJGAnwo1kAD-YvEY_PDuN7hwY4af0fM4Xo1nv1lhCeJOedpfnSLY3VWRh3ZYIeaQxoZPdhoMurQ
+        # jdmesh-productpage-test token
+        # token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJldmlld3MtdGVzdCIsImdyb3VwIjoiZWFzdC1wcmUtdjIiLCJpcCI6IjEwLjIyNi4yMTMuMzgiLCJleHAiOjE1NjE4NTI4MDAsImlhdCI6MTU2MDc1NDExMSwiaXNzIjoid3VodWkxIn0.ctuIkUIcJDBAKh6Vxzk-CGO8bVdQ5TSS8r2ea9cyAst7Hfq_msZpqwgYp23qXTX_-FY96j_jYiGDu8UpQyfxjn_rdRwSe4yeLKr01EKFBmC4rUL6mAkPotp8YDzl8h7JE3xfhoRPYhTyDn7a8vk4VDWZkxCjC-4nY-ZnCQPDKE8
+        # ratings' token
+        # token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRg
+        # token: errortoken
+        # bugs: 使用如下token会导致sdk core，越权
+        # token: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..*"
+        # token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlWZXJzaW9uIjoicnNhdjIiLCJwcm9kdWN0IjoibWljcm9zZXJ2aWNlcyIsInNlcnZpY2VOYW1lIjoiamRtZXNoLXJhdGluZ3MtdGVzdCIsImdyb3VwIjoiZWFzdDAyLXByZSIsImlwIjoiMTAuMjI2LjIxMy4zNyIsImV4cCI6MTU2MTg1MjgwMCwiaWF0IjoxNTYwODI0NDE1LCJpc3MiOiJ3dWh1aTEifQ.QRN5GIM2t592bM_jT3gBBTEyfI59t8FjcD1OLA0_DFcO1qxQ5uuN8zA97M2fGW4UFgL_-lQZc7yusFQq5q7d4RBKxv5Jaz5df0bP9RiTJ9EnyOWKUf5ucmIw7mhCGr8ObAMrKUmUAVR52cjju9y5QvMFZ1795LF-gptBq-DmoRgeyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
+
+testcases:
+    remotecall test:
+        testcase: testcases/productpage/productpage-remotecall-return-content-and-code-verify.yml
+        parameters:
+            c_host:
+                - ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+            c_headers:
+                - {"authtoken": $token }
+            c_expected_status_code-c_return_content:
+                - [[200], "send data" ]
+            loop: ${gen_list(10)}
+            c_protocol-c_headers-c_datas:
+                #- [TCP, {}, {"host": "${get_host_from_url($s_mock_host)}", port: 65534, "data": "send data", timeout: 120, "loop": 118, "loop_interval": 1}]
+                - [TCP, {}, {"host": "${get_host_from_url($s_mock_host)}", port: 65534, "data": "send data"}]
+                # - [HTTP, {"authtoken": "$token"}, {"url": "ark.jdcloud.com", "method": "GET", "headers":{"a":"123","authtoken":"1234567890"}}]
+#                - [HTTP,
+#                  {"authtoken": "$token"},
+#                  {
+#                    "url": "http://10.226.204.205/echo",
+#                    "url": "reviews.default.mesh.jdcloud.com:9080/reviews/0",
+#                    "method": "GET",
+#                    "headers":{
+#                      "a":"123",
+#                      "authtoken":"$token",
+#                      "X-Jdcloud-Test-Configs-Request-Getter": $mock_id,
+#                      "X-Jdcloud-Test-Configs-Request-Getter-Remove": $remove_after_get
+#                    }
+#                  }
+#                  ]

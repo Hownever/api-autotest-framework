@@ -1,0 +1,267 @@
+- config:
+    name: 创建分组-成功
+    variables:
+    #    path
+        regionId_apim_pinauth: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_pinauth: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        groupName_pinauth: JIASHUO_TEST_pinauthMIC
+        description_pinauth: 测试微服务VPC网关，勿删
+        prefix_pinauth:
+        keyCheck_pinauth: check_exist
+        authType_pinauth: jd_cloud
+        prefixStrip_pinauth: 0
+        groupType_pinauth: api_group
+        jdsfName_pinauth:
+        jdsfRegistryName_pinauth:
+        jdsfId_pinauth:
+        environment_pinauth:
+        backendServiceType_pinauth: vpc
+        backendUrl_pinauth: ${ENV(ENV_BACK_SERVICE_PATH)}
+        #-----------------------------------------------------
+        filters1values_pinauth: JIASHUO_TEST_pinauthMIC
+        serviceLine_jdsf_pinauth: ${ENV(ENV_SERVICELINE_JDSF)}
+        regionId_jdsf_pinauth: ${ENV(ENV_JDSF_REGIONID)}
+        gatewayName_pinauth: JIASHUO_TEST_pinauthMIC
+        gatewayType_pinauth: VPC_PROXY
+        vpcId_pinauth: vpc-7hrcljzkli
+        subnetId_pinauth: subnet-jqsaas34xn
+        gatewaySpec_pinauth: QPS_1500
+        gatewayVersion_pinauth: 1.0.0
+        rz_pinauth:
+        rzType_pinauth: SYSTEM
+        chargeMode_pinauth: CONFIG
+        chargeUnit_pinauth:
+        apiGroupRegion_pinauth: ${ENV(ENV_APIM_REGIONID)}
+        registryId_pinauth:
+        proxyAddress_pinauth: 10.0.0.218:5111
+#        proxyAddress_pinauth: 116.196.96.7:5111
+        timeSpan_pinauth:
+        serviceNames_pinauth:
+        #-----------------------------------------------------
+        authFlag_pinauth: jd_cloud
+        accessKey_pinauth: ${ENV(ENV_USER_AK)}
+        secretKey_pinauth: ${ENV(ENV_USER_SK)}
+        #-----------------------------------------------------
+        kmsName_pinauth: ${ENV(ENV_KMS_NAME)}
+        subsName_pinauth: ${ENV(ENV_SUBS_KEY_NAME)}
+        #-----------------------------------------------------
+        anotherPin_pinauth: ${ENV(ENV_PIN_ANOTHER)}
+        pin_pinauth: ${ENV(ENV_PIN)}
+        anotherPin_1_pinauth: ${ENV(ENV_PIN_ANOTHER_1)}
+        anotherVpc_pinauth: TEST_DYNAMIC_TWO
+    verify: False
+
+##使用非虎符pin创建用户授权，报错
+#- test:
+#    name: 使用非虎符pin创建用户授权，报错
+#    api: api/pinauth/createPinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_cpam: AAA
+#        subordinatesName_cpam: AAA
+#        header_cpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $anotherPin_pinauth
+#    extract:
+#        - status: content.error.status
+#    validate:
+#        - eq: ["status_code", 403]
+#        - eq: [$status, APIGATEWAY_HTTP_FORBIDDEN]
+#
+##使用非虎符pin删除用户授权，报错
+#- test:
+#    name: 使用非虎符pin删除用户授权，报错
+#    api: api/pinauth/deletePinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_delpam: AAA
+#        header_delpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $anotherPin_pinauth
+#    extract:
+#        - status: content.error.status
+#    validate:
+#        - eq: ["status_code", 403]
+#        - eq: [$status, APIGATEWAY_HTTP_FORBIDDEN]
+#
+##查询虎符pin用户授权
+#- test:
+#    name: 查询虎符pin用户授权
+#    api: api/pinauth/describePinAuthManages.yml
+#    variables:
+#        header_descags:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    validate:
+#        - eq: ["status_code", 200]
+#        - eq: [content.result.PinAuthManages.0.subordinatesPin, $pin_pinauth]
+#
+##使用虎符pin创建用户授权，给自己授权报错
+#- test:
+#    name: 使用虎符pin创建用户授权，给自己授权报错
+#    api: api/pinauth/createPinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_cpam: $pin_pinauth
+#        subordinatesName_cpam: $pin_pinauth
+#        header_cpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    extract:
+#        - status: content.error.status
+#    validate:
+#        - eq: ["status_code", 409]
+#        - eq: [$status, APIGATEWAY_RESOURCE_ISREPEAT]
+#
+#
+##使用虎符pin创建用户授权，给不存在的pin授权会报错
+#- test:
+#    name: 使用虎符pin创建用户授权，给不存在的pin授权会报错
+#    api: api/pinauth/createPinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_cpam: AAA
+#        subordinatesName_cpam: AAA
+#        header_cpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    extract:
+#        - status: content.error.status
+#    validate:
+#        - eq: ["status_code", 404]
+#        - eq: [$status, APIGATEWAY_NOT_FOUND]
+
+#使用虎符pin创建用户授权，给存在的pin授权成功
+- test:
+    name: 使用虎符pin创建用户授权，给存在的pin授权成功
+    api: api/pinauth/createPinAuthManage.yml
+    variables:
+    #    path
+        subordinatesPin_cpam: jcloud_00
+        subordinatesName_cpam: jcloud_00
+        header_cpam:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+    validate:
+        - eq: ["status_code", 200]
+
+##使用虎符pin重复创建用户授权，报错
+#- test:
+#    name: 使用虎符pin重复创建用户授权，报错
+#    api: api/pinauth/createPinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_cpam: $anotherPin_pinauth
+#        subordinatesName_cpam: $anotherPin_pinauth
+#        header_cpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    extract:
+#        - status: content.error.status
+#    validate:
+#        - eq: ["status_code", 409]
+#        - eq: [$status, APIGATEWAY_RESOURCE_ISREPEAT]
+
+#查询虎符pin用户授权
+- test:
+    name: 查询虎符pin用户授权
+    api: api/pinauth/describePinAuthManages.yml
+    variables:
+        header_descags:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: jdcloud-api-test
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [content.result.PinAuthManages.0.subordinatesPin, $anotherPin_pinauth]
+        - eq: [content.result.PinAuthManages.1.subordinatesPin, $pin_pinauth]
+
+##使用虎符pin创建第二个用户授权，授权成功
+#- test:
+#    name: 使用虎符pin创建第二个用户授权，授权成功
+#    api: api/pinauth/createPinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_cpam: $anotherPin_1_pinauth
+#        subordinatesName_cpam: $anotherPin_1_pinauth
+#        header_cpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    validate:
+#        - eq: ["status_code", 200]
+#
+##查询虎符pin用户授权
+#- test:
+#    name: 查询虎符pin用户授权
+#    api: api/pinauth/describePinAuthManages.yml
+#    variables:
+#        header_descags:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    validate:
+#        - eq: ["status_code", 200]
+#        - eq: [content.result.PinAuthManages.2.subordinatesPin, $pin_pinauth]
+#        - eq: [content.result.PinAuthManages.1.subordinatesPin, $anotherPin_pinauth]
+#        - eq: [content.result.PinAuthManages.0.subordinatesPin, $anotherPin_1_pinauth]
+#
+
+#
+#
+#
+##使用虎符pin删除自己授权，报错
+#- test:
+#    name: 使用虎符pin删除自己授权，报错
+#    api: api/pinauth/deletePinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_delpam: $pin_pinauth
+#        header_delpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    extract:
+#        - status: content.error.status
+#    validate:
+#        - eq: ["status_code", 404]
+#        - eq: [$status, APIGATEWAY_NOT_FOUND]
+#
+##使用虎符pin删除用户授权，不报错
+#- test:
+#    name: 使用非虎符pin创建用户授权，报错
+#    api: api/pinauth/deletePinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_delpam: $anotherPin_1_pinauth
+#        header_delpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    validate:
+#        - eq: ["status_code", 200]
+#
+##使用虎符pin删除用户授权，不报错
+#- test:
+#    name: 使用虎符pin删除用户授权，不报错
+#    api: api/pinauth/deletePinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_delpam: $anotherPin_pinauth
+#        header_delpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    validate:
+#        - eq: ["status_code", 200]
+#
+##使用虎符pin删除不存在的用户授权，报错
+#- test:
+#    name: 使用虎符pin删除不存在的用户授权，报错
+#    api: api/pinauth/deletePinAuthManage.yml
+#    variables:
+#    #    path
+#        subordinatesPin_delpam: $anotherPin_pinauth
+#        header_delpam:
+#            Content-Type: application/json;charset=UTF-8
+#            x-jdcloud-pin: $pin_pinauth
+#    extract:
+#        - status: content.error.status
+#    validate:
+#        - eq: ["status_code", 404]
+#        - eq: [$status, APIGATEWAY_NOT_FOUND]

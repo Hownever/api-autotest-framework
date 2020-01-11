@@ -1,0 +1,57 @@
+- config:
+    name: 查询sdk生成结果
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        accessKey: ${ENV(ENV_USER_AK)}
+        secretKey: ${ENV(ENV_USER_SK)}
+    verify: False
+
+- test:
+    name: 查找apiId
+    api: api/monitor/queryApis.yml
+    variables:
+        revision: 0.0.1
+        apiGroupId: ag-xzvhkrsz9j12
+        filters1: apiName
+        filters1values: create_task_json
+    extract:
+        - apiId: content.result.apis.0.apiId
+    output:
+        - apiId
+
+- test:
+    name: 查找apiId
+    api: api/monitor/gwSyncCheck/deploy_sync.yml
+    variables:
+        managerUrl: manager.cn-north-1.jdcloud.com
+        token: ${ENV(ENV_GW_TOKEN)}
+        apiGroupId: ag-xzvhkrsz9j12-online
+    output:
+        - result
+
+#- test:
+#    name: 检查是否已AK创建
+#    api: api/monitor/debugApi.yml
+#    variables:
+#        apiGroupId: ag-xzvhkrsz9j12
+#        revision: 0.0.1
+#        apiId: $apiId
+#        assessKey: AD2166807335241C994732BA4A757D51
+#        secretKey: 0E43E560F84A8EBC768DD80E787F16C4
+#        host: xzv0pupvrh29.cn-north-1.jdcloud-api.net
+#        uri: /todo/api/v1/tasks/createTask/json
+#        method: POST
+#        authType: jd_apikms
+#        region: $regionId
+#        queryString:
+#        body: eyJkZXNjcmlwdGlvbiI6ImRlc2NyaXB0aW9uIiwidGl0bGUiOiJ0aXRsZSJ9
+#        reqBodyType: 1
+#        headerString:

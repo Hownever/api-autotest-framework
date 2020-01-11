@@ -1,0 +1,18 @@
+name: mock server get value
+description: |
+    get mock server值
+
+variables:
+    mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+    # mock存储的id，使用时的id
+    mock_id: you_mock_data_id
+    # 是否删除get的value
+    remove_after_get: disable
+    body: {}
+
+    expected_status_code: 200
+
+request:
+    url: $mock_host/v1/api/mockserver/mocks/$mock_id
+    method: POST
+    json: $body

@@ -1,0 +1,174 @@
+- config:
+    name: 创建微服务网关，删除旧绑定
+    variables:
+        regionId_apim_pcg: ${ENV(ENV_APIM_REGIONID)}
+        filters1values_pcg: JIASHUO_TEST_JDSF
+        regionId_jdsf_pcg: ${ENV(ENV_JDSF_REGIONID)}
+        gatewayName_pcg: JIASHUO_TEST_JDSF
+        gatewayType_pcg: MICROSERVICE
+        vpcId_pcg: vpc-7hrcljzkli
+        subnetId_pcg: subnet-jqsaas34xn
+        gatewaySpec_pcg: QPS_100
+        gatewayVersion_pcg: 1.0.0
+        rz_pcg: prod_bj02
+        rzType_pcg: SYSTEM
+        chargeMode_pcg: CONFIG
+        chargeUnit_pcg:
+        apiGroupRegion_pcg: cn-north-1
+        registryId_pcg: reg-1r67qqm63nc3k
+        proxyAddress_pcg:
+        timeSpan_pcg:
+        serviceNames_pcg:
+            - jdsf-server4
+        serviceLine_jdsf_pcg: ${ENV(ENV_SERVICELINE_JDSF)}
+        serviceLine_apim_pcg: ${ENV(ENV_SERVICELINE_APIM)}
+        groupType_pcg: groupType_pcg
+        jdsfParam_pcg: ~
+        jdsfRegion_pcg: ~
+    verify: False
+    output:
+        - gatewayId_dg
+        - registryId_dg
+        - gatewayName_dg
+
+- test:
+    name: 查询微服务网关，获取微服务网关
+    api: api/jdsf/describeGateways.yml
+    variables:
+        regionId_dgs: $regionId_jdsf_pcg
+        filters1values_dgs: $gatewayName_pcg
+        serviceLine_dgs: $serviceLine_jdsf_pcg
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - microServiceGateways_dgs: content.result.microServiceGateways
+        - totalCount_dgs: content.result.totalCount
+    output:
+        - microServiceGateways_dgs
+        - totalCount_dgs
+
+- test:
+    name: 如果微服务网关未创建，创建微服务网关
+    skipIf: ${validate_skip($totalCount_dgs, 1, eq)}
+    api: api/jdsf/createGateway.yml
+    variables:
+    #    url
+        regionId_cg: $regionId_jdsf_pcg
+    #    json
+        gatewayName_cg: $gatewayName_pcg
+        gatewayType_cg: $gatewayType_pcg
+        vpcId_cg: $vpcId_pcg
+        subnetId_cg: $subnetId_pcg
+        gatewaySpec_cg: $gatewaySpec_pcg
+        gatewayVersion_cg: $gatewayVersion_pcg
+        rz_cg: $rz_pcg
+        rzType_cg: $rzType_pcg
+        chargeMode_cg: $chargeMode_pcg
+        chargeUnit_cg: $chargeUnit_pcg
+        apiGroupId_cg: $apiGroupId_pcg
+        apiGroupRegion_cg: $regionId_jdsf_pcg
+        registryId_cg: $registryId_pcg
+        proxyAddress_cg: $proxyAddress_pcg
+        timeSpan_cg: $timeSpan_pcg
+        serviceNames_cg: $serviceNames_pcg
+        serviceLine_cg: $serviceLine_jdsf_pcg
+    extract:
+        - gatewayId_cg: content.result.gatewayId
+    validate:
+        - eq: ["status_code", 200]
+    output:
+        - gatewayId_cg
+
+- test:
+    name: 如果微服务网关未创建，创建微服务网关，查询详细信息
+    skipIf: ${validate_skip($totalCount_dgs, 1, eq)}
+    api: api/jdsf/describeGateway.yml
+    variables:
+        regionId_dg: $regionId_jdsf_pcg
+        gatewayId_dg: $gatewayId_cg
+        serviceLine_dg: $serviceLine_jdsf_pcg
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - gatewayInstanceDetail_dg: content.result.gatewayInstanceDetail
+        - gatewayId_dg: content.result.gatewayInstanceDetail.gatewayId
+        - registryId_dg: content.result.gatewayInstanceDetail.registryId
+        - gatewayName_dg: content.result.gatewayInstanceDetail.gatewayName
+    output:
+        - gatewayId_dg
+        - registryId_dg
+        - gatewayName_dg
+
+- test:
+    name: 如果微服务网关已创建，查询详细信息
+    skipIf: ${validate_skip($totalCount_dgs, 0, eq)}
+    api: api/jdsf/describeGateway.yml
+    variables:
+        regionId_dg: $regionId_jdsf_pcg
+        gatewayId_dg: ${get_value_from_struct($microServiceGateways_dgs, gatewayId, 0)}
+        serviceLine_dg: $serviceLine_jdsf_pcg
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - gatewayInstanceDetail_dg: content.result.gatewayInstanceDetail
+        - gatewayId_dg: content.result.gatewayInstanceDetail.gatewayId
+        - registryId_dg: content.result.gatewayInstanceDetail.registryId
+        - gatewayName_dg: content.result.gatewayInstanceDetail.gatewayName
+    output:
+        - gatewayId_dg
+        - registryId_dg
+        - gatewayName_dg
+
+- test:
+    name: 如果微服务网关已创建，查询详细信息，绑定分组的测试环境
+    skipIf: ${validate_skip($totalCount_dgs, 0, eq)}
+    api: api/apiGroup/bindJdsfGroup.yml
+    variables:
+        jdsfName_bjg: $gatewayName_dg
+        jdsfRegistryName_bjg: $registryId_dg
+        jdsfId_bjg: $gatewayId_dg
+        jdsfRegion_bjg: $jdsfRegion_pcg
+        groupType_bjg: $groupType_pcg
+        environment_bjg: test
+        jdsfParam_bjg: $jdsfParam_pcg
+        regionId_bjg: $regionId_apim_pcg
+        apiGroupId_bjg: $apiGroupId_pcg
+        serviceLine_bjg: $serviceLine_apim_pcg
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果微服务网关已创建，查询详细信息，绑定分组的预发环境
+    skipIf: ${validate_skip($totalCount_dgs, 0, eq)}
+    api: api/apiGroup/bindJdsfGroup.yml
+    variables:
+        jdsfName_bjg: $gatewayName_dg
+        jdsfRegistryName_bjg: $registryId_dg
+        jdsfId_bjg: $gatewayId_dg
+        jdsfRegion_bjg: $jdsfRegion_pcg
+        groupType_bjg: $groupType_pcg
+        environment_bjg: preview
+        jdsfParam_bjg: $jdsfParam_pcg
+        regionId_bjg: $regionId_apim_pcg
+        apiGroupId_bjg: $apiGroupId_pcg
+        serviceLine_bjg: $serviceLine_apim_pcg
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果微服务网关已创建，查询详细信息，绑定分组的线上环境
+    skipIf: ${validate_skip($totalCount_dgs, 0, eq)}
+    api: api/apiGroup/bindJdsfGroup.yml
+    variables:
+        jdsfName_bjg: $gatewayName_dg
+        jdsfRegistryName_bjg: $registryId_dg
+        jdsfId_bjg: $gatewayId_dg
+        jdsfRegion_bjg: $jdsfRegion_pcg
+        groupType_bjg: $groupType_pcg
+        environment_bjg: online
+        jdsfParam_bjg: $jdsfParam_pcg
+        regionId_bjg: $regionId_apim_pcg
+        apiGroupId_bjg: $apiGroupId_pcg
+        serviceLine_bjg: $serviceLine_apim_pcg
+    validate:
+        - eq: ["status_code", 200]

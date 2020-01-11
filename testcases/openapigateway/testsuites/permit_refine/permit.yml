@@ -1,0 +1,255 @@
+config:
+  name: 使用各种AKSK请求
+  variables:
+    host_descags:
+      - ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+testcases:
+  describeApiGroups接口，使用各种AKSK请求:
+    testcase: testcases/permit_refine/describeApiGroups_all.yml
+    parameters:
+      host_descags: $host_descags
+      userinfo:
+        - info: 使用有权限的控制台AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_CONSOLE_AK_AUTH)}
+          SK: ${ENV(ENV_CONSOLE_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用未绑定策略的控制台AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_CONSOLE_AK)}
+          SK: ${ENV(ENV_CONSOLE_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用无权限的控制台AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_CONSOLE_AK_NOAUTH)}
+          SK: ${ENV(ENV_CONSOLE_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用有权限的控制台AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_CONSOLE_AK_AUTH)}
+          SK: ${ENV(ENV_CONSOLE_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用无权限的控制台AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_CONSOLE_AK_NOAUTH)}
+          SK: ${ENV(ENV_CONSOLE_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用有权限的控制台AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_CONSOLE_AK_AUTH)}
+          SK: ${ENV(ENV_CONSOLE_SK_AUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用无权限的控制台AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_CONSOLE_AK_NOAUTH)}
+          SK: ${ENV(ENV_CONSOLE_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用未绑定策略的控制台AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_CONSOLE_AK)}
+          SK: ${ENV(ENV_CONSOLE_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用未绑定策略的控制台AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_CONSOLE_AK)}
+          SK: ${ENV(ENV_CONSOLE_SK)}
+          result: "网关报错"
+          result_code: 403
+
+
+        - info: 使用有权限的业务线AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_APIM_AK_AUTH)}
+          SK: ${ENV(ENV_APIM_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用未绑定策略的业务线AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_APIM_AK)}
+          SK: ${ENV(ENV_APIM_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+        
+        - info: 使用无权限的业务线AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_APIM_AK_NOAUTH)}
+          SK: ${ENV(ENV_APIM_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用有权限的业务线AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_APIM_AK_AUTH)}
+          SK: ${ENV(ENV_APIM_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用无权限的业务线AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_APIM_AK_NOAUTH)}
+          SK: ${ENV(ENV_APIM_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用有权限的业务线AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_APIM_AK_AUTH)}
+          SK: ${ENV(ENV_APIM_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用无权限的业务线AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_APIM_AK_NOAUTH)}
+          SK: ${ENV(ENV_APIM_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用未绑定策略的业务线AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_APIM_AK)}
+          SK: ${ENV(ENV_APIM_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用未绑定策略的业务线AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_APIM_AK)}
+          SK: ${ENV(ENV_APIM_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+
+        - info: 使用有权限的运营后台AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_BACK_AK_AUTH)}
+          SK: ${ENV(ENV_BACK_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用未绑定策略的运营后台AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_BACK_AK)}
+          SK: ${ENV(ENV_BACK_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+          
+        - info: 使用无权限的运营后台AK和主账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_MAIN_PIN)}
+          AK: ${ENV(ENV_BACK_AK_NOAUTH)}
+          SK: ${ENV(ENV_BACK_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用有权限的运营后台AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_BACK_AK_AUTH)}
+          SK: ${ENV(ENV_BACK_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用无权限的运营后台AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_BACK_AK_NOAUTH)}
+          SK: ${ENV(ENV_BACK_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用有权限的运营后台AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_BACK_AK_AUTH)}
+          SK: ${ENV(ENV_BACK_SK_AUTH)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用无权限的运营后台AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_BACK_AK_NOAUTH)}
+          SK: ${ENV(ENV_BACK_SK_NOAUTH)}
+          result: "网关报错"
+          result_code: 403
+
+        - info: 使用未绑定策略的运营后台AK和有权限的子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_AUTH)}
+          AK: ${ENV(ENV_BACK_AK)}
+          SK: ${ENV(ENV_BACK_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200
+
+        - info: 使用未绑定策略的运营后台AK和无权限子账号的PIN
+          headers:
+            Content-Type: application/json;charset=UTF-8
+            x-jdcloud-pin: ${ENV(ENV_SUB_PIN_NOAUTH)}
+          AK: ${ENV(ENV_BACK_AK)}
+          SK: ${ENV(ENV_BACK_SK)}
+          result: 网关不拦截，后端返回200
+          result_code: 200

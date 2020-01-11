@@ -1,0 +1,113 @@
+name: 根据云翼服务树中应用名称查询白名单列表
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    appname: productpage
+    headers:
+        AUTH-APP-ID: mircoservice
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+    cookies:
+        _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/lord/api/v1/whitelist/whiteListQuery
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        nodeApp: $appname
+        pageIndex: 1
+        pageSize: 10
+validate:
+    - eq: ["status_code", $expected_status_code]
+    # JSON
+
+response: |
+    HTTP/1.1 200 OK
+    Server: Tengine
+    Date: Wed, 25 Sep 2019 10:22:36 GMT
+    Content-Type: application/json; charset=utf-8
+    Content-Length: 1278
+    Connection: close
+    access-control-allow-origin: http://ark.jdcloud.com
+    access-control-allow-methods: POST, PUT, GET, OPTIONS, DELETE
+    access-control-max-age: 3600
+    access-control-allow-credentials: true
+    cache-control: private, no-store, no-cache, must-revalidate
+    pragma: no-cache
+    expires: Thu, 01 Jan 1970 00:00:00 GMT
+    vary: Accept-Encoding, User-Agent
+    x-xss-protection: 1; mode=block
+    x-content-type-options: nosniff
+    x-download-options: noopen
+    x-readtime: 36
+
+    {
+      "data":{
+        "totalPage":1,
+        "currentCount":4,
+        "whiteList":[
+          {
+            "color":"white",
+            "consumerApp":"productpage",
+            "consumerName":"east2-pre-az2",
+            "consumerTenant":"jcloud",
+            "consumerType":"group",
+            "createTime":1569406957000,
+            "creator":"likui34",
+            "id":184,
+            "nodeApp":"reviews",
+            "nodeName":"east-pre-test",
+            "nodeTenant":"jcloud",
+            "nodeType":"group"
+          },
+          {
+            "color":"white",
+            "consumerApp":"productpage",
+            "consumerName":"east2-pre",
+            "consumerTenant":"jcloud",
+            "consumerType":"group",
+            "createTime":1569406911000,
+            "creator":"likui34",
+            "id":183,
+            "nodeApp":"reviews",
+            "nodeName":"east-pre-test",
+            "nodeTenant":"jcloud",
+            "nodeType":"group"
+          },
+          {
+            "color":"white",
+            "consumerApp":"productpage",
+            "consumerName":"east02-prod-g01",
+            "consumerTenant":"jcloud",
+            "consumerType":"group",
+            "createTime":1569406896000,
+            "creator":"likui34",
+            "id":182,
+            "nodeApp":"reviews",
+            "nodeName":"reviews",
+            "nodeTenant":"jcloud",
+            "nodeType":"app"
+          },
+          {
+            "color":"white",
+            "consumerApp":"productpage",
+            "consumerName":"productpage",
+            "consumerTenant":"jcloud",
+            "consumerType":"app",
+            "createTime":1568970290000,
+            "creator":"likui34",
+            "id":181,
+            "nodeApp":"reviews",
+            "nodeName":"reviews",
+            "nodeTenant":"jcloud",
+            "nodeType":"app"
+          }
+        ],
+        "totalCount":4
+      },
+      "status":{"code":"OK"},
+      "trace":{"destIp":"172.19.11.61","id":"91f9aed3-153e-4727-9c62-b9cd3094908d","srcIp":"10.219.36.45","timestamp":1569406956901}
+    }
+    {"color":"white","consumerApp":"reviews","consumerName":"reviews","consumerTenant":"jcloud","consumerType":"app","createTime":1569413376000,"creator":"likui34","id":189,"nodeApp":"productpage","nodeName":"3.productpage","nodeTenant":"jcloud","nodeType":"ins"},

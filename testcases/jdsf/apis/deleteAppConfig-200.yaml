@@ -1,0 +1,79 @@
+- config:
+    # 测试用例名称
+    name: 删除配置
+    # config中request中的参数是对当前yaml文件中的所有test共用的
+    request:
+         base_url: ${ENV(ENV_BASE_URL)}
+         regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+
+    variables:
+        # *定义API对应的业务线名称，必须与yaml对应，必须项
+        - product: ${ENV(ENV_PRODUCT)}
+        # *定义API的版本，必须项
+        - apiVersion: ${ENV(ENV_VERSION)}
+        # 用户pin
+        - userpin: ${ENV(ENV_USER_PIN)}
+        # 内部调用时，部分接口需要传的erp
+        - usererp: ${ENV(ENV_USER_ERP)}
+        # accessKey， 可选， 还可以从env环境变量中获取
+        - AK: ${ENV(ENV_AK)}
+        # SecretKey， 可选， 还可以从env环境变量中获取
+        - SK: ${ENV(ENV_SK)}
+        # 接口定义的swagger项目地址
+        - openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+
+- test:
+    # 测试步骤名称
+    name: 查询对应的配置是否存在-$appconfigid
+
+    # request中的key不区分大小写
+    request:
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        operationId: describeAppConfigs
+        method:
+        headers:
+            x-jdcloud-pin: $userpin
+            x-jdcloud-erp: $usererps
+            x-jdcloud-security-token: ${ENV(ENV_MFA)
+
+    # 在开始API调用前，执行的hook操作：
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    extract:
+        - scode: status_code
+
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - regex_match: [content.result, ".*['|\"]appConfigId['|\"]: $appconfigid,.*"]
+
+
+- test:
+    # 测试步骤名称
+    name:  删除配置id-$appconfigid
+    # skipIf: ${validate($scode, 200, "eq")}
+#    registryId: $registryid
+
+
+    # request中的key不区分大小写
+    request:
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        appConfigId: $appconfigid
+        operationId: deleteAppConfig
+        method:
+        headers:
+            x-jdcloud-pin: $userpin
+            x-jdcloud-erp: $usererps
+            x-jdcloud-security-token: ${ENV(ENV_MFA)
+
+    # 在开始API调用前，执行的hook操作：
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [content.requestId, 32]
+        - eq: [content.result.deleteResult, "SUCCESS"]

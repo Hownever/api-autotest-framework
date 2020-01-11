@@ -1,0 +1,43 @@
+name: 批量查询云主机的详细信息
+description: |
+    批量查询云主机的详细信息<br>
+    此接口支持分页查询，默认每页20条。
+operationId: describeInstances
+
+variables:
+    host: ${ENV(ENV_GW_BASE_URL)}
+    product: vm
+    apiVersion: v1
+    regionId: cn-north-1
+    openapi_yaml: nofile
+    AK: xxx
+    SK: xxx
+    user_pin: your_pin
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $user_pin
+    filter: []
+    params:
+        pageNumber: 1
+        pageSize: 20
+        filters: $filter
+
+    # 函数延迟执行秒数
+    sleeptime: 0
+
+    expected_status_code: 200
+
+request:
+    url: $host/$apiVersion/regions/$regionId/instances
+    method: GET
+    headers: $header
+    params: $params
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+setup_hooks:
+    - ${sleep_N_secs($sleeptime)}
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

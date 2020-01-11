@@ -1,0 +1,31 @@
+testcases:
+    主账号和子账号-不同key-IP白名单开启-配置ip白名单非本机-网关禁止访问后端:
+        testcase:  api/ipprotect-opened-deny.yml
+        parameters:
+            userinfos:
+
+                # 企业用户
+                - {
+                    "userpin" : "jcloud_uaRNqHd",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "E2D81E455C12FABA86EE50E1BC39929D",
+                    "SK" : "3B1F8C0541B5E881A1E6D8FDC3220C2A",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+            ipaddress:
+                - 127.0.0.1
+                # ip地址段中不同位置不同
+                - 10.226.132.139
+                - 10.226.131.138
+                - 10.227.132.138
+                - 11.226.132.138
+                # 掩码
+                - ${get_user_ip()}/33
+                # 多个非本机IP，及组合时
+                - 127.0.0.1,127.0.0.1,127.0.0.1,11.226.132.138,127.0.0.1,10.226.131.138,127.0.0.2
+                - 10.0.0.1,${get_user_ip()}/32,192.168.1.1/16
+                - ${get_user_ip()}/32,192.168.1.1/16,10.0.0.1
+                - 192.168.1.1/16,10.0.0.1,${get_user_ip()}/32

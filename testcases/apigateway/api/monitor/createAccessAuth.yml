@@ -1,0 +1,21 @@
+request:
+    url: /$api_ver/regions/$regionId/accessAuths
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        accessAuthView:
+            accessKey: $accessKey
+            authUserType: $authUserType
+            deploymentIds: $deploymentIds
+            description: $description
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - accessAuthId: content.result.accessAuthId
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

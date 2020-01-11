@@ -1,0 +1,80 @@
+- config:
+    # 测试用例名称
+    name: 查询某个业务线下提供的API列表
+    # config中request中的参数是对当前yaml文件中的所有test共用的
+    request:
+         base_url: ${ENV(ENV_BASE_URL)}
+         regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+
+    variables:
+        # *定义API对应的业务线名称，必须与yaml对应，必须项
+        - product: ${ENV(ENV_PRODUCT)}
+        # *定义API的版本，必须项
+        - apiVersion: ${ENV(ENV_VERSION)}
+        # 用户pin
+        - userpin: ${ENV(ENV_USER_PIN)}
+        # 内部调用时，部分接口需要传的erp
+        - usererp: ${ENV(ENV_USER_ERP)}
+        # accessKey， 可选， 还可以从env环境变量中获取
+        - AK: ${ENV(ENV_AK)}
+        # SecretKey， 可选， 还可以从env环境变量中获取
+        - SK: ${ENV(ENV_SK)}
+        # 接口定义的swagger项目地址
+        - openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+
+
+    # setup_hooks: 在整个用例开始执行前触发 hook 函数，主要用于准备工作。
+    setup_hooks:
+        - ${hook_print("setup_hooks for config")}
+
+    # teardown_hooks: 在整个用例结束执行后触发 hook 函数，主要用于测试后的清理工作。
+    teardown_hooks:
+        - ${hook_print("teardown_hooks for config")}
+
+- test:
+    # 测试步骤名称
+    name:  有效性-用户-有权限调用-返回对应业务线api列表-$usererps-$productline-$userpin
+
+    # request中的key不区分大小写
+    request:
+        operationId:  describeApiByName
+        name: $productline
+        method:
+
+
+        headers:
+            x-jdcloud-pin: $userpin
+            x-jdcloud-erp: $usererps
+        json:
+            pageNumber: 1
+            pageSize: 1
+
+    # 在开始API调用前，执行的hook操作：
+    setup_hooks:
+        # **必须项目，测试JD API接口时，必须填写的hook
+        - request: ${hook_update_jdcloud_request($config, $request, $AK, $SK, $product, $apiVersion, $openapi_yaml)}
+
+    # 在测试API调用完成后，执行的hook操作：
+    teardown_hooks:
+        # 支持更新和赋值某些变量：
+        - productline: $productline
+    extract:
+        - scode: status_code
+        - requestId: content.requestId
+        - check_path_exists: content.result.dataList.0.path   # path字段不能为空！
+
+    validate:
+        - eq: ["status_code", 200]
+        - len_gt: [content.result.dataList, 10]
+        - type_match: [content.result.dataList.0.apiId, int]
+        - len_gt: [content.result.dataList.0.name, 0]
+        - regex_match: [content.result.dataList.0.version, "v\\d+"]
+        - len_gt: [content.result.dataList.0.interfaceName, 0]
+        - contained_by: [content.result.dataList.0.method, ["GET", "POST", "DELETE", "PATCH"]]
+        - type_match: [content.result.dataList.0.apiRegex, str]
+        - len_gt: [content.result.dataList.0.apiRegex, 0]
+        - type_match: [content.result.dataList.0.internal, int]
+        - type_match: [content.result.dataList.0.status, int]
+        - type_match: [content.result.dataList.0.createTime, int]
+        - type_match: [content.result.dataList.0.lastModifyTime, int]
+        - len_gt: [content.result.dataList.0.lastModifier, 0]

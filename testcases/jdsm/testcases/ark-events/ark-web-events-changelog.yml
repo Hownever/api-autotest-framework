@@ -1,0 +1,264 @@
+- config:
+    # 测试用例名称
+    name: 查询修改日志
+    regionId: cn-north-1
+
+    variables:
+        c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+        c_jdmesh_host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+
+        c_expected_status_code: 200
+        c_product: productpage
+        c_log_app: jdmesh-openapi
+        c_env: pre
+
+        c_enableNegativeHealthCheck: False
+        c_healthCheckInterval: 10
+        c_healthCheckconsecutiveErrors: 5
+        c_healthCheckmaxEjectionPercent: 30
+        c_healthCheckbaseEjectionTime: 180
+
+        c_enableSubscription: True
+        c_serviceEntries: []
+        c_query_changelog_setup_waittime: 20
+        c_update_ingress_setup_waittime: 30
+
+        # 逻辑子集配置
+        c_subsets: []
+
+        # 路由配置
+        c_weight_policy: null
+        c_header_policy: null
+        c_host_policy: null
+        c_default_route: ""
+
+        c_ingress: []
+
+        begintimestamp: ${get_delta_timestamp(13, 0)}
+
+#    # setup_hooks: 在整个用例开始执行前触发 hook 函数，主要用于准备工作。
+#    setup_hooks:
+#        - a: ${hook_print("user： user")}
+#
+#    # teardown_hooks: 在整个用例结束执行后触发 hook 函数，主要用于测试后的清理工作。
+#    teardown_hooks:
+#        - b: ${hook_print("teardown_hooks for config")}
+
+- test:
+    name: 获取云翼cookies（从mock server）
+    api: api/mock/mock-data-get.yml
+
+    variables:
+        mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # mock存储的id，使用时的id
+        mock_id: ${get_host_from_url($c_ark_host)}
+        # 是否删除get的value
+        remove_after_get: disable
+        cookie: {}
+    extract:
+        - sso: "sso.jd.com=(\\w+\\.\\w+); "
+    teardown_hooks:
+        - cookie: {'ENV_COOKIES': '_ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; __jdv=145146863|direct|-|none|-|1564985477902; jdcloud_sitelang=cn; apigatewayareaCode=cn-north-1; apigatewayareaName=%25E5%258D%258E%25E5%258C%2597-%25E5%258C%2597%25E4%25BA%25AC; jdcloud_sitelang_server=cn; Hm_lvt_38f625421267eb5065e400d79fc42c74=1565867188,1565867204; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1565867204; ipv6_iaas=0; jdcloud-api-testconsole_label=1; jdcloud-api-testversion=v2; __jda=250358228.1554091325970812602438.1554091326.1557283719.1559796648.14; __jdc=250358228; thor=266D4182C9765ABA472EE445C9393A60509F8D7E0447FB1E10B4431FC853342A36021CD1838975E5C96DF7FBA6DA9BCA33CAD7D649DAE20DBB9DC7843D638994DB457581E8E0A69ED700E7840A853D1630E60746433053A42FC704AD989084E239118420B63B460DF45B83DAFE11B28D19783ACC092CFF07273CC880262D2A35095CFCB01C2216FAF51A5506AA530B14; pin=jcloud_00; unick=jcloud_00; jcloud_00console_label=1; jcloud_00version=v2; currPage=images; erp1.jd.com=7369BCEC44355A9112C5F56E0FB7A8BC722166B565DB51CA47690EF175BA8F8A1E7A73BDE4F4CD6B82D07449FE6EBC875DE06573D83089441B3DA9FA76143C80E2E8DB226416A5E298F459E2DB140089; sso.jd.com=$sso '}
+        # 更新cookie值到环境变量中，方便后续脚本使用
+        - update_env_var: ${set_os_environ($cookie)}
+        - begintimestamp: ${get_delta_timestamp(13, -3000)}
+    validate:
+        - eq: ["status_code", 200]
+
+
+- test:
+    name: 查询蓝绿分组 - describeBlueGreenStatus
+    api: api/jdsm-deploy/jdsm-web-describeBlueGreenStatus.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+        fullname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_$c_product
+    extract:
+        bluegroup: content.result.deployment.blueGroup
+        greengroup: content.result.deployment.greenGroup
+        enablebluegroup: content.result.deployment.enableBlueGroup
+        enablegreengroup: content.result.deployment.enableGreenGroup
+
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+
+- test:
+    name: 查询滚动分组 - describeRolloutStatus
+    api: api/jdsm-deploy/jdsm-web-describeRolloutStatus.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+        fullname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_$c_product
+    extract:
+        arkgroupname: content.result.deployment.0.arkGroupName
+
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+        - len_gt: [content.result.deployment, 1]
+
+
+- test:
+    name: 修改基本配置 - updateBasicconfig
+    api: api/jdsm-basicconfig/jdsm-web-update-basicconfig.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+
+        enableNegativeHealthCheck: $c_enableNegativeHealthCheck
+        enableSubscription: $c_enableSubscription
+
+        healthCheckInterval: $c_healthCheckInterval
+        healthCheckconsecutiveErrors: $c_healthCheckconsecutiveErrors
+        healthCheckmaxEjectionPercent: $c_healthCheckmaxEjectionPercent
+        healthCheckbaseEjectionTime: $c_healthCheckbaseEjectionTime
+        serviceEntries: $c_serviceEntries
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+
+- test:
+    name: 修改逻辑子集配置 - updateDestinationRule
+    api: api/jdsm-route/jdsm-web-updateDestinationRule.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+
+        subsets: $c_subsets
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+
+- test:
+    name: 修改内部分流规则 - updateRouteRule
+    api: api/jdsm-route/jdsm-web-update-route-rule.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+
+
+        weight_policy: $c_weight_policy
+        header_policy: $c_header_policy
+        host_policy: $c_host_policy
+        default_route: $c_default_route
+
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+
+- test:
+    name: 等待 $c_update_ingress_setup_waittime s，修改入口分流规则（Ingress配置） - UpdateIngress
+    api: api/jdsm-route/jdsm-web-update-ingress.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+        ingress: $c_ingress
+
+    setup_hooks:
+        - ${sleep_N_secs($c_update_ingress_setup_waittime)}
+
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+
+- test:
+    name: 蓝绿分组原样保存 - blueGreenDeploy
+    api: api/jdsm-deploy/jdsm-web-blueGreenDeploy.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+        fullname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_$c_product
+
+        bluegroup: $bluegroup
+        greengroup: $greengroup
+        enablebluegroup: $enablebluegroup
+        enablegreengroup: $enablegreengroup
+
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+
+- test:
+    name: 滚动分组-给查询到的第一个分组切生产流量 - rolloutDeploy
+    api: api/jdsm-deploy/jdsm-web-rolloutDeploy.yml
+
+    variables:
+        host: $c_jdmesh_host
+        expected_status_code: $c_expected_status_code
+        product: $c_product
+        env: $c_env
+        fullname: Corp_product.Dep_middleware.Pdl_microservices.Sys_internal-microservices.App_$c_product
+
+        rolloutgroups: [{"arkGroupName":"$arkgroupname","targetEnv":"product"}]
+
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+
+
+- test:
+    name: 等待 $c_query_changelog_setup_waittime s，查询最近20S的操作日志，并保证可以找到对应的日志
+    api: api/ark-events/ark-web-events-changelog.yml
+
+    variables:
+        host: $c_ark_host
+        expected_status_code: 200
+
+        #starttimestamp: ${get_delta_timestamp(13, -20000)}  # last 20seconds logs
+        starttimestamp: $begintimestamp
+        endtimestamp: ${get_delta_timestamp(13, 2000)}
+        query:
+            filters:
+                - {"name":"eventType","value":[],"op":"eq"}
+                - {"name":"nsType","value":[],"op":"eq"}
+                - {"name":"ns","value":[],"op":"eq"}
+            orgQueryReq: {"nsType":"APP","ns":"$c_log_app"}
+            key: ""
+
+        pageNumber: 0
+        pageSize: 100
+        orderBy: time
+        orderMethod: desc
+    validate:
+        - eq: ["status_code", 200]
+        - len_ge: [content.data.items, 2]
+        - string_contains: [content, "basic config"]
+        - string_contains: [content, "route rule"]
+        - string_contains: [content, "destination rule"]
+        - string_contains: [content, "ingressSpec"]
+        - string_contains: [content, "routeRuleSpec"]
+        - string_contains: [content, "defaultRoute"]
+        - string_contains: [content, "destinationRuleSpec"]
+        - string_contains: [content, '"subsets":']
+        - string_contains: [content, '"$c_product"']
+        - string_contains: [content, 'blue green deployment']
+        - string_contains: [content, 'rollout deployment']
+        - string_contains: [content, 'likui34']
+
+    # setup_hooks: 在整个用例开始执行前触发 hook 函数，主要用于准备工作。
+    setup_hooks:
+        - ${sleep_N_secs($c_query_changelog_setup_waittime)}
+
+#    # teardown_hooks: 在整个用例结束执行后触发 hook 函数，主要用于测试后的清理工作。
+#    teardown_hooks:
+#        - b: ${hook_print("teardown_hooks for config")}

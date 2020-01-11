@@ -1,0 +1,5 @@
+request:
+    url: http://$managerUrl/apis/$aaa
+    method: GET
+    headers:
+        x-jdcloud-admin-token: $token

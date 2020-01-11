@@ -1,0 +1,59 @@
+name: 查询一键配置
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: jdmesh-productpage-test
+    env: pre
+    appid: 8017
+
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+#POST http://mesh-gray.ark.jdcloud.com/openApi/jdmesh/getInitConfig HTTP/1.1
+#Host: mesh-gray.ark.jdcloud.com
+#Connection: keep-alive
+#Content-Length: 75
+#Accept: application/json
+#Origin: http://mesh-gray.ark.jdcloud.com
+#ajax-id: fcd09b19-aff8-4718-8010-cdf807bfadf5
+#User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36
+#Content-Type: application/json;charset=UTF-8
+#Referer: http://mesh-gray.ark.jdcloud.com/?tab=quickConfig
+#Accept-Encoding: gzip, deflate
+#Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,pl;q=0.7
+#Cookie: _ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; jd.erp.lang=zh_CN; pin=jcloud_00; unick=jcloud_00; jdcloud_sitelang=cn; currPage=apigateway; thor=266D4182C9765ABA472EE445C9393A60D4C9270B2B3E4EAEE9997BAA339DE3B37E3C635B514F5EF5820C5CDE0F6FB7E46B04E92640D75EA1B5198BE9A31782815B27D0972FBD75EB6F7FD946F2F36FDA9731A8C6F8424C682B9E10722424888F0202EB5FD610D15AFCD9C27C9BBB78603F3E4C23C7CC585875E286A20E54EAE0D3CC9B249BFB28C3B8E99F85A2FFF351; csrfToken=gYnzF9pL7Vzcw4amX7-h3EIf; Hm_lvt_38f625421267eb5065e400d79fc42c74=1568859508,1570790265; __jda=94787328.1554091325970812602438.1554091326.1556095859.1570790266.20; __jdc=94787328; Hm_lpvt_38f625421267eb5065e400d79fc42c74=1570790346; erp1.jd.com=DA0EC22596C3FE9F0DFF1B68106AE295432D0F44C7BB2AB50D21E9D985E492E73A66EAFA499EDE7598E32F37543DD0E5EB63A5DBFD8F6473896F6EC1D3B9E681320FEEF588D83844C06DC935DF8A21B0; sso.jd.com=BJ.6150f7d167bb4714badd9feb99238575
+#
+#{"params":{"appName":"jdmesh-productpage-test","env":"pre","appId":"8017"}}
+
+request:
+    url: $host/openApi/jdmesh/getInitConfig
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        params:
+            appName: $product
+            env: $env
+            appId: $appid
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+# a sample response
+response:
+    requestId: bngp096k1vd0gpd0ps82m6gndi2d4pw2
+    error: null
+    result:
+      initConfig:
+          appId: "8017"
+          fullName: ""
+          servicePort: [{"name":"mainPort","port":9080,"protocol":"HTTP"}]
+          groupInMesh: ["east2-pre","east2-pre-az2"]
+          groupOutMesh: []
+    responseObj: {"size":0,"timeout":0,"nonce":"59a04f79-15f7-410d-a755-e46870317ffd"}

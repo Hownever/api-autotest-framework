@@ -1,0 +1,22 @@
+request:
+    url: /$api_ver/regions/$regionId/accessAuths
+    method: GET
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    params:
+        pageNumber: 1
+        pageSize: 100
+        filters.1.name: $filters1
+        filters.1.operator: $filters1operator
+        filters.1.values.1: $filters1values
+        filters.2.name: $filters2
+        filters.2.operator: $filters2operator
+        filters.2.values.1: $filters2values
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - accessAuths: content.result.accessAuths
+    - totalCount: content.result.totalCount

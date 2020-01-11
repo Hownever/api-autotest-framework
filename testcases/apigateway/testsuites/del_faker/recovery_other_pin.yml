@@ -1,0 +1,158 @@
+- config:
+    name: 使用其他pin恢复已删除的分组、api、版本
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+#        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        authType: jd_cloud
+        revision: 0.0.2
+        baseRevision: 0.0.1
+        apiName: create_task_json
+        groupName: ${ENV(ENV_GROUP_NAME)}
+    verify: False
+
+- test:
+    name: 创建分组,创建api
+    testcase: testcases/monitor/createApis_200.yml
+    variables:
+        authType: $authType
+    output:
+        - apiGroupId
+
+- test:
+    name: 新建版本$revision
+    api: api/monitor/createRevision.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        apiGroupId: $apiGroupId
+        revision: $revision
+        baseRevision: $baseRevision
+        revisionNote: $apiGroupId, $revision based on $baseRevision
+    extract:
+        - revision: content.result.revision
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+    output:
+        - revision
+
+- test:
+    name: 可以查到新建的版本$revision
+    api: api/monitor/describeRevisions.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - totalCount: content.result.totalCount
+        - revisionId: content.result.revisions.0.revisionId
+    validate:
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 查找$apiName,获取apiId
+    api: api/monitor/queryApis.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId: content.result.apis.0.apiId
+    validate:
+        - eq: [$scode, 200]
+    output:
+        - apiId
+
+- test:
+    name: 删除0.0.2版本的api,$apiName
+    api: api/monitor/deleteApi.yml
+    variables:
+        pin: ${ENV(ENV_PIN)}
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+    name: 使用其他pin恢复删除的api,会报错,没有权限
+    api: api/monitor/recoveryDeletedApi.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+        pin: jcloud_00
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 403]
+        - eq: [$status, APIGATEWAY_HTTP_FORBIDDEN]
+        - eq: [$message, 没有权限]
+
+- test:
+      name: 删除0.0.2版本
+      api: api/monitor/deleteRevision.yml
+      variables:
+          pin: ${ENV(ENV_PIN)}
+          apiGroupId: $apiGroupId
+          revisionId: $revisionId
+      extract:
+          - scode: status_code
+      validate:
+          - eq: [$scode, 200]
+
+- test:
+    name: 使用其他pin恢复已删除的版本$revision,会报错,没有权限
+    api: api/monitor/recoveryDeletedRevision.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revisionId: $revisionId
+        pin: jcloud_00
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 403]
+        - eq: [$status, APIGATEWAY_HTTP_FORBIDDEN]
+        - eq: [$message, 没有权限]
+
+- test:
+      name: 删除分组,$groupName
+      api: api/monitor/deleteApiGroup.yml
+      variables:
+          pin: ${ENV(ENV_PIN)}
+          apiGroupId: $apiGroupId
+      extract:
+          - scode: status_code
+      validate:
+          - eq: [$scode, 200]
+
+- test:
+    name: 使用其他pin恢复已删除的分组,会报错,没有权限
+    api: api/monitor/recoveryDeletedApiGroup.yml
+    variables:
+        apiGroupId: $apiGroupId
+        pin: jcloud_00
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 403]
+        - eq: [$status, APIGATEWAY_HTTP_FORBIDDEN]
+        - eq: [$message, 没有权限]

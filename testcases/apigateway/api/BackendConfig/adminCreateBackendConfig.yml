@@ -1,0 +1,61 @@
+name: 开通后端配置
+description: 开通后端配置
+operationId: createBackendConfig
+
+variables:
+#    url
+    host_cbc: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cbc: ${ENV(ENV_API_VERSION)}
+    regionId_cbc: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_cbc: apiGroupId
+#    header
+    header_cbc:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    backendConfigId_cbc: ~
+    baseGroupId_cbc: ~
+    environment_cbc: ~
+    backendUrl_cbc: ~
+    backendServiceType_cbc: ~
+    headerParams_cbc: ~
+    queryParams_cbc: ~
+    description_cbc: ~
+    createTime_cbc: ~
+    sort_cbc: ~
+    userSort_cbc: ~
+    jdsfId_cbc: ~
+    jdsfParam_cbc: ~
+    jdsfRegion_cbc: ~
+    jdsfPin_cbc: ~
+#    hooks
+    serviceLine_cbc: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_cbc: nofile
+    openApiAk_cbc: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cbc: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cbc: v1
+
+request:
+    url: $host_cbc/$apiVer_cbc/regions/$regionId_cbc/apiGroups/$apiGroupId_cbc/adminBackendConfig
+    method: POST
+    headers: $header_cbc
+    json:
+        backendConfigId: $backendConfigId_cbc
+        baseGroupId: $baseGroupId_cbc
+        environment: $environment_cbc
+        backendUrl: $backendUrl_cbc
+        backendServiceType: $backendServiceType_cbc
+        headerParams: $headerParams_cbc
+        queryParams: $queryParams_cbc
+        description: $description_cbc
+        createTime: $createTime_cbc
+        sort: $sort_cbc
+        userSort: $userSort_cbc
+        jdsfId: $jdsfId_cbc
+        jdsfParam: $jdsfParam_cbc
+        jdsfRegion: $jdsfRegion_cbc
+        jdsfPin: $jdsfPin_cbc
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cbc, $openApiSk_cbc, $serviceLine_cbc, $apiVersion_cbc, $openapiYaml_cbc, $regionId_cbc)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

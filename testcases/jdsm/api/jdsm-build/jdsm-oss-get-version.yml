@@ -1,0 +1,24 @@
+name: 查询网格构建使用的软件版本信息（从oss外链）
+variables:
+    host: ${ENV(ENV_JDMESH_OSS_BASE_URL)}
+    expected_status_code: 200
+
+request:
+    url: $host/release/version
+    method: GET
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+# a sample response
+response:
+    data:
+        dataList:
+            product:
+                - {"version":"v1.0.0", "description":"1.增加token支持；\n2.修复xxbug"}
+                - {"version":"v1.0.1", "description":"支持故障注入"}
+            gray:
+                - {"version":"v1.0.0", "description":"1.增加token支持；\n2.修复xxbug"}
+                - {"version":"v1.0.1", "description":"支持故障注入"}
+    status:
+        code: 200

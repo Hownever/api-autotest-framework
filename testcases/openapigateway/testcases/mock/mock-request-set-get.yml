@@ -1,0 +1,78 @@
+- config:
+    name: mock set and get
+    variables:
+        c_mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+        # 值必须为1，否则mock server不会存储
+        c_mock_setter: enable
+        # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+        c_mock_force_covered: enable
+
+        c_mock_header:  {
+                "Content-Type": application/json,
+                "token": mytoken
+            }
+
+        c_mock_remove_after_get: enable
+        # mock存储的id，使用时的id
+        c_mock_id: mock-data-test-${gen_random_string(5)}
+        # mock返回结果时的http status code
+        c_mock_code: 200
+        # mock返回结果的内容
+        c_mock_data: {"result":{"totalCount":669,"apiGroups":[{"apiGroupId":"ag-wfyi5xdvyjby","groupName":"APIGW_MONITOR_GROUP_NAME","description":"description","prefix":"todo/api/v1","domain":"wfyi5xdvyjby.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":null,"groupStatus":1,"createTime":1558962121046,"updateTime":null},{"apiGroupId":"ag-wfyi74ic7zg2","groupName":"groupName1558962099019409","description":"description","prefix":"todo/api/v1","domain":"wfyi74ic7zg2.cn-north-1.jdcloud-api.net","authType":"NONE","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962099220,"updateTime":null},{"apiGroupId":"ag-wfyiydka20vy","groupName":"groupName15589620770851552","description":"description","prefix":"todo/api/v1","domain":"wfyiydka20vy.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962077208,"updateTime":null},{"apiGroupId":"ag-wfyiwl7dzl44","groupName":"groupName15589620499702694","description":"description","prefix":"todo/api/v1","domain":"wfyiwl7dzl44.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962050167,"updateTime":null},{"apiGroupId":"ag-wfyixekqmomy","groupName":"groupName15589620360730371","description":"description","prefix":"todo/api/v1","domain":"wfyixekqmomy.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962036213,"updateTime":null},{"apiGroupId":"ag-wfyifxgvek8j","groupName":"groupName155896200862328","description":"description","prefix":"todo/api/v1","domain":"wfyifxgvek8j.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558962008831,"updateTime":null},{"apiGroupId":"ag-wfybkb7n0utj","groupName":"groupName15589614962608504","description":"description","prefix":"todo/api/v1","domain":"wfybkb7n0utj.cn-north-1.jdcloud-api.net","authType":"NONE","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961496407,"updateTime":null},{"apiGroupId":"ag-wfyb2agzmubn","groupName":"groupName15589614746484423","description":"description","prefix":"todo/api/v1","domain":"wfyb2agzmubn.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961474802,"updateTime":null},{"apiGroupId":"ag-wfyb5xh61oj4","groupName":"groupName15589614481232657","description":"description","prefix":"todo/api/v1","domain":"wfyb5xh61oj4.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961448373,"updateTime":null},{"apiGroupId":"ag-wfybrjbomcaj","groupName":"groupName15589614348003814","description":"description","prefix":"todo/api/v1","domain":"wfybrjbomcaj.cn-north-1.jdcloud-api.net","authType":"JD_CLOUD","keyCheck":"CHECK_EXIST","version":"0.0.1","revision":"0.0.1","revisionNote":null,"environment":"online","groupStatus":1,"createTime":1558961434909,"updateTime":null}]},"requestId":"bjmv2fpcodnb3adquieqrtnaqsv50wnq"}
+        # mock值的http协议中的数据类型
+        c_mock_type: application/json
+
+        c_header: {}
+        c_pin: my_pin
+        c_filter: ""
+        # 页码；默认为1
+        c_pagenumber: 1
+        # 分页大小；默认为20；取值范围[10, 100]
+        c_pagesize: 20
+
+        c_expected_status_code: 200
+    verify: False
+    output:
+        - mockdata
+- test:
+    name:  configure mock server data-$c_mock_id
+    api: api/mock/mock-request-set.yml
+    variables:
+        host: $c_mock_host
+        # 值必须为1，否则mock server不会存储
+        setter: $c_mock_setter
+        # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+        force_covered: $c_mock_force_covered
+
+        mock_header:  $c_mock_header
+        # mock存储的id，使用时的id
+        mock_id: $c_mock_id
+        # mock返回结果时的http status code
+        mock_code: $c_mock_code
+        # mock返回结果的内容
+        mock_data: $c_mock_data
+        # mock值的http协议中的数据类型
+        mock_type: $c_mock_type
+
+        expected_status_code: 200
+
+    extract:
+        - scode: status_code
+
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+    name:  获取资源list
+    api: api/mock/mock-request-get.yml
+    variables:
+        mock_host: $c_mock_host
+        # mock存储的id，使用时的id
+        mock_id: $c_mock_id
+        remove_after_get: $c_mock_remove_after_get
+
+    extract:
+        - scode: status_code
+        - mockdata: content
+    validate:
+        - eq: [$scode, 200]

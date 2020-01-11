@@ -1,0 +1,45 @@
+name: create token - 自动转换deadline的值为int类型
+description:
+
+variables:
+    host: ${ENV(ENV_KEYSERVICE_BASE_URL)}
+    product: gwkms
+    apiVersion: v1
+    regionId: cn-north-1
+    openapi_yaml: nofile
+    AK: ${ENV(ENV_TOKEN_AK)}
+    SK: ${ENV(ENV_TOKEN_SK)}
+#    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers_token:
+#        ajax-id: $requestid
+#        x-jdcloud-request-id: $requestid
+        Content-Type: application/json;charset=UTF-8
+#    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    payload:
+        deadline: 1568712000
+        serviceName: productpage
+
+### 请求参数
+#|名称|类型|是否必需|默认值|描述|
+#|---|---|---|---|---|
+#|**product**|String|False| |产品名称|
+#|**serviceName**|String|True| |服务名称|
+#|**group**|String|False| |分组名称|
+#|**ip**|String|False| |IP地址|
+#|**nonce**|String|False| |随机数|
+#|**deadline**|Long|False| |token的失效时间（秒级时间戳），不传则默认token有效时间为1年|
+#|**erp**|String|False| |erp|
+#|**instanceName**|String|False| |实例名称|
+
+request:
+    url: $host/v1/tokens:isIndependent
+    method: POST
+    headers: $headers_token
+    json: $payload
+#    json:
+#        serviceName: productpage
+
+setup_hooks:
+    - payload: ${transfer_deadline_to_int_for_token_payload($payload)}
+    #- ${hook_update_request_insert_global_headers($request, $global_headers)}
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}

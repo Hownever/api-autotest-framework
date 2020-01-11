@@ -1,0 +1,15 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups
+    method: GET
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    params:
+        pageNumber: 1
+        pageSize: 100
+        filters.1.name: $filters1
+        filters.1.values.1: $filters1values
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

@@ -1,0 +1,30 @@
+variables:
+    gw_ip: ${ENV(ENV_APIM_GW_IP)}
+    jdsfServiceName: jdsfServiceName
+    host: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer: ${ENV(ENV_API_VERSION)}
+    regionId: ${ENV(ENV_APIM_REGIONID)}
+    #    header
+    header:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+    #    hooks
+    serviceLine: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml: nofile
+    openApiAk: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion: v1
+
+request:
+    url: http://${change_host($gw_host, $gw_ip)}/AAA/$jdsfServiceName/test/request/5555444
+    method: GET
+    headers:
+        DYNAMIC_BACKEND: $DYNAMIC_BACKEND
+        Content-Type: application/json;charset=UTF-8
+        jdcloud-apim-subscription-key: $subscriptionKey
+setup_hooks:
+    - ${sleep_N_secs(10)}
+    - ${add_host($gw_host, $gw_ip)}
+    - ${update_apigateway_sign($request, $USERAK, $USERSK)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

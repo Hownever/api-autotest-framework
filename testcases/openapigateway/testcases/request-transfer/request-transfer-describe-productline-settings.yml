@@ -1,0 +1,26 @@
+- config:
+    name: apply settings for api, skip if setted already.
+    variables:
+        host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+        productline: apigatewaytestproductline
+        apiversion: v1
+
+
+        c_expected_status_code: 200
+    output:
+        - apis
+- test:
+    name:  describe product line api settings
+    api: api/request-transfer/describe-product-line-api-settings.yml
+    variables:
+        host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+        productline: $productline
+        apiversion: $apiversion
+
+    extract:
+        - scode: status_code
+        - apis: content.result.data
+
+    validate:
+        - eq: [$scode, 200]
+

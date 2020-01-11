@@ -1,0 +1,60 @@
+- config:
+    name: 检查PIN是否已创建，删除旧数据后创建新的访问授权
+    variables:
+    #    path
+        regionId_apim_pcaap: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_pcaap: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        filters1_pcaap: auth_user_type
+        filters1values_pcaap: jd_cloud_pin
+        filters1operator_pcaap: eq
+        filters2_pcaap: auth_user_id
+        filters2values_pcaap: ${ENV(ENV_USER_PIN_1)}
+        filters2operator_pcaap: eq
+        accessKey_pcaap: ${ENV(ENV_USER_PIN_1)}
+    verify: False
+
+- test:
+    name: 检查PIN是否已创建
+    api: api/Author/queryAccessAuths.yml
+    variables:
+        filters1_qaa: $filters1_pcaap
+        filters1values_qaa: $filters1values_pcaap
+        filters1operator_qaa: $filters1operator_pcaap
+        filters2_qaa: $filters2_pcaap
+        filters2values_qaa: $filters2values_pcaap
+        filters2operator_qaa: $filters2operator_pcaap
+        serviceLine_qaa: $serviceLine_apim_pcaap
+        regionId_qaa: $regionId_apim_pcaap
+    validate:
+        - eq: ["status_code", 200]
+    extract:
+        - accessAuths_qaa: content.result.accessAuths
+        - totalCount_qaa: content.result.totalCount
+    output:
+        - accessAuths_qaa
+        - totalCount_qaa
+
+- test:
+    name: 如果PIN已创建，解绑分组
+    skipIf: ${validate_skip($totalCount_qaa, 0, eq)}
+    api: api/Author/updateAccessAuth.yml
+    variables:
+        authUserType_uaa: $filters1values_pcaap
+        accessKey_uaa: $accessKey_pcaap
+        accessAuthId_uaa: ${get_value_from_struct($accessAuths_qaa, accessAuthId, 0)}
+        serviceLine_uaa: $serviceLine_apim_pcaap
+        regionId_uaa: $regionId_apim_pcaap
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果PIN已创建，删除授权
+    skipIf: ${validate_skip($totalCount_qaa, 0, eq)}
+    api: api/Author/delAccessAuth.yml
+    variables:
+        accessAuthId_daa: ${get_value_from_struct($accessAuths_qaa, accessAuthId, 0)}
+        serviceLine_daa: $serviceLine_apim_pcaap
+        regionId_daa: $regionId_apim_pcaap
+    validate:
+        - eq: ["status_code", 200]

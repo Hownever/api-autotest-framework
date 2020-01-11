@@ -1,0 +1,14 @@
+name: mock server get value by method and url
+description: |
+    get mock server值
+
+variables:
+    mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+    mock_method: GET
+    mock_url: your_mock_data_url
+
+    expected_status_code: 200
+
+request:
+    url: $mock_host/$mock_url
+    method: $mock_method

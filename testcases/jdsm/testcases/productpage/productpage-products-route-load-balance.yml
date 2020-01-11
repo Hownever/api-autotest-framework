@@ -1,0 +1,84 @@
+- config:
+    # 测试用例名称
+    name: 验证productpage负载均衡策略是否正常
+
+    variables:
+        host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        productid: 0
+        headers: {}
+        jsonResList: []
+        c_looptimes: 10
+        c_expected_status_code: 200
+        c_looptime: 0
+        c_ignore_index: 99
+        c_spec_host_cnt: 3
+        c_spec_offset: 0.04
+
+        cache: []
+
+- test:
+    name: 第 1 次-验证productpage负载均衡策略是否正常-用于验证这 $c_looptime 次的hostname分布是否合理，分布率规格(ave-$c_spec_offset, ave+$c_spec_offset)-仅第一次执行，清空buf
+    skipUnless: ${validate($c_looptime, 1, str_eq)}
+    api: api/productpage/productpage-api-products.yml
+
+    variables:
+        host: $host
+        productid: $productid
+        headers: $headers
+        validate_rlt: -1
+
+    extract:
+        - jsonResponse: content
+        - hostname: content.0.hostname
+
+#    output:
+#        - hostname
+#        - jsonResList
+
+    setup_hooks:
+        - ${hook_print(setup list value is ${get_buffer()})}
+
+    teardown_hooks:
+        - cache: ${clear_buffer()}
+        - cache: ${add_buffer($hostname)}
+        - validate_rlt: ${validate_route_balance($cache, $c_looptime, $c_ignore_index, $c_spec_host_cnt, -$c_spec_offset, $c_spec_offset)}
+        # - jsonResList: ${get_buffer()}
+#        - ${hook_print(test test test $jsonResList)}
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+#        # 验证，必须有10个hostname
+        # 验证 hostname必须是负载均衡的
+        - contains: [ $validate_rlt, PASSED]
+
+- test:
+    name: 第 $c_looptime 次-验证productpage负载均衡策略是否正常-用于验证这 $c_looptime 次的hostname分布是否合理，分布率规格(ave-$c_spec_offset, ave+$c_spec_offset)
+    skipIf: ${validate($c_looptime, 1, str_eq)}
+    api: api/productpage/productpage-api-products.yml
+
+    variables:
+        host: $host
+        productid: $productid
+        headers: $headers
+        validate_rlt: -1
+
+    extract:
+        - jsonResponse: content
+        - hostname: content.0.hostname
+
+#    output:
+#        - hostname
+#        - jsonResList
+
+    setup_hooks:
+        - ${hook_print(setup list value is ${get_buffer()})}
+
+    teardown_hooks:
+        - cache: ${add_buffer($hostname)}
+        - validate_rlt: ${validate_route_balance($cache, $c_looptime, $c_ignore_index, $c_spec_host_cnt, -$c_spec_offset, $c_spec_offset)}
+        # - jsonResList: ${get_buffer()}
+#        - ${hook_print(test test test $jsonResList)}
+    validate:
+        - eq: ["status_code", $c_expected_status_code]
+#        # 验证，必须有10个hostname
+        # 验证 hostname必须是负载均衡的
+        - contains: [ $validate_rlt, PASSED]

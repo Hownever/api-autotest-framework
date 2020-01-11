@@ -1,0 +1,114 @@
+- config:
+    variables:
+        apiGroupId_raa: ag-wpa6tzsi7k6i
+        env_raa: online
+        regionId_apim_raa: cn-north-1
+        accessKey_raa: B6A6A5BE6B0D61485F257475C5A2EAC1
+        secretKey_raa: 11F6CF0C9CA272A03E91B3C40A69FFBB
+        description_raa: description_raa
+        title_raa: title_raa
+        subscriptionKey_raa: subscriptionKey_raa
+        done_raa: False
+        DYNAMIC_BACKEND_raa: DYNAMIC_BACKEND_raa
+
+- test:
+    name: POST请求微服务网关，请求成功
+    api: api/requestBackend/createTaskJson.yml
+    variables:
+        subscriptionKey_ctj: $subscriptionKey_raa
+        gw_host_ctj: ${return_string($apiGroupId_raa, env=$env_raa, host=1, regionId=$regionId_apim_raa)}
+        USERAK_ctj: $accessKey_raa
+        USERSK_ctj: $secretKey_raa
+        description_ctj: $description_raa
+        title_ctj: $title_raa
+        DYNAMIC_BACKEND_ctj: $DYNAMIC_BACKEND_raa
+    validate:
+        - eq: ["status_code", 201]
+    extract:
+        - newTaskUri: content.task.uri
+    output:
+        - newTaskUri
+
+#- test:
+#    name: HEAD请求微服务网关，请求成功
+#    api: api/requestBackend/headTask.yml
+#    variables:
+#        subscriptionKey_ht: $subscriptionKey_raa
+#        gw_host_ht: ${return_string($apiGroupId_raa, env=$env_raa, host=1, regionId=$regionId_apim_raa)}
+#        USERAK_ht: $accessKey_raa
+#        USERSK_ht: $secretKey_raa
+#    validate:
+#        - eq: ["status_code", 200]
+
+- test:
+    name: PATCH请求微服务网关，请求成功
+    api: api/requestBackend/patchTaskJson.yml
+    variables:
+        subscriptionKey_patj: $subscriptionKey_raa
+        gw_host_patj: ${return_string($apiGroupId_raa, env=$env_raa, host=1, regionId=$regionId_apim_raa)}
+        USERAK_patj: $accessKey_raa
+        USERSK_patj: $secretKey_raa
+        description_patj: $description_raa
+        title_patj: $title_raa
+        taskId_patj: ${get_value_from_str($newTaskUri, getTaskById)}
+        done_patj: $done_raa
+        DYNAMIC_BACKEND_patj: $DYNAMIC_BACKEND_raa
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: PUT请求微服务网关，请求成功
+    api: api/requestBackend/putTaskJson.yml
+    variables:
+        subscriptionKey_putj: $subscriptionKey_raa
+        gw_host_putj: ${return_string($apiGroupId_raa, env=$env_raa, host=1, regionId=$regionId_apim_raa)}
+        USERAK_putj: $accessKey_raa
+        USERSK_putj: $secretKey_raa
+        description_putj: $description_raa
+        title_putj: $title_raa
+        taskId_putj: ${get_value_from_str($newTaskUri, getTaskById)}
+        done_putj: $done_raa
+        DYNAMIC_BACKEND_putj: $DYNAMIC_BACKEND_raa
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: GET请求微服务网关，请求成功
+    api: api/requestBackend/getAllTask.yml
+    variables:
+        subscriptionKey_gat: $subscriptionKey_raa
+        gw_host_gat: ${return_string($apiGroupId_raa, env=$env_raa, host=1, regionId=$regionId_apim_raa)}
+        USERAK_gat: $accessKey_raa
+        USERSK_gat: $secretKey_raa
+        DYNAMIC_BACKEND_gat: $DYNAMIC_BACKEND_raa
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: DELETE请求微服务网关，请求成功
+    api: api/requestBackend/deleteTask.yml
+    variables:
+        subscriptionKey_dt: $subscriptionKey_raa
+        gw_host_dt: ${return_string($apiGroupId_raa, env=$env_raa, host=1, regionId=$regionId_apim_raa)}
+        USERAK_dt: $accessKey_raa
+        USERSK_dt: $secretKey_raa
+        description_dt: $description_raa
+        title_dt: $title_raa
+        taskId_dt: ${get_value_from_str($newTaskUri, getTaskById)}
+        DYNAMIC_BACKEND_dt: $DYNAMIC_BACKEND_raa
+    validate:
+        - eq: ["status_code", 200]
+
+#- test:
+#    name: OPTIONS请求微服务网关，请求成功
+#    api: api/requestBackend/testOption.yml
+#    variables:
+#        subscriptionKey_to: $subscriptionKey_raa
+#        gw_host_to: ${return_string($apiGroupId_raa, env=$env_raa, host=1, regionId=$regionId_apim_raa)}
+#        USERAK_to: $accessKey_raa
+#        USERSK_to: $secretKey_raa
+#    validate:
+#        - contains: [headers.Allow, "GET"]
+#        - contains: [headers.Allow, "OPTIONS"]
+#        - contains: [headers.Allow, "HEAD"]
+#        - contains: [headers.Allow, "POST"]

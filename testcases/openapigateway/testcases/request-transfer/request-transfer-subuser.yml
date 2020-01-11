@@ -1,0 +1,198 @@
+- config:
+    name: As a sub user, set the request transfer disabled, apply the resources policy to subuser, then use subuser to get resources, should return all the resources
+    variables:
+
+        c_suffix: ${gen_random_string(5)}
+
+        #c_suffix: f4n2x
+
+        c_gw_host: ${ENV(ENV_INTER_GW_BASE_URL)}
+        c_product: apigatewaytestproductline
+        c_apiversion: v1
+        c_regionid: cn-north-1
+        c_openapi_yaml: nofile
+        c_AK: ${ENV(ENV_USER_AK_MAIN)}
+        c_SK: ${ENV(ENV_USER_SK_MAIN)}
+
+        c_iam_host: ${ENV(ENV_IAM_SERVER_BASE_URL)}
+        c_iam_product: iam
+        c_iam_apiversion: v1
+        c_userpin: ${ENV(ENV_USER_PIN_MAIN)}
+        c_iam_headers:
+            Content-Type: application/json;charset=UTF-8
+            #x-jdcloud-pin: $userpin
+        c_subuser_name: auto_subuser_$c_suffix
+
+        c_policy_name: policyname_$c_suffix
+        c_policy_content: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstances"],"Resource":["*"],"Condition":{}}]}'
+            # - [describeInstances_part_$c_suffix, '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstances"],"Resource":["jrn:apigatewaytestproductline:*:179869473008:instances/i-lz4o87ewyr","jrn:apigatewaytestproductline:*:179869473008:instances/i-ks7ev6bznf"],"Condition":{}}]}']
+            # - [describeInstance_one_$c_suffix, '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstance"],"Resource":["*"],"Condition":{}}]}']
+            # - [describeInstanceVncUrl_part_$c_suffix, '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstanceVncUrl"],"Resource":["i-jkvluth6te", "*"],"Condition":{}}]}']
+
+        c_policy_description: your_policy_description_$c_suffix
+
+        # 网关配置host， 一般是8001接口
+        c_openapi_gw_token: ${ENV(ENV_GW_CONTROL_TOKEN)}
+        c_gw_control_host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+        c_operationid: describeInstances
+        c_request_transfer_is_open: False
+        c_request_transfer_is_in_to_eq: False
+        c_request_transfer_is_ni_to_ne: False
+        c_request_transfer_sub_path: /post
+        c_is_internal: False
+        c_teardown_wait_time: 5
+        c_config_setup_wait_time: 0
+
+        c_mock_setter: enable
+        c_mock_request_force_cover: enable
+        c_mock_request_id: mock_request_id_$c_suffix
+        c_mock_server_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+
+        c_case_summary: your_case_description
+        c_describeInstances_params:
+            pageNumber: 1
+            pageSize: 20
+            filters: "your_case_filters"
+
+        c_expected_status_code: 200
+        c_expected_path: your_expected_path
+        c_expected_method: POST
+        c_expected_body: your_expected_body
+
+
+        accessKey: your_subuser_ak
+        secretAccessKey: your_subuser_sk
+        subuser_pin: your_subuser_pin
+#    setup_hooks:
+#        - ${sleep_N_secs($c_config_setup_wait_time)}
+#
+#    teardown_hooks:
+#        - ${hook_print("teardown_hooks for config")
+#         - ${sleep_N_secs($teardown_wait_time)}
+
+- test:
+    name: create the subuser, create the policys, bind this policy to this subuser
+    testcase: testcases/iam/create_subuser_and_create_policy_and_bind_policy_to_subuser.yml
+    variables:
+        host:  $c_iam_host
+        AK: $c_AK
+        SK: $c_SK
+        productline: $c_iam_product
+        apiversion:  $c_iam_apiversion
+        openapi_yaml: $c_openapi_yaml
+        regionid: $c_regionid
+        # 主账号pin
+        userpin: $c_userpin
+
+        headers: $c_iam_headers
+
+        # 创建子账号的相关设置
+        subuser_name: $c_subuser_name
+        subuser_description: sub_user_description-$c_subuser_name
+        subuser_password: z9gjmP5tNUaVUcX1
+        subuser_phone: 0086-18631256565
+        subuser_email: 123@qq.com
+        subuser_create_ak: True
+        subuser_reset_passwd: False
+        subuser_console_login: True
+        subuser_auto_gen_passwd: False
+        policyname: $c_policy_name
+        policycontent: $c_policy_content
+        policydescription: $c_policy_description
+
+    output:
+        - accessKey
+        - secretAccessKey
+        - subuser_pin
+        - policyname
+
+- test:
+    name: configure request transfer for operationid - $c_product - $c_operationid - open=$c_request_transfer_is_open - in_2_eq=$c_request_transfer_is_in_to_eq - ni_2_ne=$c_request_transfer_is_ni_to_ne - sub_path=$c_request_transfer_sub_path - teardown_waittime=$c_teardown_wait_time
+    api: api/request-transfer/apply-product-line-api-settings.yml
+    variables:
+        host: $c_gw_control_host
+        productline: $c_product
+        apiversion: $c_apiversion
+        operationid: $c_operationid
+        token: $c_openapi_gw_token
+        request_transfer_is_open: $c_request_transfer_is_open
+        request_transfer_is_in_to_eq: $c_request_transfer_is_in_to_eq
+        request_transfer_is_ni_to_ne: $c_request_transfer_is_ni_to_ne
+        is_internal: $c_is_internal
+        request_transfer_sub_path: $c_request_transfer_sub_path
+        teardown_wait_time: $c_teardown_wait_time
+
+        expected_status_code: 200
+
+
+- test:
+    name: $c_case_summary - subuser - $c_subuser_name - expected ($c_expected_status_code, $c_expected_method, $c_expected_path, expected_body_too_long_to_shown)
+    api: api/describeInstances.yml
+    variables:
+        host: $c_gw_host
+        product: $c_product
+        apiVersion: $c_apiversion
+        regionId: $c_regionid
+        openapi_yaml: $c_openapi_yaml
+#        AK: $c_AK
+#        SK: $c_SK
+        AK: $accessKey
+        SK: $secretAccessKey
+
+        header: {
+            #"x-jdcloud-pin": "$subuser_pin @ $c_userpin",
+            "ak": $accessKey,
+            "sk": $secretAccessKey,
+            "pin": "$subuser_pin @ $c_userpin",
+            "X-Jdcloud-Test-Configs-Request-Setter": $c_mock_setter,
+            "X-Jdcloud-Test-Configs-Request-Setter-Id": $c_mock_request_id,
+            "X-Jdcloud-Test-Configs-Request-Setter-Force-Covered": $c_mock_request_force_cover,
+          }
+
+        params: $c_describeInstances_params
+
+    extract:
+        - scode: status_code
+        # http://10.226.152.49/v1/regions/cn-north-1/instances?pageNumber=1&pageSize=20&filters=
+        - extendfilter: content.request.url
+
+    validate:
+        - eq: [status_code, $expected_status_code]
+        - regex_match: [content.request.url, $c_expected_path]
+        - eq: [content.request.method, $c_expected_method]
+        - eq: [content.request.data, $c_expected_body]
+
+- test:
+    name: job clean - delete the request data from mock server
+    api: api/mock/mock-request-delete.yml
+    variables:
+        mock_host: $c_mock_server_host
+        mock_request_id: $c_mock_request_id
+
+        expected_status_code: 200
+
+    validate:
+        - ge: [status_code, 200]
+        # - len_eq: [content.request, 0]
+
+- test:
+    name: job clean - unbound policy to subuser, delete the subuser , delete the policy
+    testcase: testcases/iam/unbound_policy_with_subuser_and_delete_subuser_and_delete_policy.yml
+    variables:
+        host:  $c_iam_host
+        AK: $c_AK
+        SK: $c_SK
+        productline: $c_iam_product
+        apiversion:  $c_iam_apiversion
+        openapi_yaml: $c_openapi_yaml
+        regionid: $c_regionid
+        # 账号pin
+        c_userpin:  $c_userpin
+
+        c_headers: $c_iam_headers
+
+        # 子账号pin
+        c_subuser_name: $c_subuser_name
+
+        # 删除的策略名称：
+        c_policyname: $c_policy_name

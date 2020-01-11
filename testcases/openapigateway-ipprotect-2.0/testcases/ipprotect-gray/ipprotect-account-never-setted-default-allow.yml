@@ -1,0 +1,33 @@
+testcases:
+    老账号-不同key-IP白名单默认状态（用户从未配置过）-网关允许访问后端:
+        testcase:  api/ipprotect-never-setted-account-allow.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+
+                # 普通用户-主账号
+                - {"userpin" : "jdcloud-api-test", "keytype" : "OldNormalUserSelfkey", "AK" : "0E91C3765B78CBD71715F9BF24997AF3", "SK" : "AF7B13C8010F50F03A52C01458714701"}
+                # 普通用户-子账号
+                - {"userpin" : "jcloud_PWYyhSe @ jdcloud-api-test", "keytype" : "OldNormalSubUserSelfkey", "AK" : "0E91C3765B78CBD71715F9BF24997AF3", "SK" : "AF7B13C8010F50F03A52C01458714701"}
+
+                # 控制台
+
+                # 控制台账号
+                - {
+                    "userpin" : "jdcloud-api-test",
+                    "keytype" : "ConsoleUserSelfkey",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        # 此处的pin可以和userpin字段中的值不一致
+                        "x-jdcloud-pin" : "jdcloud-api-test",
+                        "x-jdcloud-erp" : "likui34",
+                        "x-jdcloud-user-ip" : "invalid_ip_address",
+                        }
+                  }
+
+                # 运营后台
+                # - {"userpin" : "jiashuo-ite-1", "keytype" : "ConsoleUserSelfKey", "AK" : "6996C51A54B8D05CB0A5A924F9A78629", "SK" : "14B63D66B94B81D25F8819244CE44E97"}
+                # - {"userpin" : "?", "keytype" : "ConsoleUserSelfKey", "AK" : "6996C51A54B8D05CB0A5A924F9A78629", "SK" : "14B63D66B94B81D25F8819244CE44E97"}
+

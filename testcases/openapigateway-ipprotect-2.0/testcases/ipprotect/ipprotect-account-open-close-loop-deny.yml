@@ -1,0 +1,49 @@
+testcases:
+    企业用户开启IP白名单-关闭IP白名单-再次开启-每个阶段都正确验证-网关禁止调用:
+        testcase:  api/ipprotect-opened-close-open-close-deny.yml
+        parameters:
+            # father  jiashuo-ite-1
+            userinfos:
+                # 企业用户
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "CompanySelfKey",
+                    "AK" : "6215839D85DE2B6D348F9806F210CFAF",
+                    "SK" : "278CC7371F602C8965B70C9E76B98E32",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 普通用户-子账号
+                - {
+                    "userpin" : "jcloud_yZxvwCR @ bd2492f6969c4225a404",
+                    "keytype" : "NormalSubUserSelfKey",
+                    "AK" : "C704A8A22A56346860B9671415FAD54E",
+                    "SK" : "113009268A7FA97C41CF9EBEE8B7D794",
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 305,
+                    "gw_ipprotect_close_wait_time" : 305,
+                  }
+
+                # 控制台用户- 不传x-jdcloud-user-ip
+                - {
+                    "userpin" : "huangyichun0018",
+                    "keytype" : "ConsoleUserSelfKey-HeaderWithValidPin",
+                    "AK" : "DD1B0BFA7BAA5DAED057ACF4817AF55B",
+                    "SK" : "6FC47989E4F4B1F489004F12FFFD89DE",
+                    # optional, 可以没有此字段
+                    "headers" : {
+                        "x-jdcloud-pin" : "huangyichun0018",
+                        },
+                    "uc_ipprotect_open_wait_time" : 0,
+                    "uc_ipprotect_close_wait_time" : 0,
+                    "gw_ipprotect_open_wait_time" : 120,
+                    "gw_ipprotect_close_wait_time" : 120,
+                  }
+
+            # deny的ip地址：指非用户调用IP的地址
+            ipaddressdeny:
+                - 168.95.1.1

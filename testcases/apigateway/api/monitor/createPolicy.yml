@@ -1,0 +1,15 @@
+request:
+    url: /$api_ver/policy
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        createPolicyInfo:
+            name: $name
+            description: $description
+            content: $content
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, iam, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

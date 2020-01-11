@@ -1,0 +1,29 @@
+name: 删除单个API分组
+description: 删除单个API分组
+operationId: deleteApiGroup
+
+variables:
+#    url
+    host_deleag: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_deleag: ${ENV(ENV_API_VERSION)}
+    regionId_deleag: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_deleag: apiGroupId
+#    header
+    header_deleag:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_deleag: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_deleag: nofile
+    openApiAk_deleag: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_deleag: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_deleag: v1
+
+request:
+    url: $host_deleag/$apiVer_deleag/regions/$regionId_deleag/apiGroups/$apiGroupId_deleag
+    method: DELETE
+    headers: $header_deleag
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_deleag, $openApiSk_deleag, $serviceLine_deleag, $apiVersion_deleag, $openapiYaml_deleag, $regionId_deleag)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

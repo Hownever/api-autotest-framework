@@ -1,0 +1,37 @@
+- config:
+    # 测试用例名称
+    name: productpage remotecall
+
+    variables:
+        c_host: ${ENV(ENV_PRODUCT_PAGE_BASE_URL)}
+        c_summary: ""
+        c_expected_status_code: 200
+        c_headers: {}
+        c_protocol: HTTP
+        c_datas:
+            url: http://httpbin.org/get
+            method: GET
+            headers:
+                h1: testheader
+
+    output:
+        - jsonResponse
+
+- test:
+    name: $c_summary remotecall - $host - headers:$headers
+    api: api/productpage/productpage-api-remotecall.yml
+
+    variables:
+        host: $c_host
+        expected_status_code: $c_expected_status_code
+        headers: $c_headers
+        protocol: $c_protocol
+        datas: $c_datas
+
+    extract:
+        - jsonResponse: content
+
+#    teardown_hooks:
+#        - ${hook_print(test test test)}
+    validate:
+        - str_eq: [status_code, $c_expected_status_code]

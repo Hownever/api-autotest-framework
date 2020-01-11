@@ -1,0 +1,29 @@
+name: 删除密钥
+description: 删除密钥
+operationId: deleteSubscriptionKey
+
+variables:
+#    url
+    host_dsk: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_dsk: ${ENV(ENV_API_VERSION)}
+    regionId_dsk: ${ENV(ENV_APIM_REGIONID)}
+    subscriptionKeyId_dsk: subscriptionKeyId
+#    header
+    header_dsk:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_dsk: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_dsk: nofile
+    openApiAk_dsk: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_dsk: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_dsk: v1
+
+request:
+    url: $host_dsk/$apiVer_dsk/regions/$regionId_dsk/subscriptionKeys/$subscriptionKeyId_dsk
+    method: DELETE
+    headers: $header_dsk
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_dsk, $openApiSk_dsk, $serviceLine_dsk, $apiVersion_dsk, $openapiYaml_dsk, $regionId_dsk)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

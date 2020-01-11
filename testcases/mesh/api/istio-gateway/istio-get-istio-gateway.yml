@@ -1,0 +1,65 @@
+name: 获取k8s集群网关状态
+description: |
+    POST http://mesh-console-g.jdcloud.com/openApi/mesh/getIstioGateway?regionId=cn-north-1&_t=1576582190059 HTTP/1.1
+    Host: mesh-console-g.jdcloud.com
+    Connection: keep-alive
+    Content-Length: 98
+    Accept: application/json
+    timeout: 3000
+    Origin: http://mesh-console-g.jdcloud.com
+    x-csrf-token: yG_Wqh42Fev77U2y7ODwuAuS
+    User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36
+    Content-Type: application/json;charset=UTF-8
+    Referer: http://mesh-console-g.jdcloud.com/gateway?regionId=cn-north-1
+    Accept-Encoding: gzip, deflate
+    Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,pl;q=0.7
+    Cookie: _ga=GA1.2.1393266954.1552618748; 3AB9D23F7A4B3C9B=N56LRR2BO5SZE5CC45ZOBB2KSDATYNJX4LX3CNGKBXC32FFGVFAUZOX2JS5CFMDTB3WES7TJYJD22HNLXDUL4LZQ3I; NewMenuGuild=finished; __jdv=176089151|direct|-|none|-|1576053084568; Hm_lvt_38f625421267eb5065e400d79fc42c74=1573639986,1574406735,1575339381,1576145850; _gid=GA1.2.1722081991.1576564040; thor=520D78BDB6E3106915005393D9283339AB820C281E44189BBA969B0B11966F4D308F543A6158453590B07AFB6DB6B2FEC63FAEF48854523E72DC51ED97426190B903B07B0BEF20159960F8E57539A22F4E4B81B8AB249875CE67CCEBB89F7EB098BD743AC76A9276C43BFBEF9939A006792E7352D3F44795624F791360D4F1B10105C4A33E8EB49B7D0BDA3E493796A5C538818B19035FA70BBCD0D4E89FDAE7; pin=jdcloud-api-test; unick=jdcloud-api-test; jdcloud_sitelang=cn; csrfToken=yG_Wqh42Fev77U2y7ODwuAuS; ipv6_iaas=1; jdcloud-api-testconsole_label=undefined; jdcloud-api-testversion=v2; jdcloud-api-testareaCode=cn-north-1; jdcloud-api-testvisitedMenu=codedeploy%2Cjdsf%2CKubernetesCluster%2CMesh; currPage=codedeploy; __jda=257992726.1554091325970812602438.1554091326.1576572929.1576578324.16; __jdc=257992726; __jdb=257992726.135.1554091325970812602438|16.1576578324
+
+    {"params":{"regionId":"cn-north-1","clusterId":"k8s-9iu5eg9wje","x-extra-header":{"user":"gray"}}}
+variables:
+    host: ${ENV(ENV_MESH_WEB_BASE_URL)}
+    regionid: cn-north-1
+    clusterid: k8s-9iu5eg9wje
+    node_extra_header: {"user": "gray"}
+    timestamps: ${get_delta_timestamp(13,0)}
+
+    requestid: ${gen_random_string(19)}${get_timestamp(13)}
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    headers:  { "timeout": "3000" }
+    cookies:
+        _ga: ${ENV(ENV_WEB_COOKIES_JDCLOUD_COM)}
+
+request:
+    url: $host/openApi/mesh/getIstioGateway
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    params:
+        regionId: $regionid
+        _t: $timestamps
+    json:
+        params:
+            regionId: $regionid
+            clusterId: $clusterid
+            x-extra-header: $node_extra_header
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+response: |
+    HTTP/1.1 200 OK
+    x-jdcloud-traceid: 1a0397b6e1611be37d903b76cb1bcbab
+    content-type: application/json; charset=utf-8
+    x-frame-options: SAMEORIGIN
+    x-xss-protection: 1; mode=block
+    x-content-type-options: nosniff
+    x-download-options: noopen
+    x-readtime: 69
+    content-length: 823
+    date: Tue, 17 Dec 2019 11:29:50 GMT
+    x-envoy-upstream-service-time: 75
+    server: istio-envoy
+    connection: close
+
+    {"requestId":"botbpbmhsouam2arcsnwesjk7f28q663","result":{"gatewayRequest":[{"gatewayName":"grafana-gateway","namespace":"istio-system","timestamp":1576582163000,"servers":[{"hosts":["*"],"name":"http-grafana","number":15031,"protocol":"HTTP"}]},{"gatewayName":"kiali-gateway","namespace":"istio-system","timestamp":1576582164000,"servers":[{"hosts":["*"],"name":"http-kiali","number":15029,"protocol":"HTTP"}]},{"gatewayName":"tracing-gateway","namespace":"istio-system","timestamp":1576582164000,"servers":[{"hosts":["*"],"name":"http-tracing","number":15032,"protocol":"HTTP"}]},{"gatewayName":"bookinfo-gateway","namespace":"default","timestamp":1576582165000,"servers":[{"hosts":["*"],"name":"http","number":80,"protocol":"HTTP"}]}]},"responseObj":{"size":0,"timeout":0,"nonce":"14201ad9-a7e6-4d5a-995b-399db7377d84"}}

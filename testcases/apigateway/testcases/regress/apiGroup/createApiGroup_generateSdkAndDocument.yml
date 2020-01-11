@@ -1,0 +1,81 @@
+- config:
+    name: 创建分组后未创建api，生成sdk、文档报错
+    variables:
+        serviceLine_apim: apigateway
+        regionId_apim_1: cn-north-1
+        groupName: JIASHUO_CREATE_GROUP_NO_GEN_SDK
+        authType: jd_cloud
+        filters1: groupName
+        filters1values: JIASHUO_CREATE_GROUP_NO_GEN_SDK
+    verify: False
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values
+
+- test:
+    name: 创建分组成功，分组名：$groupName
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+        regionId_cag: $regionId_apim_1
+        groupName_cag: $groupName
+        description_cag: 同region下创建同名分组，会报错
+        authType_cag: $authType
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+
+- test:
+    name: 生成sdk、文档
+    api: api/apiGroup/generateSdkAndDocument.yml
+    variables:
+        revision_gsdk: $revision_cag
+        environment_gsdk: ~
+        language_gsdk: java,python,doc
+        apiGroupId_gsdk: $apiGroupId_cag
+        regionId_gsdk: $regionId_apim_1
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 查询生成的sdk、文档
+    api: api/apiGroup/querySdkAndDocument.yml
+    variables:
+        revision_qsdk: $revision_cag
+        environment_qsdk: ~
+        deploymentId_qsdk: ~
+        apiGroupId_qsdk: $apiGroupId_cag
+        regionId_gsdk: $regionId_apim_1
+    extract:
+        - scode: status_code
+        - downloadUrls: content.result.downloadUrls
+        - doc_fileStatus: content.result.downloadUrls.0.fileStatus
+        - python_fileStatus: content.result.downloadUrls.1.fileStatus
+        - java_fileStatus: content.result.downloadUrls.2.fileStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$doc_fileStatus, 2]
+        - eq: [$python_fileStatus, 2]
+        - eq: [$java_fileStatus, 2]
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/regress/setup/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim
+        regionId_apim_pcag: $regionId_apim_1
+        filters1_pcag: $filters1
+        filters1values_pcag: $filters1values

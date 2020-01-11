@@ -1,0 +1,60 @@
+name: 创建计费规格
+description: 创建计费规格
+operationId: createApiChargeSpec
+
+variables:
+#    url
+    host_cacs: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cacs: ${ENV(ENV_API_VERSION)}
+    regionId_cacs: cn-south-1
+#    header
+    header_cacs:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    apiId_cacs: ~
+    showStatus_cacs: 1
+    appCode_cacs: PaaS
+    apiGroupAlias_cacs: 贾硕
+    grayWhiteListStatus_cacs: 0
+
+    serviceCode_cacs: lingmatting
+    key_cacs: matting
+    chargeType_cacs: 1
+#    计费类型 0 标准计费 1 阶梯计费
+    accessSuccessType_cacs: 1
+#    计费方式 0 200请求计费 1 后端处理计费
+    apiGroupId_cacs: ag-wnpb3aow6534
+
+    value_cacs: 1
+    unit_cacs: 元/10000次
+#    hooks
+    serviceLine_cacs: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_cacs: nofile
+    openApiAk_cacs: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cacs: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cacs: v1
+
+request:
+    url: $host_cacs/$apiVer_cacs/regions/$regionId_cacs/apiChargeSpecs
+    method: POST
+    headers: $header_cacs
+    json:
+        apiGroupId: $apiGroupId_cacs
+        appCode: $appCode_cacs
+        serviceCode: $serviceCode_cacs
+        showStatus: $showStatus_cacs
+        chargeType: $chargeType_cacs
+        apiGroupAlias: $apiGroupAlias_cacs
+        grayWhiteListStatus: $grayWhiteListStatus_cacs
+        accessSuccessType: $accessSuccessType_cacs
+        apiChargeSpecs:
+            - apiId: $apiId_cacs
+              formulas:
+                  - key: $key_cacs
+                    value: $value_cacs
+                    unit: $unit_cacs
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cacs, $openApiSk_cacs, $serviceLine_cacs, $apiVersion_cacs, $openapiYaml_cacs, $regionId_cacs)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

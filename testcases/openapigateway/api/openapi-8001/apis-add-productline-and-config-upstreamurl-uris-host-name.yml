@@ -1,0 +1,31 @@
+name: apply request transfer settings
+description: |
+    apply request transfer settings
+
+variables:
+    host: ${ENV(ENV_GW_CONTROL_BASE_URL)}
+    productline_name_in_gw: productpage-mesh-internal-cn-north-1
+    uris: /productpage-mesh
+    hosts:
+    upstream_url: http://productpage.default.mesh.jdcloud.com:9080
+    token: ${ENV(ENV_GW_CONTROL_TOKEN)}
+
+    teardown_wait_time: 10
+
+#curl 127.0.0.1:8001/apis -d name=drds-internal-cn-north-1-g -d uris=/drds
+#-d hosts=openapi-internal-test.cn-north-1.jdcloud-api.com -d upstream_url=http://drds-biz-g.jdcloud.com
+
+request:
+    url: $host/apis
+    method: POST
+    headers:
+        x-jdcloud-admin-token: $token
+    params:
+        name: $productline_name_in_gw
+        uris: $uris
+        hosts: $hosts
+        upstream_url: $upstream_url
+
+teardown_hooks:
+    - ${hook_print("Wait $teardown_wait_time s to sync the config to local cache for gw")
+    - ${sleep_N_secs($teardown_wait_time)}

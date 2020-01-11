@@ -1,0 +1,52 @@
+name: 根据云翼服务树中应用名称配置服务网格的内部分流规则-$product-$env-$host
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: jdmesh-reviews-test
+    env: pre
+
+    weight_policy: null
+    header_policy: null
+    host_policy: null
+    default_route: ""
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/openApi/jdmesh/updateRouteRule
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    # {"params":{"appId":"jdmesh-reviews-test","env":"pre","routeRuleSpec":{"appId":"jdmesh-reviews-test","weightPolicy":null,"headerPolicy":null,"hostPolicy":null,"defaultRoute":""}}}
+    # {"params":{"appName":"jdmesh-productpage-test","env":"pre","routeRuleSpec":{"appName":"jdmesh-productpage-test","weightPolicy":null,"headerPolicy":null,"uriPolicy":null,"defaultRoute":"*"}}}
+    # header
+    # {"params":{"appName":"productpage","env":"pre","routeRuleSpec":{"appName":"productpage","weightPolicy":null,"headerPolicy":[{"header":{"a":"b"},"subsetId":"az1"}],"uriPolicy":null,"defaultRoute":"v1"}}}
+    # header has 2 rule
+    # {"params":{"appName":"productpage","env":"pre","routeRuleSpec":{"appName":"productpage","weightPolicy":null,"headerPolicy":[{"header":{"a":"b"},"subsetId":"az1"},{"header":{"c":"d"},"subsetId":"az2"}],"uriPolicy":null,"defaultRoute":"v1"}}}
+    # url
+    # {"params":{"appName":"productpage","env":"pre","routeRuleSpec":{"appName":"productpage","weightPolicy":null,"headerPolicy":null,"uriPolicy":[{"matchType":"exact","matchRule":"/1/2","subsetId":"az1"},{"matchType":"prefix","matchRule":"/3/4","subsetId":"az2"}],"defaultRoute":"v1"}}}
+    # weight
+    # {"params":{"appName":"productpage","env":"pre","routeRuleSpec":{"appName":"productpage","weightPolicy":[{"subsetId":"az1","weight":50},{"subsetId":"az2","weight":50}],"headerPolicy":null,"uriPolicy":null,"defaultRoute":""}}}
+    json:
+        params:
+            appName: $product
+            env: $env
+
+            routeRuleSpec:
+                appName: $product
+                weightPolicy: $weight_policy
+                headerPolicy: $header_policy
+                hostPolicy: $host_policy
+                defaultRoute: $default_route
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+validate:
+    - eq: ["status_code", $expected_status_code]

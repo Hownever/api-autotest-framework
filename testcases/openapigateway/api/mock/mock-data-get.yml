@@ -1,0 +1,20 @@
+name: mock server get value
+description: |
+    get mock server值
+
+variables:
+    mock_host: ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+    # mock存储的id，使用时的id
+    mock_id: you_mock_data_id
+    # 是否删除get的value
+    remove_after_get: disable
+
+    expected_status_code: 200
+
+request:
+    url: $mock_host/mockserver
+    method: GET
+    headers:
+        # X-Jdcloud-Test-Configs-Mock-Setter
+        X-Jdcloud-Test-Configs-Mock-Getter: $mock_id
+        X-Jdcloud-Test-Configs-Mock-Getter-Remove: $remove_after_get

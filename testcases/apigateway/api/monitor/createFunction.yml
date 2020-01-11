@@ -1,0 +1,39 @@
+variables:
+#    url
+    api_ver: ${ENV(ENV_API_VERSION)}
+
+request:
+    url: /$api_ver/regions/$regionId/functions
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        name: $funcName
+        description: $description
+        entrance: index.handler
+        memory: 128
+        runTime: python3.6
+        overTime: 100
+        version: LATEST
+        logSetId: ~
+        logTopicId: ~
+        subnetId: ~
+        vpcId: ~
+        code:
+            zipFile: ~
+            bucketName: ~
+            objectName: ~
+            onlineCode: "#coding=utf-8\n\nimport json\n\ndef handler(event, context):\n    result = {\n        'statusCode': 200,\n        'headers': {\"Content-Type\":\"application/json\"},\n        'body': \"{'key':'apigateway_auto_test_4'}\",\n    }\n    return result"
+        environment:
+            data: ~
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, function, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")
+extract:
+    - backServiceId: content.result.data.functionId
+    - backServiceName: content.result.data.name
+    - requestId: content.requestId
+validate:
+    - len_eq: [$requestId, 32]

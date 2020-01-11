@@ -1,0 +1,29 @@
+name: 查询API分组详情
+description: 查询API分组详情
+operationId: describeApiGroup
+
+variables:
+#    url
+    host_descag: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_descag: ${ENV(ENV_API_VERSION)}
+    regionId_descag: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_descag: apiGroupId
+#    header
+    header_descag:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_descag: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_descag: nofile
+    openApiAk_descag: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_descag: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_descag: v1
+
+request:
+    url: $host_descag/$apiVer_descag/regions/$regionId_descag/apiGroups/$apiGroupId_descag
+    method: GET
+    headers: $header_descag
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_descag, $openApiSk_descag, $serviceLine_descag, $apiVersion_descag, $openapiYaml_descag, $regionId_descag)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

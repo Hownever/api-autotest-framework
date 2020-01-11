@@ -1,0 +1,29 @@
+name: 校验pin是否存在
+description: 校验pin是否存在
+operationId: checkPin
+
+variables:
+#    url
+    host_cp: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_cp: ${ENV(ENV_API_VERSION)}
+    regionId_cp: ${ENV(ENV_APIM_REGIONID)}
+    pin_cp: AAA
+#    header
+    header_cp:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_cp: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_cp: nofile
+    openApiAk_cp: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_cp: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_cp: v1
+
+request:
+    url: $host_cp/$apiVer_cp/regions/$regionId_cp/pins/$pin_cp:checkPin
+    method: POST
+    headers: $header_cp
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_cp, $openApiSk_cp, $serviceLine_cp, $apiVersion_cp, $openapiYaml_cp, $regionId_cp)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

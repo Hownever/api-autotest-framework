@@ -1,0 +1,20 @@
+config:
+    name: 多区域域名测试，保证目前所要求的各个（区域的）域名可以正常访问
+    variables:
+        times: 0
+        testenv: ${ENV(ENV_TEST_ENV)}
+        testproduct: ${ENV(ENV_TEST_PRODUCT)}
+        test_provider_app: ${ENV(ENV_TEST_PROVIDER)}
+        test_consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+
+testcases:
+    多区域域名测试，保证目前所要求的各个（区域的）域名可以正常访问:
+        testcase: testcases/productpage/productpage-reviews-cnt-ge-n.yml
+        parameters:
+            host:
+                - http://productpage.ingress.mesh.cn-north-1.jdcloud.com
+                - http://productpage.ingress.mesh.cn-north-1.jcloud.com
+                - http://productpage.ingress.mesh.cn-east-1.jdcloud.com
+                - http://productpage.ingress.mesh.cn-east-2.jdcloud.com
+                - http://productpage.ingress.mesh.cn-south-1.jdcloud.com
+

@@ -1,0 +1,80 @@
+config:
+    name: 分组多region下请求成功
+#    variables:
+#    #    path
+#        regionId_apim_jdsfgw: ${ENV(ENV_APIM_REGIONID)}
+#        serviceLine_apim_jdsfgw: ${ENV(ENV_SERVICELINE_APIM)}
+#    #    json
+#        groupName_jdsfgw: JIASHUO_TEST_JDSF
+#        description_jdsfgw: 测试微服务网关，勿删
+#        prefix_jdsfgw:
+#        keyCheck_jdsfgw: check_exist
+#        authType_jdsfgw: jd_cloud
+#        prefixStrip_jdsfgw: 0
+#        groupType_jdsfgw: jdsf_group
+#        jdsfName_jdsfgw:
+#        jdsfRegistryName_jdsfgw:
+#        jdsfId_jdsfgw:
+#        environment_jdsfgw: online
+#        backendServiceType_jdsfgw: jdsf
+#        backendUrl_jdsfgw:
+#        #-----------------------------------------------------
+#        filters1values_jdsfgw: JIASHUO_TEST_JDSF
+#        serviceLine_jdsf_jdsfgw: ${ENV(ENV_SERVICELINE_JDSF)}
+#        regionId_jdsf_jdsfgw: ${ENV(ENV_JDSF_REGIONID)}
+#        gatewayName_jdsfgw: JIASHUO_TEST_JDSF
+#        gatewayType_jdsfgw: MICROSERVICE
+#        vpcId_jdsfgw: vpc-7hrcljzkli
+#        subnetId_jdsfgw: subnet-jqsaas34xn
+#        gatewaySpec_jdsfgw: QPS_100
+#        gatewayVersion_jdsfgw: 1.0.0
+#        rz_jdsfgw: prod_bj02
+#        rzType_jdsfgw: SYSTEM
+#        chargeMode_jdsfgw: CONFIG
+#        chargeUnit_jdsfgw:
+#        apiGroupRegion_jdsfgw: cn-north-1
+#        registryId_jdsfgw: reg-1r67qqm63nc3k
+#        proxyAddress_jdsfgw:
+#        timeSpan_jdsfgw:
+#        serviceNames_jdsfgw:
+#            - jdsf-server-nolink
+#        #-----------------------------------------------------
+#        authFlag_jdsfgw: jd_subscription_key
+#        accessKey_jdsfgw: ${ENV(ENV_USER_AK)}
+#        secretKey_jdsfgw: ${ENV(ENV_USER_SK)}
+#        #-----------------------------------------------------
+#        kmsName_jdsfgw: ${ENV(ENV_KMS_NAME)}
+#        subsName_jdsfgw: ${ENV(ENV_SUBS_KEY_NAME)}
+#        #-----------------------------------------------------
+
+testcases:
+#    分组多region下请求微服务网关成功:
+#        testcase: testcases/jdsfgw/jdsfgw.yml
+#        parameters:
+#            regionId_apim_jdsfgw:
+#                - cn-north-1
+##                - cn-south-1
+##                - cn-east-1
+##                - cn-east-2
+#            regionId_jdsf_jdsfgw:
+##                - cn-north-1
+#                - cn-east-2
+#            authFlag_jdsfgw:
+##                - jd_subscription_key
+##                - jd_apikms
+#                - jd_cloud
+    分组多region下请求VPC网关成功:
+        testcase: testcases/jdsfgw/vpcgw.yml
+        parameters:
+            regionId_apim_vpcgw:
+#                - cn-north-1
+#                - cn-south-1
+                - cn-east-1
+#                - cn-east-2
+            regionId_jdsf_vpcgw:
+                - cn-north-1
+#                - cn-east-2
+            authFlag_vpcgw:
+#                - jd_subscription_key
+#                - jd_apikms
+                - jd_cloud

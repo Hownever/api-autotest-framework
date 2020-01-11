@@ -1,0 +1,19 @@
+config:
+    name: 核心功能监控-网格构建
+    variables:
+        testenv: ${ENV(ENV_TEST_ENV)}
+        testproduct: ${ENV(ENV_TEST_PRODUCT)}
+        test_provider_app: ${ENV(ENV_TEST_PRODUCT)}
+        test_consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+        s_sleeptime: 30
+#    base_url: ${ENV(BASE_URL)}
+
+testcases:
+    网格构建验证-获取网格软件版本列表，并且可以正确从oss下载对应的tar包，验证下载tar包的MD5值是否正确:
+        testcase: testcases/ark-build/ark-build-get-mesh-software-version-list.yml
+        variables:
+            c_ark_host: ${ENV(ENV_ARK_WEB_BASE_URL)}
+            c_ark_api_host: ${ENV(ENV_ARK_API_BASE_URL)}
+            c_oss_host: ${ENV(ENV_JDMESH_OSS_BASE_URL)}
+            c_expected_status_code: 200
+            c_env: ${ENV(ENV_TEST_ENV)}

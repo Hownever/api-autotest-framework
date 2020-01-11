@@ -1,0 +1,164 @@
+name: 创建API
+description: 创建API
+operationId: createApis
+
+variables:
+#    url
+    host_tatp: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_tatp: ${ENV(ENV_API_VERSION)}
+    regionId_tatp: ${ENV(ENV_APIM_REGIONID)}
+    apiGroupId_tatp: apiGroupId
+    revision_tatp: revision
+#    header
+    header_tatp:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    hooks
+    serviceLine_tatp: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_tatp: nofile
+    openApiAk_tatp: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_tatp: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_tatp: v1
+
+request:
+    url: $host_tatp/$apiVer_tatp/regions/$regionId_tatp/apiGroups/$apiGroupId_tatp/revision/$revision_tatp/apis
+    method: POST
+    headers: $header_tatp
+    json:
+        api:
+            apiGroupId: $apiGroupId_tatp
+            action: POST
+            apiName: _Test_All_Type_POST_
+            description: _Test_All_Type_
+            path: "/todo/api/v1/task/RE1/{a_p-S}/{b_p-I}/{c_p-L}/{d-p_F}/{e-p_D}/{f-p_B}"
+            matchType: absolute
+            backServiceConfig: True
+            reqParams:
+              - defaultValue: abcd
+                description: a_p-S
+                isRequired: true
+                name: a_p-S
+                paramType: String
+                paramLocation: path
+              - defaultValue: 123
+                description: b_p-I
+                isRequired: true
+                name: b_p-I
+                paramType: Int
+                paramLocation: path
+              - defaultValue: 2147483646
+                description: c_p-L
+                isRequired: true
+                name: c_p-L
+                paramType: Long
+                paramLocation: path
+              - defaultValue: 12.34
+                description: d-p_F
+                isRequired: true
+                name: d-p_F
+                paramType: Float
+                paramLocation: path
+              - defaultValue: 12.34567891234568
+                description: e-p_D
+                isRequired: true
+                name: e-p_D
+                paramType: Double
+                paramLocation: path
+              - defaultValue: false
+                description: f-p_B
+                isRequired: true
+                name: f-p_B
+                paramType: Boolean
+                paramLocation: path
+              - defaultValue: ~
+                description: a_q-S
+                isRequired: true
+                name: a_q-S
+                paramType: String
+                paramLocation: query
+              - defaultValue: ~
+                description: b_q_I
+                isRequired: true
+                name: b_q_I
+                paramType: Int
+                paramLocation: query
+              - defaultValue: ~
+                description: b_q-I
+                isRequired: true
+                name: b_q-I
+                paramType: Int
+                paramLocation: query
+              - defaultValue: ~
+                description: bQI
+                isRequired: true
+                name: bQI
+                paramType: Int
+                paramLocation: query
+              - defaultValue: ~
+                description: c_q-L
+                isRequired: true
+                name: c_q-L
+                paramType: Long
+                paramLocation: query
+              - defaultValue: ~
+                description: d-q_F
+                isRequired: true
+                name: d-q_F
+                paramType: Float
+                paramLocation: query
+              - defaultValue: ~
+                description: e-q_D
+                isRequired: true
+                name: e-q_D
+                paramType: Double
+                paramLocation: query
+              - defaultValue: ~
+                description: f-q_B
+                isRequired: true
+                name: f-q_B
+                paramType: Boolean
+                paramLocation: query
+              - defaultValue: ~
+                description: a_h-S
+                isRequired: false
+                name: a_h-S
+                paramType: String
+                paramLocation: head
+              - defaultValue: ~
+                description: b_h-I
+                isRequired: false
+                name: b_h-I
+                paramType: Int
+                paramLocation: head
+              - defaultValue: ~
+                description: c_h-L
+                isRequired: false
+                name: c_h-L
+                paramType: Long
+                paramLocation: head
+              - defaultValue: ~
+                description: d-h_F
+                isRequired: false
+                name: d-h_F
+                paramType: Float
+                paramLocation: head
+              - defaultValue: ~
+                description: e-h_D
+                isRequired: false
+                name: e-h_D
+                paramType: Double
+                paramLocation: head
+              - defaultValue: ~
+                description: f-h_B
+                isRequired: false
+                name: f_h-B
+                paramType: Boolean
+                paramLocation: head
+            reqBody: "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"a_b-S\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"b_b-I\": {\n\t\t\t\"type\": \"integer\",\n\t\t\t\"format\": \"int32\"\n\t\t},\n\t\t\"c_b-L\": {\n\t\t\t\"type\": \"integer\",\n\t\t\t\"format\": \"int64\"\n\t\t},\n\t\t\"d-b_F\": {\n\t\t\t\"type\": \"number\",\n\t\t\t\"format\": \"float\"\n\t\t},\n\t\t\"e-b_D\": {\n\t\t\t\"type\": \"number\",\n\t\t\t\"format\": \"double\"\n\t\t},\n\t\t\"f-b_B\": {\n\t\t\t\"type\": \"boolean\"\n\t\t}\n\t}\n}"
+            resBody: "{\"type\":\"boolean\"}"
+            reqBodyType: 1
+            resBodyType: 1
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_tatp, $openApiSk_tatp, $serviceLine_tatp, $apiVersion_tatp, $openapiYaml_tatp, $regionId_tatp)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

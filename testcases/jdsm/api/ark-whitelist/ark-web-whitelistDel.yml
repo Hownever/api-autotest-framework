@@ -1,0 +1,27 @@
+name: 根据白名单设置中的已添加白名单列表项目的id，删除对应的白名单规则
+variables:
+    host: ${ENV(ENV_ARK_API_BASE_URL)}
+    expected_status_code: 200
+    nodeapp: productpage
+    nodename: productpage
+    nodetype: app
+    ids: [-1]
+    headers:
+        AUTH-APP-ID: mircoservice
+        AUTH-TOKEN: ${ENV(ENV_ARK_API_TOKEN)}
+    cookies:
+        _ga: ${ENV(ENV_COOKIES)}
+
+request:
+    url: $host/lord/api/v1/whitelist/whiteListDel
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        ids: $ids
+        nodeApp: $nodeapp
+        nodeName: $nodename
+        nodeType: $nodetype
+validate:
+    - eq: ["status_code", $expected_status_code]

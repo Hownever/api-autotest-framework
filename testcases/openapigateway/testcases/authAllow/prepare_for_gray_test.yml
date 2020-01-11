@@ -1,0 +1,163 @@
+- config:
+    name: 调用网关控制端，配置灰度业务线和api
+    variables:
+        openapi_manage_host: ${ENV(ENV_OPENAPI_MANAGE_HOST)}
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        serviceLine: apigateway
+        serviceLineFlag: True
+        serviceLinePin: Jcloud_00
+        serviceLinePinFlag: True
+        apis: describeApiGroups
+        apisFlag: True
+        apisPin: Jcloud_00
+        apisPinFlag: True
+        ser_ver_api: apigateway-v1-describeApiGroups
+    verify: False
+
+- test:
+    name: 查询是否有业务线记录
+    api: api/grayGetServiceLine.yml
+    variables:
+        host: $openapi_manage_host
+    extract:
+        - scode: status_code
+        - GetServiceLineResult: content
+    output:
+        - scode: $scode
+        - GetServiceLineResult: $GetServiceLineResult
+
+- test:
+    name: 如果未查到业务线记录，创建业务线，$serviceLine
+    skipIf: ${validate_skip($scode, 200, eq)}
+    api: api/grayCreateServiceLine.yml
+    variables:
+        host: $openapi_manage_host
+        name: basic-service-gray-list
+        key: service
+        value: $serviceLine
+    validate:
+        - eq: [status_code, 201]
+
+- test:
+    name: 如果查到业务线记录，根据是否有需要的业务线进行编辑
+    skipIf: ${validate_skip($scode, 404, eq)}
+    api: api/grayPatchServiceLine.yml
+    variables:
+        host: $openapi_manage_host
+        value: ${get_value_from_struct_gray($GetServiceLineResult, $serviceLine, flag=$serviceLineFlag)}
+    validate:
+          - eq: [status_code, 200]
+#-------------------------------------------------------------------------------------------------------------
+
+- test:
+    name: 查询是否有业务线pin记录
+    api: api/grayServiceLineGetPin.yml
+    variables:
+        host: $openapi_manage_host
+        serviceLine: $serviceLine
+    extract:
+        - scode: status_code
+        - grayServiceLineGetPinResult: content
+    output:
+        - scode: $scode
+        - grayServiceLineGetPinResult: $grayServiceLineGetPinResult
+
+- test:
+    name: 如果未查到业务线pin记录，创建业务线pin
+    skipIf: ${validate_skip($scode, 200, eq)}
+    api: api/grayServiceLineBindPin.yml
+    variables:
+        host: $openapi_manage_host
+        name: basic-service-gray
+        key: $serviceLine
+        value: ${to_base64($serviceLinePin)}
+    validate:
+        - eq: [status_code, 201]
+
+- test:
+    name: 如果查到业务线pin记录，根据是否有需要的业务线pin进行编辑
+    skipIf: ${validate_skip($scode, 404, eq)}
+    api: api/grayServiceLinePatchPin.yml
+    variables:
+        host: $openapi_manage_host
+        serviceLine: $serviceLine
+        value: ${get_value_from_struct_gray($grayServiceLineGetPinResult, $serviceLinePin, pin, flag=$serviceLinePinFlag)}
+    validate:
+        - eq: [status_code, 200]
+#-------------------------------------------------------------------------------------------------------------
+- test:
+    name: 查询是否有api记录
+    api: api/grayGetApiList.yml
+    variables:
+        host: $openapi_manage_host
+        serviceLine: $serviceLine
+    extract:
+        - scode: status_code
+        - grayGetApiListResult: content
+    output:
+        - scode: $scode
+        - grayGetApiListResult: $grayGetApiListResult
+
+- test:
+    name: 如果未查到api记录，创建api
+    skipIf: ${validate_skip($scode, 200, eq)}
+    api: api/grayCreateApiList.yml
+    variables:
+        host: $openapi_manage_host
+        name: basic-api-gray-list
+        key: $serviceLine
+        value: $apis
+    validate:
+        - eq: [status_code, 201]
+
+- test:
+    name: 如果查到api记录，根据是否有需要的api进行编辑
+    skipIf: ${validate_skip($scode, 404, eq)}
+    api: api/grayPatchApiList.yml
+    variables:
+        host: $openapi_manage_host
+        serviceLine: $serviceLine
+        value: ${get_value_from_struct_gray($grayGetApiListResult, $apis, flag=$apisFlag)}
+    validate:
+        - eq: [status_code, 200]
+#-------------------------------------------------------------------------------------------------------------
+
+- test:
+    name: 查询是否有api-pin记录
+    api: api/grayApiListGetPin.yml
+    variables:
+        host: $openapi_manage_host
+        ser_ver_api: $ser_ver_api
+    extract:
+        - scode: status_code
+        - grayApiListGetPinResult: content
+    output:
+        - scode: $scode
+        - grayApiListGetPinResult: $grayApiListGetPinResult
+
+- test:
+    name: 如果未查到api-pin记录，创建api-pin
+    skipIf: ${validate_skip($scode, 200, eq)}
+    api: api/grayApiListBindPin.yml
+    variables:
+        host: $openapi_manage_host
+        name: basic-api-gray
+        key: $ser_ver_api
+        value: ${to_base64($apisPin)}
+    validate:
+        - eq: [status_code, 201]
+
+- test:
+    name: 如果查到api-pin记录，根据是否有需要的api-pin进行编辑
+    skipIf: ${validate_skip($scode, 404, eq)}
+    api: api/grayApiListPatchPin.yml
+    variables:
+        host: $openapi_manage_host
+        ser_ver_api: $ser_ver_api
+        value: ${get_value_from_struct_gray($grayApiListGetPinResult, $apisPin, pin, flag=$apisPinFlag)}
+    validate:
+        - eq: [status_code, 200]

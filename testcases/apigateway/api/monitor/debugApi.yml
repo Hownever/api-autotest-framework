@@ -1,0 +1,25 @@
+request:
+    url: /$api_ver/regions/$regionId/apiGroups/$apiGroupId/revision/$revision/apis/$apiId:debug
+    method: POST
+    headers:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: $pin
+    json:
+        api:
+            assessKey: $assessKey
+            secretKey: $secretKey
+            host: $host
+            uri: $uri
+            method: $method
+            authType: $authType
+            region: $region
+            queryString: $queryString
+            body: $body
+            reqBodyType: $reqBodyType
+            headerString: $headerString
+            environment: online
+    timeout: 500
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $AK, $SK, $product, $apiVersion, $openapi_yaml, $regionId)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

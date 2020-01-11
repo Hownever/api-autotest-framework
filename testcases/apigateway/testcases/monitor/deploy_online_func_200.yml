@@ -1,0 +1,58 @@
+- config:
+    name: 创建分组-创建API-API后端地址为func-发布到线上环境
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        environment: online
+        backendUrl: ${ENV(ENV_BACK_SERVICE_PATH)}
+        backendServiceType: HTTP/HTTPS
+        authType: jd_cloud
+        groupName: ${ENV(ENV_GROUP_NAME)}
+    verify: False
+    output:
+        - apiGroupId
+        - revision
+        - environment
+
+- test:
+    name: 更新API-后端为Mock
+    testcase: testcases/monitor/updateApis_backServiceType_func_200.yml
+    variables:
+        groupName: $groupName
+        authType: $authType
+    output:
+        - apiGroupId
+        - revision
+
+- test:
+    name: 创建后端配置
+    api: api/monitor/adminCreateBackendConfig.yml
+    variables:
+        apiGroupId_cbc: $apiGroupId
+        baseGroupId_cbc: $apiGroupId
+        environment_cbc: $environment
+        backendUrl_cbc: $backendUrl
+        backendServiceType_cbc: $backendServiceType
+        sort_cbc: 0
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布到线上环境
+    api: api/monitor/deployByAdmin.yml
+    variables:
+        apiGroupId_dba: $apiGroupId
+        revision_dba: $revision
+        environment_dba: $environment
+        backendServiceType: $backendServiceType
+        backendUrl: $backendUrl
+        description: $apiGroupId+$environment+$revision+$backendServiceType
+    validate:
+        - eq: ["status_code", 200]

@@ -1,0 +1,63 @@
+config:
+    name: Token 安全测试环境初始化
+    description: |
+        网格应用token配置初始化
+    variables:
+        testenv: ${ENV(ENV_TEST_ENV)}
+        test_provider_app: ${ENV(ENV_TEST_PROVIDER)}
+        test_consumer_app: ${ENV(ENV_TEST_CONSUMER)}
+        testproduct_productpage: $test_consumer_app
+        testproduct_reviews: $test_provider_app
+        testproduct_ratings: ${ENV(ENV_TEST_RATINGS)}
+
+testcases:
+    网格应用token配置 - ${testproduct_productpage}:
+        testcase: testcases/ark-token/apply-ark-token-settings.yml
+        parameters:
+            c_appname:
+                - ${testproduct_productpage}
+
+            # token 网格同步时间
+            c_update_token_settings_waittime:
+                - ${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}
+            # 安全配置
+            c_docheck: [0]
+            c_whitelist: [0]
+            c_checkip: [0]
+            c_ipwhitelist: [0]
+            c_sendlog: [0]
+            c_tenantname: [jcloud]
+
+    网格应用token配置 - ${testproduct_reviews}:
+        testcase: testcases/ark-token/apply-ark-token-settings.yml
+        parameters:
+            c_appname:
+                - ${testproduct_reviews}
+
+            # token 网格同步时间
+            c_update_token_settings_waittime:
+                - ${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}
+            # 安全配置
+            c_docheck: [1]
+            c_whitelist: [0]
+            c_checkip: [0]
+            c_ipwhitelist: [0]
+            c_sendlog: [0]
+            c_tenantname: [jcloud]
+
+    网格应用token配置 - ${testproduct_ratings}:
+        testcase: testcases/ark-token/apply-ark-token-settings.yml
+        parameters:
+            c_appname:
+                - ${testproduct_ratings}
+
+            # token 网格同步时间
+            c_update_token_settings_waittime:
+                - ${ENV(ENV_UPDATE_ARK_TOKEN_SETTINGS_WAITTIME_SEC)}
+            # 安全配置
+            c_docheck: [1]
+            c_whitelist: [0]
+            c_checkip: [0]
+            c_ipwhitelist: [0]
+            c_sendlog: [0]
+            c_tenantname: [jcloud]

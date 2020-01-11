@@ -1,0 +1,699 @@
+- config:
+    name: 恢复已删除的分组、api、版本
+    base_url: ${ENV(ENV_BASE_URL)}
+    variables:
+        product: ${ENV(ENV_PRODUCT)}
+        apiVersion: ${ENV(ENV_API_VERSION)}
+        openapi_yaml: ${ENV(ENV_OPENAPI_SWAGGER_FILE_PATH)}
+        regionId: ${ENV(ENV_DEFAULT_REGIONID)}
+        api_ver: ${ENV(ENV_API_VERSION)}
+        pin: ${ENV(ENV_PIN)}
+        AK: ${ENV(ENV_AK)}
+        SK: ${ENV(ENV_SK)}
+        authType: jd_cloud
+        revision: 0.0.2
+        baseRevision: 0.0.1
+        apiName: create_task_json
+        groupName: ${ENV(ENV_GROUP_NAME)}
+        environment: online
+        backendUrl: ${ENV(ENV_BACK_SERVICE_PATH)}
+        backendServiceType: unique
+        accessKey: ${ENV(ENV_USER_AK)}
+        secretKey: ${ENV(ENV_USER_SK)}
+    verify: False
+
+- test:
+    name: 创建分组,创建api
+    testcase: testcases/monitor/createApis_200.yml
+    variables:
+        authType: $authType
+    output:
+        - apiGroupId
+
+- test:
+    name: 新建版本$revision
+    api: api/monitor/createRevision.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        baseRevision: $baseRevision
+        revisionNote: $apiGroupId, $revision based on $baseRevision
+    extract:
+        - revision: content.result.revision
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+    output:
+        - revision
+
+- test:
+    name: 可以查到新建的版本$revision
+    api: api/monitor/describeRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - totalCount: content.result.totalCount
+        - revisionId: content.result.revisions.0.revisionId
+    validate:
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 查找$apiName,获取apiId
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId: content.result.apis.0.apiId
+    validate:
+        - eq: [$scode, 200]
+    output:
+        - apiId
+
+- test:
+    name: 删除0.0.2版本的api,$apiName
+    api: api/monitor/deleteApi.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+    name: describeDeletedApis接口查找已删除的api,$apiName,可以查到
+    api: api/monitor/describeDeletedApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId_recover: content.result.apis.0.apiId
+        - apiGroupId_recover: content.result.apis.0.apiGroupId
+        - apiName_recover: content.result.apis.0.apiName
+        - totalCount: content.result.totalCount
+        - apiStatus: content.result.apis.0.apiStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$apiId_recover, $apiId]
+        - eq: [$apiName_recover, $apiName]
+        - contains: [$apiGroupId_recover, $apiGroupId]
+        - contains: [$apiGroupId_recover, $revision]
+        - eq: [$totalCount, 1]
+        - eq: [$apiStatus, 0]
+
+- test:
+    name: queryApis接口查找已删除的api,$apiName,不可以查到
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$totalCount, 0]
+
+- test:
+    name: 恢复删除的api,$apiName
+    api: api/monitor/recoveryDeletedApi.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 200]
+
+- test:
+    name: 查找api查看是否已恢复,$apiName
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId_recover: content.result.apis.0.apiId
+        - apiGroupId_recover: content.result.apis.0.apiGroupId
+        - apiName_recover: content.result.apis.0.apiName
+        - totalCount: content.result.totalCount
+        - apiStatus: content.result.apis.0.apiStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$apiId_recover, $apiId]
+        - eq: [$apiName_recover, $apiName]
+        - contains: [$apiGroupId_recover, $apiGroupId]
+        - contains: [$apiGroupId_recover, $revision]
+        - eq: [$totalCount, 1]
+        - eq: [$apiStatus, 1]
+
+- test:
+      name: 删除0.0.2版本
+      api: api/monitor/deleteRevision.yml
+      variables:
+          apiGroupId: $apiGroupId
+          revisionId: $revisionId
+      extract:
+          - scode: status_code
+      validate:
+          - eq: [$scode, 200]
+
+- test:
+    name: describeDeletedRevisions接口查找已删除的版本,$revision,可以查到
+    api: api/monitor/describeDeletedRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - scode: status_code
+        - revision_recover: content.result.revisions.0.revision
+        - baseGroupId: content.result.revisions.0.baseGroupId
+        - totalCount: content.result.totalCount
+        - groupStatus: content.result.revisions.0.groupStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$revision_recover, $revision]
+        - eq: [$baseGroupId, $apiGroupId]
+        - eq: [$totalCount, 1]
+        - eq: [$groupStatus, 0]
+
+- test:
+    name: describeRevisions接口查找已删除的版本,$revision,不可以查到
+    api: api/monitor/describeRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$totalCount, 0]
+
+- test:
+    name: 恢复删除的api,会报错
+    api: api/monitor/recoveryDeletedApi.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 404]
+        - eq: [$status, APIGATEWAY_NOT_FOUND]
+        - eq: [$message, api group资源不存在]
+
+- test:
+    name: 查找api查看是否已恢复,$apiName,可以查到,设计如此不影响
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId_recover: content.result.apis.0.apiId
+        - apiGroupId_recover: content.result.apis.0.apiGroupId
+        - apiName_recover: content.result.apis.0.apiName
+        - totalCount: content.result.totalCount
+        - apiStatus: content.result.apis.0.apiStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$apiId_recover, $apiId]
+        - eq: [$apiName_recover, $apiName]
+        - contains: [$apiGroupId_recover, $apiGroupId]
+        - contains: [$apiGroupId_recover, $revision]
+        - eq: [$totalCount, 1]
+        - eq: [$apiStatus, 1]
+
+- test:
+    name: 恢复已删除的版本$revision
+    api: api/monitor/recoveryDeletedRevision.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revisionId: $revisionId
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 查找已恢复的版本,$revision,可以查到
+    api: api/monitor/describeRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - scode: status_code
+        - revisionId_recover: content.result.revisions.0.revisionId
+        - revision_recover: content.result.revisions.0.revision
+        - baseRevision_recover: content.result.revisions.0.baseRevision
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$revisionId_recover, $revisionId]
+        - eq: [$revision_recover, $revision]
+        - eq: [$baseRevision_recover, $baseRevision]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 查找api查看是否已恢复,$apiName,可以查到
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId_recover: content.result.apis.0.apiId
+        - apiGroupId_recover: content.result.apis.0.apiGroupId
+        - apiName_recover: content.result.apis.0.apiName
+        - totalCount: content.result.totalCount
+        - apiStatus: content.result.apis.0.apiStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$apiId_recover, $apiId]
+        - eq: [$apiName_recover, $apiName]
+        - contains: [$apiGroupId_recover, $apiGroupId]
+        - contains: [$apiGroupId_recover, $revision]
+        - eq: [$totalCount, 1]
+        - eq: [$apiStatus, 1]
+
+- test:
+    name: 查找0.0.2版本所有api是否已恢复,可以查到
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1:
+        filters1values:
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 1]
+
+- test:
+      name: 删除分组,$groupName
+      api: api/monitor/deleteApiGroup.yml
+      variables:
+          apiGroupId: $apiGroupId
+      extract:
+          - scode: status_code
+      validate:
+          - eq: [$scode, 200]
+
+- test:
+    name: describeDeletedApiGroups接口查找已删除的分组,$groupName,可以查到
+    api: api/monitor/describeDeletedApiGroups.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: groupName
+        filters1values: $groupName
+    extract:
+        - scode: status_code
+        - groupName_recover: content.result.apiGroups.0.groupName
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$groupName_recover, $groupName]
+
+- test:
+    name: describeApiGroups接口查找已删除的分组,$groupName,不可以查到
+    api: api/monitor/describeApiGroups.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: groupName
+        filters1values: $groupName
+    extract:
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$totalCount, 0]
+
+- test:
+    name: 恢复删除的api,会报错
+    api: api/monitor/recoveryDeletedApi.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        apiId: $apiId
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 404]
+        - eq: [$status, APIGATEWAY_NOT_FOUND]
+        - eq: [$message, api group资源不存在]
+
+- test:
+    name: $revision,查找api查看是否已恢复,可以查到不影响,设计如此
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId_recover: content.result.apis.0.apiId
+        - apiGroupId_recover: content.result.apis.0.apiGroupId
+        - apiName_recover: content.result.apis.0.apiName
+        - totalCount: content.result.totalCount
+        - apiStatus: content.result.apis.0.apiStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$apiId_recover, $apiId]
+        - eq: [$apiName_recover, $apiName]
+        - contains: [$apiGroupId_recover, $apiGroupId]
+        - contains: [$apiGroupId_recover, $revision]
+        - eq: [$totalCount, 1]
+        - eq: [$apiStatus, 1]
+
+- test:
+    name: $revision,查找所有api是否已恢复,可以查到不影响,设计如此
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1:
+        filters1values:
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: $baseRevision,查找此分组的所有api,可以查到不影响,设计如此
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $baseRevision
+        filters1:
+        filters1values:
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: describeApiGroups接口查找已删除的分组,不可以查到
+    api: api/monitor/describeApiGroups.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: groupName
+        filters1values: $groupName
+    extract:
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$totalCount, 0]
+
+- test:
+    name: 恢复已删除的版本$revision,会报错
+    api: api/monitor/recoveryDeletedRevision.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revisionId: $revisionId
+    extract:
+        - scode: status_code
+        - status: content.error.status
+        - message: content.error.message
+    validate:
+        - eq: [$scode, 404]
+        - eq: [$status, APIGATEWAY_NOT_FOUND]
+        - eq: [$message, api group资源不存在]
+
+- test:
+    name: describeRevisions接口查找版本$revision,可以查到不影响,设计如此
+    api: api/monitor/describeRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - scode: status_code
+        - revisionId_recover: content.result.revisions.0.revisionId
+        - revision_recover: content.result.revisions.0.revision
+        - baseRevision_recover: content.result.revisions.0.baseRevision
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$revisionId_recover, $revisionId]
+        - eq: [$revision_recover, $revision]
+        - eq: [$baseRevision_recover, $baseRevision]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: $revision,查找api查看是否已恢复,可以查到不影响,设计如此
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId_recover: content.result.apis.0.apiId
+        - apiGroupId_recover: content.result.apis.0.apiGroupId
+        - apiName_recover: content.result.apis.0.apiName
+        - totalCount: content.result.totalCount
+        - apiStatus: content.result.apis.0.apiStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$apiId_recover, $apiId]
+        - eq: [$apiName_recover, $apiName]
+        - contains: [$apiGroupId_recover, $apiGroupId]
+        - contains: [$apiGroupId_recover, $revision]
+        - eq: [$totalCount, 1]
+        - eq: [$apiStatus, 1]
+
+- test:
+    name: $revision,查找所有api是否已恢复,可以查到不影响,设计如此
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1:
+        filters1values:
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: $baseRevision,查找此分组的所有api,可以查到不影响,设计如此
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $baseRevision
+        filters1:
+        filters1values:
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 恢复已删除的分组
+    api: api/monitor/recoveryDeletedApiGroup.yml
+    variables:
+        apiGroupId: $apiGroupId
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: describeApiGroups接口查找已删除的分组,可以查到
+    api: api/monitor/describeApiGroups.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: groupName
+        filters1values: $groupName
+    extract:
+        - scode: status_code
+        - apiGroupId_recover: content.result.apiGroups.0.apiGroupId
+        - groupName_recover: content.result.apiGroups.0.groupName
+        - totalCount: content.result.totalCount
+        - groupStatus: content.result.apiGroups.0.groupStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$groupName_recover, $groupName]
+        - eq: [$apiGroupId_recover, $apiGroupId]
+        - eq: [$totalCount, 1]
+        - eq: [$groupStatus, 1]
+
+- test:
+    name: 查找此分组的版本$revision,可以查到
+    api: api/monitor/describeRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $revision
+    extract:
+        - scode: status_code
+        - revisionId_recover: content.result.revisions.0.revisionId
+        - revision_recover: content.result.revisions.0.revision
+        - baseRevision_recover: content.result.revisions.0.baseRevision
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$revisionId_recover, $revisionId]
+        - eq: [$revision_recover, $revision]
+        - eq: [$baseRevision_recover, $baseRevision]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 查找此分组的版本$baseRevision,可以查到
+    api: api/monitor/describeRevisions.yml
+    variables:
+        apiGroupId: $apiGroupId
+        filters1: revision
+        filters1values: $baseRevision
+    extract:
+        - scode: status_code
+        - revisionId_recover: content.result.revisions.0.revisionId
+        - revision_recover: content.result.revisions.0.revision
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$revisionId_recover, $apiGroupId]
+        - eq: [$revision_recover, $baseRevision]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 查找此分组的$revision,$apiName,可以查到
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1: apiName
+        filters1values: $apiName
+    extract:
+        - scode: status_code
+        - apiId_recover: content.result.apis.0.apiId
+        - apiGroupId_recover: content.result.apis.0.apiGroupId
+        - apiName_recover: content.result.apis.0.apiName
+        - totalCount: content.result.totalCount
+        - apiStatus: content.result.apis.0.apiStatus
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$apiId_recover, $apiId]
+        - eq: [$apiName_recover, $apiName]
+        - contains: [$apiGroupId_recover, $apiGroupId]
+        - contains: [$apiGroupId_recover, $revision]
+        - eq: [$totalCount, 1]
+        - eq: [$apiStatus, 1]
+
+- test:
+    name: $revision,查找所有api是否已恢复,可以查到
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $revision
+        filters1:
+        filters1values:
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: $baseRevision,查找此分组所有api,可以查到
+    api: api/monitor/queryApis.yml
+    variables:
+        apiGroupId: $apiGroupId
+        revision: $baseRevision
+        filters1:
+        filters1values:
+    extract:
+        - scode: status_code
+        - totalCount: content.result.totalCount
+    validate:
+        - eq: [$scode, 200]
+        - eq: [$totalCount, 1]
+
+- test:
+    name: 创建后端配置
+    api: api/monitor/adminCreateBackendConfig.yml
+    variables:
+        apiGroupId_cbc: $apiGroupId
+        baseGroupId_cbc: $apiGroupId
+        environment_cbc: $environment
+        backendUrl_cbc: $backendUrl
+        backendServiceType_cbc: $backendServiceType
+        sort_cbc: 0
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布到线上环境
+    api: api/monitor/deployByAdmin.yml
+    variables:
+        apiGroupId_dba: $apiGroupId
+        revision_dba: $revision
+        environment_dba: $environment
+        backendServiceType: $backendServiceType
+        backendUrl: $backendUrl
+        description: $apiGroupId+$environment+$revision+$backendServiceType
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 删除旧数据
+    testcase: testcases/monitor/prepare_for_createAccessAuth_jdcloud.yml
+    variables:
+        accessKey: $accessKey
+
+- test:
+    name: 创建jdcloud访问授权，绑定分组
+    api: api/monitor/createAccessAuth.yml
+    variables:
+        accessKey: $accessKey
+        authUserType: $authType
+        deploymentIds: ${return_string($apiGroupId, $environment)}
+        description: $accessKey+$authUserType+${return_string($apiGroupId, $environment)}
+
+- test:
+    name: 请求createTaskJson接口
+    api: api/requestBackend/createTaskJson.yml
+    variables:
+        subscriptionKey:
+        gw_host: ${return_string($apiGroupId, env=$environment, host=1, regionId=$regionId)}
+        description: description
+        title: title
+        USERAK: $accessKey
+        USERSK: $secretKey
+    extract:
+        - scode: status_code
+    validate:
+        - eq: [$scode, 201]

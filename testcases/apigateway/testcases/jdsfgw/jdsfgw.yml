@@ -1,0 +1,542 @@
+- config:
+    name: 微服务网关
+    variables:
+    #    path
+        regionId_apim_jdsfgw: ${ENV(ENV_APIM_REGIONID)}
+        serviceLine_apim_jdsfgw: ${ENV(ENV_SERVICELINE_APIM)}
+    #    json
+        groupName_jdsfgw: JIASHUO_TEST_JDSF
+        description_jdsfgw: 测试微服务网关，勿删
+        prefix_jdsfgw: AAA
+        keyCheck_jdsfgw: check_exist
+        authType_jdsfgw: jd_cloud
+        prefixStrip_jdsfgw: 0
+        groupType_jdsfgw: jdsf_group
+        jdsfName_jdsfgw:
+        jdsfRegistryName_jdsfgw:
+        jdsfId_jdsfgw:
+        environment_jdsfgw: online
+        backendServiceType_jdsfgw: jdsf
+        backendUrl_jdsfgw:
+        #-----------------------------------------------------
+        filters1values_jdsfgw: JIASHUO_TEST_JDSF
+        serviceLine_jdsf_jdsfgw: ${ENV(ENV_SERVICELINE_JDSF)}
+        regionId_jdsf_jdsfgw: ${ENV(ENV_JDSF_REGIONID)}
+        gatewayName_jdsfgw: JIASHUO_TEST_JDSF
+        gatewayType_jdsfgw: MICROSERVICE
+        vpcId_jdsfgw: vpc-ze2t9f0k6p
+        subnetId_jdsfgw: subnet-1ls6zsv8tz
+        gatewaySpec_jdsfgw: QPS_1500
+        gatewayVersion_jdsfgw: 1.0.0
+        rz_jdsfgw:
+        rzType_jdsfgw: SYSTEM
+        chargeMode_jdsfgw: CONFIG
+        chargeUnit_jdsfgw:
+        apiGroupRegion_jdsfgw: cn-north-1
+        registryId_jdsfgw: reg-xj0pz7w601z4
+        proxyAddress_jdsfgw:
+        timeSpan_jdsfgw:
+        serviceNames_jdsfgw:
+#            - jdsf-server
+            - jdsf-server-nolink
+        serviceNames_one_jdsfgw: jdsf-server-nolink
+        #-----------------------------------------------------
+        authFlag_jdsfgw: jd_subscription_key
+        accessKey_jdsfgw: ${ENV(ENV_USER_AK)}
+        secretKey_jdsfgw: ${ENV(ENV_USER_SK)}
+        #-----------------------------------------------------
+        kmsName_jdsfgw: ${ENV(ENV_KMS_NAME)}
+        subsName_jdsfgw: ${ENV(ENV_SUBS_KEY_NAME)}
+        #-----------------------------------------------------
+    verify: False
+
+- test:
+    name: 删除旧数据：删除旧的API分组
+    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+    variables:
+        serviceLine_pcag: $serviceLine_apim_jdsfgw
+        regionId_apim_pcag: $regionId_apim_jdsfgw
+        filters1values_pcag: $groupName_jdsfgw
+
+- test:
+    name: 创建分组成功，分组名：$groupName_jdsfgw，分组类型：$groupType_jdsfgw
+    api: api/apiGroup/createApiGroup.yml
+    variables:
+    #    path
+        regionId_cag: $regionId_apim_jdsfgw
+    #    json
+        groupName_cag: $groupName_jdsfgw
+        description_cag: $description_jdsfgw
+        prefix_cag: $prefix_jdsfgw
+        keyCheck_cag: $keyCheck_jdsfgw
+        authType_cag: $authType_jdsfgw
+        prefixStrip_cag: $prefixStrip_jdsfgw
+        groupType_cag: $groupType_jdsfgw
+        jdsfName_cag: $jdsfName_jdsfgw
+        jdsfRegistryName_cag: $jdsfRegistryName_jdsfgw
+        jdsfId_cag: $jdsfId_jdsfgw
+        serviceLine_cag: $serviceLine_apim_jdsfgw
+    extract:
+        - apiGroupId_cag: content.result.apiGroupId
+        - revision_cag: content.result.revision
+    validate:
+        - eq: ["status_code", 200]
+        - len_eq: [$apiGroupId_cag, 15]
+        - eq: [$revision_cag, 0.0.1]
+        - contains: [$apiGroupId_cag, ag-]
+    output:
+        - apiGroupId_cag
+        - revision_cag
+
+- test:
+    name: 查询微服务网关各信息，绑定分组
+    testcase: testcases/jdsfgw/prepare_for_createGateway.yml
+    variables:
+        regionId_apim_pcg: $regionId_apim_jdsfgw
+        regionId_jdsf_pcg: $regionId_jdsf_jdsfgw
+        filters1values_pcg: $gatewayName_jdsfgw
+    #-----------------------------------------------------
+        gatewayName_pcg: $gatewayName_jdsfgw
+        gatewayType_pcg: $gatewayType_jdsfgw
+        vpcId_pcg: $vpcId_jdsfgw
+        subnetId_pcg: $subnetId_jdsfgw
+        gatewaySpec_pcg: $gatewaySpec_jdsfgw
+        gatewayVersion_pcg: $gatewayVersion_jdsfgw
+        rz_pcg: $rz_jdsfgw
+        rzType_pcg: $rzType_jdsfgw
+        chargeMode_pcg: $chargeMode_jdsfgw
+        chargeUnit_pcg: $chargeUnit_jdsfgw
+        apiGroupId_pcg: $apiGroupId_cag
+        apiGroupRegion_pcg: $regionId_apim_jdsfgw
+        registryId_pcg: $registryId_jdsfgw
+        proxyAddress_pcg: $proxyAddress_jdsfgw
+        timeSpan_pcg: $timeSpan_jdsfgw
+        serviceNames_pcg: $serviceNames_jdsfgw
+        serviceLine_pcg: $serviceLine_jdsf_jdsfgw
+        groupType_pcg: $groupType_jdsfgw
+        jdsfParam_pcg: ~
+        jdsfRegion_pcg: $regionId_jdsf_jdsfgw
+    output:
+        - gatewayId_dg
+        - registryId_dg
+        - gatewayName_dg
+
+- test:
+    name: 查询分组，绑定信息正确
+    api: api/apiGroup/batchQueryApiGroups.yml
+    variables:
+    #    url
+        regionId_bqag: $regionId_apim_jdsfgw
+    #    para
+        filters1values_bqag: $gatewayId_dg
+        serviceLine_bqag: $serviceLine_apim_jdsfgw
+    extract:
+        - apiGroup_bqag: content.result.apiGroups.0
+        - apiGroupId_bqag: content.result.apiGroups.0.apiGroupId
+        - jdsfId_bqag: content.result.apiGroups.0.jdsfId
+        - jdsfName_bqag: content.result.apiGroups.0.jdsfName
+        - environment_bqag: content.result.apiGroups.0.environment
+        - jdsfRegistryName_bqag: content.result.apiGroups.0.jdsfRegistryName
+    validate:
+        - eq: ["status_code", 200]
+        - eq: [$apiGroupId_bqag, $apiGroupId_cag]
+        - contains: [$jdsfId_bqag, $gatewayId_dg]
+        - eq: [$jdsfName_bqag, null]
+        - contains: [$jdsfRegistryName_bqag, $registryId_dg]
+        - eq: [$environment_bqag, "test,preview,online"]
+
+- test:
+    name: 发布分组到测试环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_jdsfgw
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: test
+        backendServiceType_dba: $backendServiceType_jdsfgw
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba:
+        jdsfRegistryName_dba:
+        jdsfId_dba: $gatewayId_dg
+        serviceLine_dba: $serviceLine_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布分组到预发环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_jdsfgw
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: preview
+        backendServiceType_dba: $backendServiceType_jdsfgw
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba:
+        jdsfRegistryName_dba:
+        jdsfId_dba: $gatewayId_dg
+        serviceLine_dba: $serviceLine_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 发布分组到线上环境
+    api: api/Deployment/deployByAdmin.yml
+    variables:
+    #    url
+        regionId_dba: $regionId_apim_jdsfgw
+        apiGroupId_dba: $apiGroupId_cag
+    #    json
+        revision_dba: $revision_cag
+        environment_dba: online
+        backendServiceType_dba: $backendServiceType_jdsfgw
+        backendUrl_dba:
+        description_dba:
+        jdsfName_dba:
+        jdsfRegistryName_dba:
+        jdsfId_dba: $gatewayId_dg
+        serviceLine_dba: $serviceLine_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型不是京东云用户，跳过；如果是京东云用户，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_cloud, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_jdcloud.yml
+    variables:
+        accessKey_pcaaj: $accessKey_jdsfgw
+        serviceLine_apim_pcaaj: $serviceLine_apim_jdsfgw
+        regionId_apim_pcaaj: $regionId_apim_jdsfgw
+        filters2values_pcaaj: $accessKey_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建jdcloud访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_cloud, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $accessKey_jdsfgw
+        authUserType_caa: jd_cloud
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: $accessKey_jdsfgw+jd_cloud+${return_string($apiGroupId_cag, online)}
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+        regionId_caa: $regionId_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建jdcloud访问授权，绑定分组预发环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_cloud, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $accessKey_jdsfgw
+        authUserType_caa: jd_cloud
+        deploymentIds_caa: ${return_string($apiGroupId_cag, preview)}
+        description_caa: $accessKey_jdsfgw+jd_cloud+${return_string($apiGroupId_cag, preview)}
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+        regionId_caa: $regionId_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建jdcloud访问授权，绑定分组测试环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_cloud, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        accessKey_caa: $accessKey_jdsfgw
+        authUserType_caa: jd_cloud
+        deploymentIds_caa: ${return_string($apiGroupId_cag, test)}
+        description_caa: $accessKey_jdsfgw+jd_cloud+${return_string($apiGroupId_cag, test)}
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+        regionId_caa: $regionId_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求测试环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_cloud, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        subscriptionKey: subscriptionKey
+        gw_host: ${return_string($apiGroupId_cag, env=test, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: $accessKey_jdsfgw
+        USERSK: $secretKey_jdsfgw
+        jdsfServiceName: $serviceNames_one_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求预发环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_cloud, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: subscriptionKey
+        gw_host: ${return_string($apiGroupId_cag, env=preview, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: $accessKey_jdsfgw
+        USERSK: $secretKey_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求线上环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_cloud, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: subscriptionKey
+        gw_host: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: $accessKey_jdsfgw
+        USERSK: $secretKey_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型是API网关签名，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_kms.yml
+    variables:
+        regionId_apim_pcaak: $regionId_apim_jdsfgw
+        serviceLine_apim_pcaak: $serviceLine_apim_jdsfgw
+        kmsName_pcaak: $kmsName_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是API网关签名，创建kms
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    api: api/kms/createKey.yml
+    variables:
+        keyName_ck: $kmsName_jdsfgw
+        keyDesc_ck: $kmsName_jdsfgw
+        serviceLine_ck: $serviceLine_apim_jdsfgw
+        regionId_ck: $regionId_apim_jdsfgw
+    extract:
+        - kmsaccessKey_ck: content.result.accessKey
+        - kmssecretKey_ck: content.result.secretKey
+        - kmskeyId_ck: content.result.keyId
+    validate:
+        - eq: ["status_code", 200]
+    output:
+        - kmsaccessKey_ck
+        - kmssecretKey_ck
+        - kmskeyId_ck
+
+- test:
+    name: 创建kms访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        regionId_caa: $regionId_apim_jdsfgw
+        accessKey_caa: $kmskeyId_ck
+        authUserType_caa: jd_apikms
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: $kmsaccessKey_ck+jd_apikms+${return_string($apiGroupId_cag, online)}
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建kms访问授权，绑定分组预发环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        regionId_caa: $regionId_apim_jdsfgw
+        accessKey_caa: $kmskeyId_ck
+        authUserType_caa: jd_apikms
+        deploymentIds_caa: ${return_string($apiGroupId_cag, preview)}
+        description_caa: $kmsaccessKey_ck+jd_apikms+${return_string($apiGroupId_cag, preview)}
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建kms访问授权，绑定分组测试环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        regionId_caa: $regionId_apim_jdsfgw
+        accessKey_caa: $kmskeyId_ck
+        authUserType_caa: jd_apikms
+        deploymentIds_caa: ${return_string($apiGroupId_cag, test)}
+        description_caa: $kmsaccessKey_ck+jd_apikms+${return_string($apiGroupId_cag, test)}
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求测试环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: subscriptionKey
+        gw_host: ${return_string($apiGroupId_cag, env=test, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: $kmsaccessKey_ck
+        USERSK: $kmssecretKey_ck
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求预发环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: subscriptionKey
+        gw_host: ${return_string($apiGroupId_cag, env=preview, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: $kmsaccessKey_ck
+        USERSK: $kmssecretKey_ck
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求线上环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_apikms, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: subscriptionKey
+        gw_host: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: $kmsaccessKey_ck
+        USERSK: $kmssecretKey_ck
+    validate:
+        - eq: ["status_code", 200]
+#--------------------------------------------------------------------------------------------------------------
+- test:
+    name: 如果授权类型是订阅密钥，绑定访问授权，删除旧数据
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    testcase: testcases/jdsfgw/prepare_for_createAccessAuth_subs.yml
+    variables:
+        regionId_apim_pcaas: $regionId_apim_jdsfgw
+        serviceLine_apim_pcaas: $serviceLine_apim_jdsfgw
+        subsName_pcaas: $subsName_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 如果授权类型是订阅密钥，创建订阅密钥
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/subscriptionKey/createSubscriptionKey.yml
+    variables:
+        serviceLine_csk: $serviceLine_apim_jdsfgw
+        regionId_csk: $regionId_apim_jdsfgw
+        name_csk: $subsName_jdsfgw
+        description_csk: $subsName_jdsfgw
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 检查是否已创建
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/subscriptionKey/querySubscriptionKeys.yml
+    variables:
+        serviceLine_qsk: $serviceLine_apim_jdsfgw
+        regionId_qsk: $regionId_apim_jdsfgw
+        filters1_qsk:
+        filters1values_qsk:
+    extract:
+        - subscriptionKeys_qsk: content.result.subscriptionKeys
+        - totalCount_qsk: content.result.totalCount
+    validate:
+        - eq: ["status_code", 200]
+    output:
+        - subscriptionKeys_qsk
+
+- test:
+    name: 创建订阅密钥访问授权，绑定分组线上环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+        regionId_caa: $regionId_apim_jdsfgw
+        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKeyId)}
+        authUserType_caa: jd_subscription_key
+        deploymentIds_caa: ${return_string($apiGroupId_cag, online)}
+        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, online)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建订阅密钥访问授权，绑定分组预发环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+        regionId_caa: $regionId_apim_jdsfgw
+        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKeyId)}
+        authUserType_caa: jd_subscription_key
+        deploymentIds_caa: ${return_string($apiGroupId_cag, preview)}
+        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, preview)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 创建订阅密钥访问授权，绑定分组测试环境
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/Author/createAccessAuth.yml
+    variables:
+        serviceLine_caa: $serviceLine_apim_jdsfgw
+        regionId_caa: $regionId_apim_jdsfgw
+        accessKey_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKeyId)}
+        authUserType_caa: jd_subscription_key
+        deploymentIds_caa: ${return_string($apiGroupId_cag, test)}
+        description_caa: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKeyId)}+jd_subscription_key+${return_string($apiGroupId_cag, test)}
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求测试环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKey)}
+        gw_host: ${return_string($apiGroupId_cag, env=test, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: USERAK
+        USERSK: USERSK
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求预发环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKey)}
+        gw_host: ${return_string($apiGroupId_cag, env=preview, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: USERAK
+        USERSK: USERSK
+    validate:
+        - eq: ["status_code", 200]
+
+- test:
+    name: 请求线上环境微服务网关，请求成功
+    skipIf: ${validate_skip($authFlag_jdsfgw, jd_subscription_key, noeq)}
+    api: api/requestBackend/testJdsf.yml
+    variables:
+        jdsfServiceName: $serviceNames_one_jdsfgw
+        subscriptionKey: ${get_id_from_list($subscriptionKeys_qsk, name, $subsName_jdsfgw, subscriptionKey)}
+        gw_host: ${return_string($apiGroupId_cag, env=online, host=1, regionId=$regionId_apim_jdsfgw)}
+        USERAK: USERAK
+        USERSK: USERSK
+    validate:
+        - eq: ["status_code", 200]
+
+##----------------------------------------------------------------------------------------------------------------
+#- test:
+#    name: 删除已创建的API分组
+#    testcase: testcases/jdsfgw/prepare_for_createApiGroup.yml
+#    variables:
+#        serviceLine_apim_pcag: $serviceLine_apim_jdsfgw
+#        regionId_apim_pcag: $regionId_apim_jdsfgw
+#        filters1values_pcag: $groupName_jdsfgw

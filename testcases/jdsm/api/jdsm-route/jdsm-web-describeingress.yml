@@ -1,0 +1,120 @@
+name: 根据云翼服务树中应用名称查询服务网格的入口分流规则配置-$product-$env-$host
+variables:
+    host: ${ENV(ENV_JDMESH_WEB_BASE_URL)}
+    expected_status_code: 200
+    product: productpage
+    env: pre
+    requestid: ${get_timestamp(13)}${gen_random_string(19)}
+    headers:
+        ajax-id: $requestid
+        x-jdcloud-request-id: $requestid
+    global_headers: {"ajax-id": "$requestid", "x-jdcloud-request-id": "$requestid"}
+    cookies:
+         _ga: ${ENV(ENV_COOKIES)}
+request:
+    url: $host/openApi/jdmesh/describeIngress
+    method: POST
+    headers: $headers
+    cookies: $cookies
+
+    json:
+        params:
+            appName: $product
+            env: $env
+
+setup_hooks:
+    - ${hook_update_request_insert_global_headers($request, $global_headers)}
+
+validate:
+    - eq: ["status_code", $expected_status_code]
+
+response:
+    - {"requestId":"bkp6pa27irsuc2bw0o4mc9916h6rne5e","error":null,
+        "result":{
+            "ingresses":null
+        },
+        "responseObj":{"size":0,"timeout":0,"nonce":"5075f30d-7ff3-4e7c-b511-0334ef616b2f"}}
+    - {"requestId":"bkp38kgidpwd33qsu803u83htkd3wmai","error":null,
+        "result":{
+            "ingresses":{
+                "appName":"reviews",
+                "ingresses":[
+                    {
+                        "weightPolicy":null,
+                        "headerPolicy":null,
+                        "uriPolicy":null,
+                        "defaultRoute":"*",
+                        "useWaf":false,
+                        "host":"reviews.ingress.mesh.cn-east-2-stag.jdcloud.com",
+                        "DestinationHost":"reviews.default.mesh.jdcloud.com",
+                        "Revision":"6543058"}
+                ]
+            }
+        },
+        "responseObj":{"size":0,"timeout":0,"nonce":"48555688-2f63-4ffb-8e2d-ad1b58174d1e"}
+    }
+
+    - {"requestId":"bkp36aj7e02h9h0a0cbus3098haomnh1","error":null,
+        "result":{
+            "ingresses":{
+                "appName":"productpage",
+                "ingresses":[
+                    {
+                        "weightPolicy":null,
+                        "headerPolicy":null,
+                        "uriPolicy":null,
+                        "defaultRoute":"gray",
+                        "useWaf":false,
+                        "host":"productpage-g.ingress.mesh.cn-east-2-stag.jdcloud.com",
+                        "DestinationHost":"productpage.default.mesh.jdcloud.com",
+                        "Revision":"6706108"},
+                    {
+                        "weightPolicy":null,
+                        "headerPolicy":null,
+                        "uriPolicy":null,
+                        "defaultRoute":"az1",
+                        "useWaf":false,
+                        "host":"productpage.ingress.mesh.az1.jdcloud.com",
+                        "DestinationHost":"productpage.default.mesh.jdcloud.com",
+                        "Revision":"6706109"},
+                    {
+                        "weightPolicy":null,
+                        "headerPolicy":null,
+                        "uriPolicy":null,
+                        "defaultRoute":"az2",
+                        "useWaf":false,
+                        "host":"productpage.ingress.mesh.az2.jdcloud.com",
+                        "DestinationHost":"productpage.default.mesh.jdcloud.com",
+                        "Revision":"6706110"},
+                    {
+                        "weightPolicy":null,
+                        "headerPolicy":null,
+                        "uriPolicy":null,
+                        "defaultRoute":"*",
+                        "useWaf":false,
+                        "host":"productpage.ingress.mesh.azx.jdcloud.com",
+                        "DestinationHost":"productpage.default.mesh.jdcloud.com",
+                        "Revision":"6706111"},
+                    {
+                        "weightPolicy":null,
+                        "headerPolicy":[
+                            {
+                                "header":{
+                                    "x-jdcloud-test-jdsm-route":"healthcheckfailed"
+                                },
+                                "subsetId":"healthcheckfailed",
+                                "DestinationHost":"productpage.default.mesh.jdcloud.com"
+                            }
+                        ],
+                        "uriPolicy":null,
+                        "defaultRoute":"product",
+                        "useWaf":false,
+                        "host":"productpage.ingress.mesh.cn-east-2-stag.jdcloud.com",
+                        "DestinationHost":"productpage.default.mesh.jdcloud.com",
+                        "Revision":"6706112"
+                    }
+                ]
+            }
+        },
+        "responseObj":{"size":0,"timeout":0,"nonce":"e33e5d10-8c09-4d0b-a98e-91582dc5c60a"}
+    }

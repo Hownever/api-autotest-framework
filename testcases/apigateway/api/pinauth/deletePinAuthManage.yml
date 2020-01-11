@@ -1,0 +1,32 @@
+name: 删除用户授权
+description: 删除用户授权
+operationId: deletePinAuthManage
+
+variables:
+#    url
+    host_delpam: ${ENV(ENV_OPENAPI_INNER_DATA_HOST)}
+    apiVer_delpam: ${ENV(ENV_API_VERSION)}
+    regionId_delpam: ${ENV(ENV_APIM_REGIONID)}
+#    header
+    header_delpam:
+        Content-Type: application/json;charset=UTF-8
+        x-jdcloud-pin: ${ENV(ENV_PIN)}
+#    json
+    subordinatesPin_delpam: ~
+#    hooks
+    serviceLine_delpam: ${ENV(ENV_SERVICELINE_APIM)}
+    openapiYaml_delpam: nofile
+    openApiAk_delpam: ${ENV(ENV_OPENAPI_SYS_AK)}
+    openApiSk_delpam: ${ENV(ENV_OPENAPI_SYS_SK)}
+    apiVersion_delpam: v1
+
+request:
+    url: $host_delpam/$apiVer_delpam/pinAuthManage
+    method: DELETE
+    headers: $header_delpam
+    params:
+        subordinatesPin: $subordinatesPin_delpam
+setup_hooks:
+    - ${hook_update_jdcloud_request($request, $openApiAk_delpam, $openApiSk_delpam, $serviceLine_delpam, $apiVersion_delpam, $openapiYaml_delpam, $regionId_delpam)}
+teardown_hooks:
+    - ${hook_print("teardown_hooks for config")

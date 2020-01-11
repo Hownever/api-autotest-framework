@@ -1,0 +1,25 @@
+config:
+    name: 核心功能监控
+    variables:
+        testenv: ${ENV(ENV_TEST_ENV)}
+
+testcases:
+    服务发现功能测试，通过调用productpage项目的reviews接口，返回reviews >= 1:
+        testcase: testcases/productpage/productpage-reviews-cnt-ge-n.yml
+        parameters:
+            productid:
+                - 0
+            headers:
+                - {}
+            reviewcnt:
+                # 循环10次
+                - 1
+                - 1
+                - 1
+                - 1
+                - 1
+                - 1
+                - 1
+                - 1
+                - 1
+                - 1

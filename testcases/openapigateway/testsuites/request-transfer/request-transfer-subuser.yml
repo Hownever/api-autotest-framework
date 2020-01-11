@@ -1,0 +1,839 @@
+config:
+    name: As a main user or sub user, set the request transfer enabled, apply the resources policy to subuser, then use mainuser or subuser to get resources, should return the resources within policy for subuser, return all the resource for mainuser
+    variables:
+        product: apigatewaytestproductline
+        s_suffix: ${gen_random_string(5)}
+        s_mock_request_id: mock-data-request-id-$s_suffix
+        # 值必须为enable，否则mock server不会存储
+        s_setter: enable
+        # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+        s_force_covered: enable
+        s_remove_after_get: enable
+
+        # 网关缓存同步时间（s）
+        s_gw_cache_refresh_time: 300
+
+        s_policy_two: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstances"],"Resource":["jrn:apigatewaytestproductline:*:179869473008:instances/i-lz4o87ewyr","jrn:apigatewaytestproductline:*:179869473008:instances/i-ks7ev6bznf"],"Condition":{}}]}'
+        s_policy_all: '{"Version":3,"Statement":[{"Effect":"Allow","Action":["apigatewaytestproductline:describeInstances"],"Resource":["*"],"Condition":{}}]}'
+
+testcases:
+    初始化Tag服务相关接口数据:
+        testcase: testcases/mock/mock-mockdata-set-get.yml
+        parameters:
+            c_mock_host:
+                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+            # 值必须为1，否则mock server不会存储
+            c_mock_setter:
+                - enable
+            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+            c_mock_force_covered:
+                - enable
+            c_mock_remove_after_get:
+                - disable
+            c_mock_header:
+                - {
+                    "Content-Type": application/json,
+                    "token": mytoken
+                  }
+            # mock值的http协议中的数据类型
+            c_mock_type:
+                - application/json
+
+            # mock返回结果时的http status code
+            c_mock_code:
+                - 200
+            # mock data id 和 mock数据的内容
+            c_mock_id-c_mock_data:
+                - [tags_validateTags,
+                  {"apiGatewayTestProductLineResult":
+                    [
+                    {
+                      "resourceId": "id001",
+                      "valid": True,
+                      "resourceName": "name001",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id002",
+                      "valid": True,
+                      "resourceName": "name002",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id003",
+                      "valid": True,
+                      "resourceName": "name003",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id004",
+                      "valid": True,
+                      "resourceName": "name004",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceId": "id005",
+                      "valid": True,
+                      "resourceName": "name005",
+                      "az": "cn-north-1",
+                    },
+                    ]}
+                  ]
+                - [tags_describeTagResourcesInfo,
+                    {"apiGatewayTestProductLineResult":
+                    [
+                    {
+                      "resourceName": "name001",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name002",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name003",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name004",
+                      "az": "cn-north-1",
+                    },
+                    {
+                      "resourceName": "name005",
+                      "az": "cn-north-1",
+                    },
+                    ]}
+                  ]
+
+#
+#    获取Tag服务相关接口数据-查询接口:
+#        testcase: testcases/mock/mock-api-sdk-get-data.yml
+#        parameters:
+#            c_mock_host:
+#                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+#            # 值必须为1，否则mock server不会存储
+#            c_mock_setter:
+#                - enable
+#            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+#            c_mock_force_covered:
+#                - enable
+#            c_mock_remove_after_get:
+#                - disable
+#            c_mock_id:
+#                - tags_describeTagResourcesInfo
+#
+#
+#    获取Tag服务相关接口数据-验证接口:
+#        testcase: testcases/mock/mock-api-sdk-get-data.yml
+#        parameters:
+#            c_mock_host:
+#                - ${ENV(ENV_MOCK_SERVER_BASE_URL)}
+#            # 值必须为1，否则mock server不会存储
+#            c_mock_setter:
+#                - enable
+#            # 如果已经存在对应mock_id的记录，是否覆盖， enable表示覆盖，其他值不覆盖
+#            c_mock_force_covered:
+#                - enable
+#            c_mock_remove_after_get:
+#                - disable
+#            c_mock_id:
+#                - tags_validateTags
+
+
+    子账号请求转换逻辑场景测试-验证各种转换内容正确性:
+        testcase: testcases/request-transfer/request-transfer-subuser.yml
+        parameters:
+            c_suffix:
+                - $s_suffix
+            c_gw_host:
+                - ${ENV(ENV_INTER_GW_BASE_URL)}
+            c_product:
+                - $product
+            c_apiversion:
+                - v1
+            c_regionid:
+                - cn-north-1
+            c_openapi_yaml:
+                - nofile
+            c_AK:
+                - ${ENV(ENV_USER_AK_SYS)}
+            c_SK:
+                - ${ENV(ENV_USER_SK_SYS)}
+            c_iam_host:
+                - ${ENV(ENV_IAM_SERVER_BASE_URL)}
+            c_iam_product:
+                - iam
+            c_iam_apiversion:
+                - v1
+            c_userpin:
+                - ${ENV(ENV_USER_PIN_MAIN)}
+            c_iam_headers:
+                - {
+                  Content-Type: application/json;charset=UTF-8,
+                  x-jdcloud-pin: $c_userpin,
+                  }
+            c_subuser_name:
+                - auto_subuser_$s_suffix
+
+            c_policy_name:
+                - policyname_$s_suffix
+
+            c_policy_description:
+                - your_policy_description_$s_suffix
+
+            # 网关配置host， 一般是8001接口
+            c_gw_control_host:
+                - ${ENV(ENV_GW_CONTROL_BASE_URL)}
+
+            c_operationid:
+                - describeInstances
+            c_is_internal:
+                - False
+            c_setter_header:
+                - {
+                    "x-jdcloud-pin": "${ENV(ENV_USER_PIN_MAIN)}",
+                    "X-Jdcloud-Test-Configs-Request-Setter": $s_setter,
+                    "X-Jdcloud-Test-Configs-Request-Setter-Id": $s_mock_request_id,
+                    "X-Jdcloud-Test-Configs-Request-Setter-Force-Covered": $s_force_covered,
+
+                  }
+
+            c_getter_header:
+                - {
+                    "x-jdcloud-pin": "${ENV(ENV_USER_PIN_MAIN)}",
+                    "X-Jdcloud-Test-Configs-Request-Getter": $s_mock_request_id,
+                    "X-Jdcloud-Test-Configs-Request-Getter-Remove": $s_remove_after_get,
+                  }
+
+            c_pin:
+                - jiashuo-stag
+
+            c_request_transfer_resource_name:
+                - 'instanceId'
+            c_case_summary-c_request_transfer_is_open-c_request_transfer_is_in_to_eq-c_request_transfer_is_ni_to_ne-c_teardown_wait_time-c_policy_content-c_describeInstances_params-c_request_transfer_sub_path-c_expected_path-c_expected_method-c_expected_body:
+
+#                # ==========================有效filter name格式=====================================
+#                - [
+#                    "有效filter-name值为空",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-name值为空格",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":" ", "filters.1.values.1":"value1"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":" "}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-name值为null",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":null, "filters.1.values.1":"value1"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":"None"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-name值为整数",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name": 1, "filters.1.values.1":1},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["1"],"name":"1"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-name值为浮点数",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name": 1.123, "filters.1.values.1":1},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["1"],"name":"1.123"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-name值为英文字符、数字、有效字符组合",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name": filter1, "filters.1.values.1": "1", "filters.1.values.2": "2"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["1","2"],"name":"filter1"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-name值为中文",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name": 中文, "filters.1.values.1": 1, "filters.1.values.2": 2},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["1","2"],"name":"中文"}]}]}'
+#                    ]
+#
+#                - [
+#                    "有效filter-多个name+value组合",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": filter1, "filters.1.values.1": v1, "filters.1.values.2": v2,
+#                      "filters.2.name": filter2, "filters.2.values.1": v1,
+#                      "filters.3.name": filter3, "filters.3.values.1": v1,
+#                      "filters.4.name": filter4, "filters.4.values.1": v1,
+#                      "filters.5.name": filter5, "filters.5.values.1": v1,
+#                      "filters.6.name": filter6, "filters.6.values.1": v1,
+#                      "filters.7.name": filter7, "filters.7.values.1": v1, "filters.7.values.2": v2,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["v1","v2"],"name":"filter1"},{"values":["v1"],"name":"filter2"},{"values":["v1"],"name":"filter3"},{"values":["v1"],"name":"filter4"},{"values":["v1"],"name":"filter5"},{"values":["v1"],"name":"filter6"},{"values":["v1","v2"],"name":"filter7"}]}]}'
+#                    ]
+#
+#                # ==========================有效filter value格式=====================================
+#                - [
+#                    "有效filter-value值为空,null,None等",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                    "filters.1.name": filter1, "filters.1.values.1": , "filters.1.values.2": "",
+#                    "filters.2.name": filter2, "filters.2.values.1": null
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["None",""],"name":"filter1"},{"values":["None"],"name":"filter2"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-value值为整数，浮点数，字符",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name": filter1, "filters.1.values.1": 1, "filters.1.values.2": 3.14159265758, "filters.2.name": filter2, "filters.2.values.1": "3.14159265758abcdefghijklmnOPQRSTUVWXYZ"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["1","3.14159265758"],"name":"filter1"},{"values":["3.14159265758abcdefghijklmnOPQRSTUVWXYZ"],"name":"filter2"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-value值为特殊字符（~!@#$%^&*()_+-=，;:\",./?\\|）",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name": filter1, "filters.1.values.1": "~!@#$%^&*()_+-=", "filters.1.values.2": ";:\",./?\\|"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["~!@#$%^&*()_+-=",";:\",./?\\|"],"name":"filter1"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-value值为特殊字符(')",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name": filter1, "filters.1.values.1": "'"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    "{\"pageSize\":20,\"pageNumber\":1,\"filterGroups\":[{\"filters\":[{\"values\":[\"'\"],\"name\":\"filter1\"}]}]}"
+#                    ]
+#                - [
+#                    "有效filter-多个value值",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": filter1, "filters.1.values.1": v1, "filters.1.values.2": v2, "filters.1.values.3": v3, "filters.1.values.4": v4, "filters.1.values.5": v5, "filters.1.values.6": v6,  "filters.1.values.7": v7,
+#                      "filters.2.name": filter2, "filters.2.values.1": "3.14159265758abcdefghijklmnOPQRSTUVWXYZ",
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["v1","v2","v3","v4","v5","v6","v7"],"name":"filter1"},{"values":["3.14159265758abcdefghijklmnOPQRSTUVWXYZ"],"name":"filter2"}]}]}'
+#                    ]
+#
+#                # ==========================有效filter operator格式=====================================
+#                - [
+#                    "有效filter-operator无，默认使用eq",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": filter1, "filters.1.values.1": v1, "filters.1.values.2": v2, "filters.1.values.3": v3, "filters.1.values.4": v4, "filters.1.values.5": v5, "filters.1.values.6": v6,  "filters.1.values.7": v7,
+#                      "filters.2.name": filter2, "filters.2.values.1": "3.14159265758abcdefghijklmnOPQRSTUVWXYZ",
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["v1","v2","v3","v4","v5","v6","v7"],"name":"filter1"},{"values":["3.14159265758abcdefghijklmnOPQRSTUVWXYZ"],"name":"filter2"}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-有效operator: eq,ne,gt,lt,ge,le,like,in,ni，不转换in和ni",
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+#                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+#                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+#                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+#                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+#                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+#                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+#                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"in","name":"f8","values":["v8"]},{"operator":"ni","name":"f9","values":["v9"]}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-有效operator-仅in->eq",
+#                    True, True, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+#                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+#                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+#                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+#                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+#                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+#                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+#                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"eq","name":"f8","values":["v8"]},{"operator":"ni","name":"f9","values":["v9"]}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-有效operator-仅ni->ne",
+#                    True, False, True, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+#                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+#                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+#                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+#                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+#                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+#                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+#                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"in","name":"f8","values":["v8"]},{"operator":"ne","name":"f9","values":["v9"]}]}]}'
+#                    ]
+#                - [
+#                    "有效filter-有效operator-in->eqh和ni->ne",
+#                    True, True, True, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "filters.2.name": f2, "filters.2.values.1": v2, "filters.2.operator": ne,
+#                      "filters.3.name": f3, "filters.3.values.1": v3, "filters.3.operator": gt,
+#                      "filters.4.name": f4, "filters.4.values.1": v4, "filters.4.operator": lt,
+#                      "filters.5.name": f5, "filters.5.values.1": v5, "filters.5.operator": ge,
+#                      "filters.6.name": f6, "filters.6.values.1": v6, "filters.6.operator": le,
+#                      "filters.7.name": f7, "filters.7.values.1": v7, "filters.7.operator": like,
+#                      "filters.8.name": f8, "filters.8.values.1": v8, "filters.8.operator": in,
+#                      "filters.9.name": f9, "filters.9.values.1": v9, "filters.9.operator": ni,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]},{"operator":"ne","name":"f2","values":["v2"]},{"operator":"gt","name":"f3","values":["v3"]},{"operator":"lt","name":"f4","values":["v4"]},{"operator":"ge","name":"f5","values":["v5"]},{"operator":"le","name":"f6","values":["v6"]},{"operator":"like","name":"f7","values":["v7"]},{"operator":"eq","name":"f8","values":["v8"]},{"operator":"ne","name":"f9","values":["v9"]}]}]}'
+#                    ]
+
+                # ==========================有效tags格式=====================================
+                - [
+                    "有效tags-key和value值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）",
+                    True, False, False, $s_gw_cache_refresh_time,$s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007, "filters.1.operator": eq,
+                      "tags.1.key": tag001, "tags.1.values.1": tag001, "tags.1.values.2": tag005,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":["id001"]}]}]}'
+                    ]
+                - [
+                    "有效tags-key和value值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）",
+                    True, False, False, 0,$s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007, "filters.1.operator": eq,
+                      "tags.1.key": tag001, "tags.1.values.1": tag001, "tags.1.values.2": tag005,
+                      "tags.2.key": -123, "tags.2.values.1": 3.1415926, "tags.2.values.2": _,
+                      "tags.3.key": 3.1415926, "tags.3.values.1": "", "tags.3.values.2": v3,
+                      "tags.4.key": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name, "tags.4.values.1": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1, "tags.4.values.2": v4.2,
+                      "tags.5.key": name_1, "tags.5.values.1": v5.1, "tags.5.values.2": v5.22,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":[]}]}]}'
+                    ]
+
+#                - [
+#                    "有效tags-key和value值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "tags.1.key": 123, "tags.1.values.1": 123, "tags.1.values.2": -123,
+#                      "tags.2.key": -123, "tags.2.values.1": 3.1415926, "tags.2.values.2": _,
+#                      "tags.3.key": 3.1415926, "tags.3.values.1": "", "tags.3.values.2": v3,
+#                      "tags.4.key": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name, "tags.4.values.1": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1, "tags.4.values.2": v4.2,
+#                      "tags.5.key": name_1, "tags.5.values.1": v5.1, "tags.5.values.2": v5.22,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"tagFilters":[{"operator":"eq","key":"123","values":["123","-123"]},{"operator":"eq","key":"-123","values":["3.1415926","_"]},{"operator":"eq","key":"3.1415926","values":["","v3"]},{"operator":"eq","key":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name","values":["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1","v4.2"]},{"operator":"eq","key":"name_1","values":["v5.1","v5.22"]}],"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}]}'
+#                    ]
+
+#                - [
+#                    "有效tags-key和value值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "tags.1.key": 123, "tags.1.values.1": 123, "tags.1.values.2": -123,
+#                      "tags.2.key": -123, "tags.2.values.1": 3.1415926, "tags.2.values.2": _,
+#                      "tags.3.key": 3.1415926, "tags.3.values.1": "", "tags.3.values.2": v3,
+#                      "tags.4.key": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name, "tags.4.values.1": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1, "tags.4.values.2": v4.2,
+#                      "tags.5.key": name_1, "tags.5.values.1": v5.1, "tags.5.values.2": v5.22,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"tagFilters":[{"operator":"eq","key":"123","values":["123","-123"]},{"operator":"eq","key":"-123","values":["3.1415926","_"]},{"operator":"eq","key":"3.1415926","values":["","v3"]},{"operator":"eq","key":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name","values":["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1","v4.2"]},{"operator":"eq","key":"name_1","values":["v5.1","v5.22"]}],"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}]}'
+#                    ]
+#
+#                - [
+#                    "有效tags-operator为有效值：eq,ne,gt,lt,ge,le,like,in,ni，不转换in和ni",
+#                    True, True, True, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "tags.1.key": k1, "tags.1.values.1": v1, "tags.1.operator": eq,
+#                      "tags.2.key": k2, "tags.2.values.1": v2, "tags.2.operator": ne,
+#                      "tags.3.key": k3, "tags.3.values.1": v3, "tags.3.operator": gt,
+#                      "tags.4.key": k4, "tags.4.values.1": v4, "tags.4.operator": lt,
+#                      "tags.5.key": k5, "tags.5.values.1": v5, "tags.5.operator": ge,
+#                      "tags.6.key": k6, "tags.6.values.1": v6, "tags.6.operator": le,
+#                      "tags.7.key": k7, "tags.7.values.1": v7, "tags.7.operator": like,
+#                      "tags.8.key": k8, "tags.8.values.1": v8, "tags.8.operator": in,
+#                      "tags.9.key": k9, "tags.9.values.1": v9, "tags.9.operator": ni,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"tagFilters":[{"operator":"eq","key":"k1","values":["v1"]},{"operator":"ne","key":"k2","values":["v2"]},{"operator":"gt","key":"k3","values":["v3"]},{"operator":"lt","key":"k4","values":["v4"]},{"operator":"ge","key":"k5","values":["v5"]},{"operator":"le","key":"k6","values":["v6"]},{"operator":"like","key":"k7","values":["v7"]},{"operator":"in","key":"k8","values":["v8"]},{"operator":"ni","key":"k9","values":["v9"]}],"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}]}'
+#                    ]
+#                # ==========================有效tagFilters格式=====================================
+                - [
+                    "有效tagFilters-key和value值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）",
+                    True, False, False, $s_gw_cache_refresh_time,$s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007, "filters.1.operator": eq,
+                      "tagFilters.1.key": tag001, "tagFilters.1.values.1": tag001,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":["id001"]}]}]}'
+                    ]
+                - [
+                    "有效tagFilters-key和value值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）",
+                    True, False, False, 0,$s_policy_all,
+                    {"pageNumber": 1, "pageSize": 20,
+                      "filters.1.name": instanceId, "filters.1.values.1": id001, "filters.1.values.2": id007, "filters.1.operator": eq,
+                      "tagFilters.1.key": tag001, "tagFilters.1.values.1": tag001, "tagFilters.1.values.2": -123,
+                      "tagFilters.2.key": -123, "tagFilters.2.values.1": 3.1415926, "tagFilters.2.values.2": _,
+                      "tagFilters.3.key": 3.1415926, "tagFilters.3.values.1": "", "tagFilters.3.values.2": v3,
+                      "tagFilters.4.key": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name, "tagFilters.4.values.1": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1, "tagFilters.4.values.2": v4.2,
+                      "tagFilters.5.key": name_1, "tagFilters.5.values.1": v5.1, "tagFilters.5.values.2": v5.22,
+                    },
+                    "/post",
+                    ".*/post/instances$",
+                    "POST",
+                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"operator":"eq","name":"instanceId","values":[]}]}]}'
+                    ]
+#                - [
+#                    "有效tagFilters-key和value值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "tagFilters.1.key": 123, "tagFilters.1.values.1": 123, "tagFilters.1.values.2": -123,
+#                      "tagFilters.2.key": -123, "tagFilters.2.values.1": 3.1415926, "tagFilters.2.values.2": _,
+#                      "tagFilters.3.key": 3.1415926, "tagFilters.3.values.1": "", "tagFilters.3.values.2": v3,
+#                      "tagFilters.4.key": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name, "tagFilters.4.values.1": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1, "tagFilters.4.values.2": v4.2,
+#                      "tagFilters.5.key": name_1, "tagFilters.5.values.1": v5.1, "tagFilters.5.values.2": v5.22,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"tagFilters":[{"key":"123","values":["123","-123"]},{"key":"-123","values":["3.1415926","_"]},{"key":"3.1415926","values":["","v3"]},{"key":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name","values":["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.1","v4.2"]},{"key":"name_1","values":["v5.1","v5.22"]}],"filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}]}'
+#                    ]
+#                - [
+#                    "有效tagFilters-不支持传operator：eq,ne,gt,lt,ge,le,like,in,ni，如果传operator作为一般参数处理",
+#                    True, True, True, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "tagFilters.1.key": k1, "tagFilters.1.values.1": v1, "tagFilters.1.operator": eq,
+#                      "tagFilters.2.key": k2, "tagFilters.2.values.1": v2, "tagFilters.2.operator": ne,
+#                      "tagFilters.3.key": k3, "tagFilters.3.values.1": v3, "tagFilters.3.operator": gt,
+#                      "tagFilters.4.key": k4, "tagFilters.4.values.1": v4, "tagFilters.4.operator": lt,
+#                      "tagFilters.5.key": k5, "tagFilters.5.values.1": v5, "tagFilters.5.operator": ge,
+#                      "tagFilters.6.key": k6, "tagFilters.6.values.1": v6, "tagFilters.6.operator": le,
+#                      "tagFilters.7.key": k7, "tagFilters.7.values.1": v7, "tagFilters.7.operator": like,
+#                      "tagFilters.8.key": k8, "tagFilters.8.values.1": v8, "tagFilters.8.operator": in,
+#                      "tagFilters.9.key": k9, "tagFilters.9.values.1": v9, "tagFilters.9.operator": ni,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"tagFilters.6.operator":"le","tagFilters.1.operator":"eq","tagFilters.8.operator":"in","tagFilters.9.operator":"ni","tagFilters.7.operator":"like","filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}],"tagFilters.4.operator":"lt","tagFilters.2.operator":"ne","tagFilters.5.operator":"ge","pageSize":20,"pageNumber":1,"tagFilters.3.operator":"gt","tagFilters":[{"operator":"eq","key":"k1","values":["v1"]},{"operator":"eq","key":"k2","values":["v2"]},{"operator":"eq","key":"k3","values":["v3"]},{"operator":"eq","key":"k4","values":["v4"]},{"operator":"eq","key":"k5","values":["v5"]},{"operator":"eq","key":"k6","values":["v6"]},{"operator":"eq","key":"k7","values":["v7"]},{"operator":"eq","key":"k8","values":["v8"]},{"operator":"eq","key":"k9","values":["v9"]}]}'
+#                    ]
+#                # ==========================有效tags + tagFilters混合使用格式=====================================
+#                # TODO：
+#                # ==========================有效sorts格式=====================================
+#                - [
+#                    "有效sorts-key值为整数，浮点数，负数，英文字母，_及其组合（不含特殊字符）,direction值为asc,desc",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1,
+#                      "sorts.1.name": 123, "sorts.1.direction": asc,
+#                      "sorts.2.name": -123, "sorts.2.direction": desc,
+#                      "sorts.3.name": 3.1415926, "sorts.3.direction": desc,
+#                      "sorts.4.name": abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name, "sorts.4.direction": desc,
+#                      "sorts.5.name": name_1, "sorts.5.direction": asc,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"sorts":[{"direction":"asc","name":"123"},{"direction":"desc","name":"-123"},{"direction":"desc","name":"3.1415926"},{"direction":"desc","name":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZv4.name"},{"direction":"asc","name":"name_1"}],"pageNumber":1,"filterGroups":[{"filters":[{"values":["v1"],"name":"f1"}]}]}'
+#                    ]
+#                - [
+#                    "有效sorts-不支持传operator：eq,ne,gt,lt,ge,le,like,in,ni，如果穿operator作为一般参数处理,direction值无效时，也应作为一般参数处理",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                      "filters.1.name": f1, "filters.1.values.1": v1, "filters.1.operator": eq,
+#                      "sorts.1.name": n1, "sorts.1.direction": asc, "sorts.1.operator": eq,
+#                      "sorts.2.name": n2, "sorts.2.direction": asc, "sorts.2.operator": ne,
+#                      "sorts.3.name": n3, "sorts.3.direction": asc, "sorts.3.operator": gt,
+#                      "sorts.4.name": n4, "sorts.4.direction": asc, "sorts.4.operator": lt,
+#                      "sorts.5.name": n5, "sorts.5.direction": asc, "sorts.5.operator": ge,
+#                      "sorts.6.name": n6, "sorts.6.direction": asc, "sorts.6.operator": le,
+#                      "sorts.7.name": n7, "sorts.7.direction": asc, "sorts.7.operator": like,
+#                      "sorts.8.name": n8, "sorts.8.direction": asc, "sorts.8.operator": in,
+#                      "sorts.9.name": n9, "sorts.9.direction": asc, "sorts.9.operator": ni,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"sorts.6.operator":"le","sorts.4.operator":"lt","sorts.9.operator":"ni","sorts.2.operator":"ne","filterGroups":[{"filters":[{"operator":"eq","name":"f1","values":["v1"]}]}],"sorts.7.operator":"like","sorts":[{"direction":"asc","name":"n1"},{"direction":"asc","name":"n2"},{"direction":"asc","name":"n3"},{"direction":"asc","name":"n4"},{"direction":"asc","name":"n5"},{"direction":"asc","name":"n6"},{"direction":"asc","name":"n7"},{"direction":"asc","name":"n8"},{"direction":"asc","name":"n9"}],"sorts.8.operator":"in","sorts.5.operator":"ge","pageSize":20,"pageNumber":1,"sorts.1.operator":"eq","sorts.3.operator":"gt"}'
+#                    ]
+#
+#                # ==========================请求转换路径测试=====================================
+#
+#                - [
+#                    "请求转换路径为/",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "/",
+#                    ".*/cn-north-1/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#                - [
+#                    '请求转换路径为""(空)',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "",
+#                    ".*/cn-north-1/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#                - [
+#                    '请求转换路径为数字、英文字符、.、_、-、~等非coding字符',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "/1/2/3/3.14/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/_/12-~bc",
+#                    ".*/cn-north-1/1/2/3/3.14/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/_/12-~bc/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#                - [
+#                    '请求转换路径为中文字符',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "/中文",
+#                    ".*/cn-north-1/中文/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#
+#                # https://blog.csdn.net/pcyph/article/details/45010609 网址URL中特殊字符转义编码
+#                # 常见字符的Url编码列表：
+#
+#                # 保留字符的Url编码
+#                # !	   *   "   '   (   )   ;   :   @   &
+#                # %21 %2A %22 %27 %28 %29 %3B %3A %40 %26
+#                #  =   +   $   ,   /   ?   %   #   [   ]
+#                # %3D %2B %24 %2C %2F %3F %25 %23 %5B %5D
+#                - [
+#                    '请求转换路径为保留字符: !*"‘();:@&=+$,/?%#[]共计{10个}，配置失败，(BUG:可以使用特殊字符实现转发到后端其它url，需过滤特殊字符:?&@)',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "/%21%2A%22%27%28%29%3B%3A%40%26/%3D%2B%24%2C%2F%3F%25%23%5B%5D/",
+#                    ".*/cn-north-1/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#
+#                - [
+#                    '请求转换路径为转义后的字符,类似：%xx，配置失败，(BUG:可以使用特殊字符实现转发到后端其它url，需过滤特殊字符)',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "/%21%2A%22%27%28%29%3B%3A%40%26/%3D%2B%24%2C%2F%3F%25%23%5B%5D/",
+#                    ".*/cn-north-1/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#
+#                - [
+#                    '请求转换路径-格式-开头无/',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "no_slash_in_head",
+#                    ".*/cn-north-1/no_slash_in_head/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#
+#                - [
+#                    '请求转换路径-格式-结尾有/',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "slash_in_end/",
+#                    ".*/cn-north-1/slash_in_end/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#
+#                - [
+#                    '请求转换路径-格式-重复/',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "//////dup_slash_head////dup_slash_end////",
+#                    ".*/cn-north-1/dup_slash_head/dup_slash_end/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#                # ==========================请求转换关闭、开启测试=====================================
+#                - [
+#                    "关闭请求转换",
+#                    False, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"n1", "filters.1.values.1":"value1"},
+#                    "/post",
+#                    ".*v1/regions/cn-north-1/instances\\?pageNumber=1&pageSize=20&filters.1.name=n1&filters.1.values.1=value1$",
+#                    "GET",
+#                    ''
+#                    ]
+#                - [
+#                    "开启请求转换",
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"", "filters.1.values.1":"value1"},
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"pageSize":20,"pageNumber":1,"filterGroups":[{"filters":[{"values":["value1"],"name":""}]}]}'
+#                    ]
+#                - [
+#                    "开启，然后关闭请求转换",
+#                    False, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20, "filters.1.name":"n1", "filters.1.values.1":"value1"},
+#                    "/post",
+#                    ".*v1/regions/cn-north-1/instances\\?pageNumber=1&pageSize=20&filters.1.name=n1&filters.1.values.1=value1$",
+#                    "GET",
+#                    ''
+#                    ]
+#                # ==========================非filters、tags、tagfilters、sorts参数不转换=====================================
+#
+#                - [
+#                    '请求转换-非filters参数不转换',
+#                    True, False, False, $s_gw_cache_refresh_time, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                    "filters.1":"name", "filters.1.values":"value1",
+#                    "filters.a.name":"namea", "filters.a.values.1":"valuea",
+#                    "filters.name":"name", "filters.values.11":"value1",
+#                    "filters.1..name":"..name", "filters.1.values..1":"..value1",
+#                    "filter.1.name":"name1", "filter.1.values.1":"value1", "filter.1.operator":"eq",
+#                    "filters.1.Name":"uppercase1", "filters.1.Values.1":"uppercasevalue1",
+#                    "Filters.1.name":"uppercase2", "Filters.1.values.1":"uppercasevalue2",
+#                    "filters.1.name":"name1", "filters.1.values.1":"value1",
+#                    "filters.2.operator":"eq",
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"filters.1.values..1":"..value1","filters.2.operator":"eq","filters.name":"name","filterGroups":[{"filters":[{"values":["value1"],"name":"name1"}]}],"filters.a.name":"namea","filters.1.Values.1":"uppercasevalue1","pageNumber":1,"filters.a.values.1":"valuea","filters.1.values":"value1","filters.1":"name","filters.values.11":"value1","filters.1.Name":"uppercase1","Filters.1.name":"uppercase2","filter.1.operator":"eq","Filters.1.values.1":"uppercasevalue2","filter.1.values.1":"value1","filter.1.name":"name1","pageSize":20,"filters.1..name":"..name"}'
+#                    ]
+#                - [
+#                    '请求转换-非tags参数不转换',
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                    "tags.1.key": "name1", "tags.1.values.1": "value1", "tags.1.operator": le, # ok
+#                    "tags.1.key.": ek1, "tags.1.value.1.": ev1, "tags.1.value.2.": ev1, #  add . in key
+#                    "tag.1.key": ek2, "tag.1.values.1": ev2, "tag.1.operator": eo2, # key miss s
+#                    "tags.5.key": ek3, "tags.5.values.1": ev3, "tags.5.operator": eo3, # index miss
+#                    "tags.3.Keys": ek4, "tags.3.Values.1": ev4, "tags.3.Operator": eo4, #  upper Value and Operator
+#                    "Tags.3.keys": ek5, "Tags.3.values.1": ev5, "Tags.3.operator": eo5, #  upper Tag
+#                    "tags.key": ek6, "tags.values.1": ev6, "tags.operator": eo6, #  miss index in key
+#                    "tags": ek7, "values": ev7, "operator": eo7, # key format err
+#                    "tags.1.keys":ek8, "tags.1.value.1": ev8, # value miss s
+#                    "tags.2.key":"name2", "tags.2.values.1":"value2", # ok
+#                                          "tags.3.values.1":"ev9", #  miss key
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"tag.1.operator":"eo2","operator":"eo7","tag.1.values.1":"ev2","Tags.3.keys":"ek5","tags.5.key":"ek3","filterGroups":[],"tags.3.Operator":"eo4","tags.1.value.1":"ev8","tags.1.key.":"ek1","pageSize":20,"pageNumber":1,"tags.3.Keys":"ek4","tags.values.1":"ev6","tags.1.keys":"ek8","Tags.3.operator":"eo5","tag.1.key":"ek2","values":"ev7","tags.3.values.1":"ev9","Tags.3.values.1":"ev5","tagFilters":[{"operator":"eq","key":"name1","values":["value1"]},{"operator":"eq","key":"name2","values":["value2"]}],"tags.1.value.2.":"ev1","tags.operator":"eo6","tags.key":"ek6","tags.5.operator":"eo3","tags.3.Values.1":"ev4","tags.1.operator":"le","tags.1.value.1.":"ev1","tags.5.values.1":"ev3","tags":"ek7"}'
+#                    ]
+#                - [
+#                    '请求转换-非tagfilters参数不转换',
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                    "tagFilters.1.keys": ek1, "tagFilters.1.value.1": ev1, "tagFilters.1.operators": ege1,
+#                    "tagFilters.1.key.": ek2, "tagFilters.1.values.1.": ev2, "tagFilters.1.operator": ege2,
+#                    "tagFilter.3.key": ek3, "tagFilter.3.values.1": ev3, "tagFilter.3.operator": ge3,
+#                    "tagFilters.5.key": ek4, "tagFilters.5.values.1": ev4, "tagFilters.5.operator": ege4,
+#                    "tagFilters.1.key": k1, "tagFilters.1.values.1": v1, "tagFilters.1.operator": ge,
+#                    "tagFilters.2.key": k2, "tagFilters.2.values.1": v2, "tagFilters.2.operator": e_operator,
+#                    "tagFilters.3.key": k3,                              "tagFilters.3.operator": gt,
+#                    "tagFilters.4.Key": ek5, "tagFilters.4.Values.1": ev5, "tagFilters.4.Operator": ege5,
+#                    "tagfilters.4.key": ek6, "tagfilters.4.values.1": ev6, "tagfilters.4.operator": ege6,
+#                                             "tagFilters.4.values.1": ev7, "tagFilters.4.operator": eop7,  # miss key
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"tagFilters.1.operator":"ge","tagfilters.4.key":"ek6","tagFilter.3.key":"ek3","filterGroups":[],"tagFilters.1.value.1":"ev1","tagFilter.3.operator":"ge3","tagFilters.1.operators":"ege1","pageSize":20,"pageNumber":1,"tagfilters.4.values.1":"ev6","tagFilter.3.values.1":"ev3","tagFilters.4.Key":"ek5","tagFilters.1.key.":"ek2","tagFilters.4.Values.1":"ev5","tagFilters.1.keys":"ek1","tagFilters.1.values.1.":"ev2","tagFilters":[{"operator":"eq","key":"k1","values":["v1"]},{"operator":"eq","key":"k2","values":["v2"]},{"operator":"eq","key":"k3","values":[]}],"tagFilters.4.Operator":"ege5","tagFilters.5.key":"ek4","tagFilters.4.values.1":"ev7","tagFilters.2.operator":"e_operator","tagFilters.5.operator":"ege4","tagFilters.3.operator":"gt","tagFilters.4.operator":"eop7","tagfilters.4.operator":"ege6","tagFilters.5.values.1":"ev4"}'
+#                    ]
+#
+#                - [
+#                    '请求转换-非sorts参数不转换',
+#                    True, False, False, 0, $s_policy_all,
+#                    {"pageNumber": 1, "pageSize": 20,
+#                    "sorts.1.name": n1, "sorts.1.direction": asc, "sorts.1.operator": eq,
+#                    "sorts.2.name": n2, "sorts.2.direction": invalid_direction, "sorts.2.operator": eq,
+#                                        "sorts.3.direction": asc,  # miss name
+#                    "sorts.3": en1, "sorts.3": ed1,
+#                    "sorts.3.names": en2, "sorts.3.directions": ed2,
+#                    "sort.3.name": en3, "sort.3.direction": ed3,
+#                    "sort.3.name": en4, "sort.3.direction": ed4,
+#                    "sorts.3.Name": en5, "sorts.3.Direction": ed5,
+#                    "sorts.3.name.": en6, "sorts.3.direction.": ed6,
+#                    "sorts.3.name_": en7, "sorts.3.direction_": ed7,
+#                    "Sorts.3.name_": en8, "Sorts.3.direction_": ed8,
+#                    "sorts.6.name": enx, "sorts.6.direction": edx,
+#                    },
+#                    "/post",
+#                    ".*/post/instances$",
+#                    "POST",
+#                    '{"sorts.6.name":"enx","sorts.6.direction":"edx","sorts.3":"ed1","sorts.3.name.":"en6","sorts.3.Name":"en5","sorts.3.Direction":"ed5","sort.3.direction":"ed4","pageSize":20,"pageNumber":1,"sorts.3.direction_":"ed7","sorts":[{"direction":"asc","name":"n1"},{"direction":"invalid_direction","name":"n2"}],"Sorts.3.direction_":"ed8","Sorts.3.name_":"en8","sorts.3.name_":"en7","sorts.3.directions":"ed2","sorts.3.direction":"asc","sort.3.name":"en4","sorts.3.direction.":"ed6","sorts.1.operator":"eq","sorts.3.names":"en2","filterGroups":[],"sorts.2.operator":"eq"}'
+#                    ]
+#
