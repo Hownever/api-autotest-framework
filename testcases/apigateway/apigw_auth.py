@@ -8,7 +8,6 @@ import traceback
 import json
 import abc
 import time
-import requests
 import sys
 VERSION = '1.0.0'
 
