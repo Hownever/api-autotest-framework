@@ -2,13 +2,13 @@ config:
     name: openapi-core-console
     variables:
       base_url:
-        - http://apigw-internal.cn-east-2.jdcloud.com
-        - http://apigw-internal.cn-east-1.jdcloud.com
-        - http://apigw-internal.cn-south-1.jdcloud.com
+#        - http://apigw-internal.cn-east-2.jdcloud.com
+#        - http://apigw-internal.cn-east-1.jdcloud.com
+#        - http://apigw-internal.cn-south-1.jdcloud.com
         - http://apigw-internal.cn-north-1.jdcloud.com
         - http://apigw-internal.cn-north-1.jcloudcs.com
 #        - http://apigw-kong-internal.ingress.mesh.cn-north-1.jdcloud.com
-        - http://openapi-internal-test.cn-north-1.jdcloud-api.com
+#        - http://openapi-internal-test.cn-north-1.jdcloud-api.com
 
 testcases:
     deleteInstance接口，网关报错403,this user is not allowed:

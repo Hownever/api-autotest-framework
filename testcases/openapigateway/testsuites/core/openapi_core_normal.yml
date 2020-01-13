@@ -7,14 +7,14 @@ config:
         - https://vm.cn-south-1.jdcloud-api.com
         - https://vm.cn-east-1.jdcloud-api.com
         - https://vm.cn-east-2.jdcloud-api.com
-        - https://openapi-test.cn-north-1.jdcloud-api.com
+#        - https://openapi-test.cn-north-1.jdcloud-api.com
       base_url_external_csa:
         - https://csa.jdcloud-api.com
         - https://csa.cn-north-1.jdcloud-api.com
         - https://csa.cn-south-1.jdcloud-api.com
         - https://csa.cn-east-1.jdcloud-api.com
         - https://csa.cn-east-2.jdcloud-api.com
-        - https://openapi-test.cn-north-1.jdcloud-api.com
+#        - https://openapi-test.cn-north-1.jdcloud-api.com
 testcases:
     deleteInstance接口，网关报错403，do not use illegal header:
         testcase: testcases/authDeny/deleteInstance_gw_block_403_illegal_header.yml
